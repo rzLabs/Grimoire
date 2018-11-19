@@ -2,12 +2,12 @@
 All-in-one Rappelz Development Tool
 
 # Current Functionality
-1 RDB Editing
+1. **RDB Editing**
   * User defined structures (LUA via MoonSharp)
   * Load from File/SQL AND Data.XXX
   * Load by Drag-N-Drop
   * Save to File/SQL
-2 Data Management
+2. **Data Management**
   * Load data.000 index
   * View all extensions
   * View Size and Count
@@ -16,13 +16,13 @@ All-in-one Rappelz Development Tool
   * Export by ALL or by Ext
   * Build new client from previous Export (ALL)
   * Search ALL by complete/partial file name
-3 Hasher Utility
+3. **Hasher Utility**
   * Hash name (on the fly) w/ flip option
   * Add File or Folder via Drag-N-Drop/Right-Click Context menu
   * Add/Remove (ascii) to/from added files
   * Auto-Convert added files
   * Auto-Clear file list upon conversion
-4 Item_Use_Flag utility
+4. **Item_Use_Flag utility**
   * Customizable flag list
   * Included premade lists for various epics
   * Auto convert
