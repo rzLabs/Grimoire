@@ -8,14 +8,28 @@ All-in-one Rappelz Development Tool
   * Load by Drag-N-Drop
   * Save to File/SQL
 2. **Data Management**
-  * Load data.000 index
-  * View all extensions
-  * View Size and Count
+  * Load
+    * File Menu
+    * Drag-N-Drop
+  * View client files
+  * View detailed information per extension
+    * Extension file count
+    * Extension total size consumed
+  * View detailed information per file
+    * Data.00* ID
+    * File offset
+    * File Size (length)
+    * File Encryption status
+    * File Extension
+    * File Upload Path (for use with retail upload system)
   * Filter index by Extension
-  * Export client contents
-  * Export by ALL or by Ext
-  * Build new client from previous Export (ALL)
-  * Search ALL by complete/partial file name
+  * Export Files
+    * Export by Extension
+      * Export all files by 'ALL' Extension
+    * Export Selected Files
+  * Search
+    * All Files
+    * Extension (by selecting extension then searching)
 3. **Hasher Utility**
   * Hash name (on the fly) w/ flip option
   * Add File or Folder via Drag-N-Drop/Right-Click Context menu
