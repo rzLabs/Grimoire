@@ -96,11 +96,23 @@ namespace Grimoire.GUI
 
         private void Main_DragDrop(object sender, DragEventArgs e)
         {
-            if (tManager.Style == Style.RDB)
-            {
-                string filePath = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+            //TODO: Move Hasher to here so that we don't have a drag operation per tab style
+            // Make sure (FOR HASHER) that we provide proper string[] of paths from possible dir drop
+            string[] paths = ((string[])e.Data.GetData(DataFormats.FileDrop));
 
-                tManager.RDBTab.LoadFile(filePath);
+            switch (tManager.Style)
+            {
+                case Style.RDB:
+                    tManager.RDBTab.LoadFile(paths[0]);
+                    break;
+
+                case Style.DATA:
+                    tManager.DataTab.Load(paths[0]);
+                    break;
+
+                case Style.HASHER:
+                    tManager.HashTab.Add_Dropped_Files(paths);
+                    break;
             }
         }
 
@@ -113,6 +125,22 @@ namespace Grimoire.GUI
         {
             Utilities.OPT.Save();
             lManager.Write();
+        }
+
+        private void tabs_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                for (int i = 0; i < tabs.TabCount; ++i)
+                {
+                    Rectangle r = tabs.GetTabRect(i);
+                    if (r.Contains(e.Location) /* && it is the header that was clicked*/)
+                    {
+                        tabs_cMenu.Show(tabs, e.Location);
+                        break;
+                    }
+                }
+            }
         }
     }
 }

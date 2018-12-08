@@ -68,22 +68,29 @@ namespace Grimoire.Tabs.Utilities
                     break;
 
                 case Style.DATA:
-                    {
+                   {
+                        int rowCount = 0;
+
                         if (tManager.DataTab.Filtered)
                         {
-                            int rowCount = tManager.DataTab.FilterCount;
+                            rowCount = tManager.DataTab.FilterCount;
                             if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
                             if (e.RowIndex == 0 & rowCount == 0) { return; }
-                            IndexEntry entry = tManager.DataTab.FilteredIndex[e.RowIndex];
-                            e.Value = entry.Name;
+                            e.Value = tManager.DataTab.FilteredIndex[e.RowIndex].Name;
+                        }
+                        else if (tManager.DataTab.Searching)
+                        {
+                            rowCount = tManager.DataTab.SearchCount;
+                            if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
+                            if (e.RowIndex == 0 & rowCount == 0) { return; }
+                            e.Value = tManager.DataTab.SearchIndex[e.RowIndex].Name;
                         }
                         else
                         {
-                            int rowCount = tManager.DataCore.RowCount;
+                            rowCount = tManager.DataCore.RowCount;
                             if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
                             if (e.RowIndex == 0 & rowCount == 0) { return; }
-                            IndexEntry entry = tManager.DataCore.Index[e.RowIndex];
-                            e.Value = entry.Name;
+                            e.Value = tManager.DataCore.Index[e.RowIndex].Name;
                         }                       
                     }
                     break;

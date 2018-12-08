@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DataCore;
 using DataCore.Structures;
+using Grimoire.Utilities;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -19,8 +20,14 @@ namespace Grimoire.Tabs.Styles
         private readonly Tabs.Manager tManager;
         private readonly Utilities.Grid gridUtils;
         public List<IndexEntry> FilteredIndex = new List<IndexEntry>();
-        public bool Filtered { get { return FilteredIndex.Count > 0; } }
+        public bool Filtered
+        {
+            get { return FilteredIndex.Count > 0 && !Searching; }
+        }
         public int FilterCount { get { return FilteredIndex.Count; } }
+        public List<IndexEntry> SearchIndex = new List<IndexEntry>();
+        public bool Searching { get { return SearchIndex.Count > 0; } }
+        public int SearchCount { get { return SearchIndex.Count; } }
 
         public DataCore.Core Core
         {
@@ -48,8 +55,8 @@ namespace Grimoire.Tabs.Styles
 
         private bool extensions_cs_enabled
         {
-            get { return extensions_cs.Enabled; }
-            set { extensions_cs.Enabled = value; }
+            get { return extensions_cs.Items[0].Enabled; }
+            set { extensions_cs.Items[0].Enabled = value; }
         }
 
         private bool search_enabled
@@ -123,8 +130,8 @@ namespace Grimoire.Tabs.Styles
 
         private async void ts_file_new_Click(object sender, EventArgs e)
         {
-            string dumpDirectory = Grimoire.Utilities.Paths.FolderPath;
-            string buildDirectory = Grimoire.Utilities.OPT.GetString("build.directory");
+            string dumpDirectory = Paths.FolderPath;
+            string buildDirectory = OPT.GetString("build.directory");
 
             tab_disabled = true;
 
@@ -137,66 +144,19 @@ namespace Grimoire.Tabs.Styles
             tab_disabled = false;
         }
 
-        private async void ts_file_load_Click(object sender, EventArgs e)
+        private void ts_file_load_Click(object sender, EventArgs e)
         {
-            string filePath = Grimoire.Utilities.Paths.FilePath;
-            if (Grimoire.Utilities.Paths.FileResult != DialogResult.OK)
+            string filePath = Paths.FilePath;
+            if (Paths.FileResult != DialogResult.OK)
                 return;
 
-            tab_disabled = true;
-
-            try
-            {
-                await Task.Run(() => { core.Load(filePath); });
-            }
-            catch (Exception ex)
-            {
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex, "Exception occured while attempting to load file at: {0}", filePath);
-            }
-            finally
-            {
-                ts_file_load.Enabled = false;
-                ts_file_new.Enabled = false;
-
-                grid.RowCount = core.RowCount + 1;
-                grid.VirtualMode = true;
-                grid.CellValueNeeded += gridUtils.Grid_CellValueNeeded;
-                grid.CellValuePushed += gridUtils.Grid_CellPushed;
-
-                await Task.Run(() => { populate_selection_info(tManager.DataCore.Index[0]); });
-
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE,
-                    "{0} entries loaded from data.000 to tab: {1} from path:\n\t- {2}",
-                    core.RowCount,
-                    tManager.Text,
-                    filePath);
-
-                extStatus.Text = "Analyzing index...";
-
-                extensions.Nodes.Add("all", "all");
-                extensions.Nodes["all"].Nodes.Add(string.Format("Count: {0}", tManager.DataCore.RowCount));
-
-                await Task.Run(() => {
-                    foreach (ExtensionInfo extInfo in Core.ExtensionList)
-                    {
-                        this.Invoke(new MethodInvoker(delegate
-                        {
-                            extensions.Nodes.Add(extInfo.Type, extInfo.Type);
-                            extensions.Nodes[extInfo.Type].Nodes.Add(string.Format("Count: {0}", extInfo.Count));
-                            extensions.Nodes[extInfo.Type].Nodes.Add("Size: ");
-                        }));
-                    }
-                });
-
-                tab_disabled = false;
-                extStatus.ResetText();
-            }
+            load(filePath);
         }
 
         private void extensions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             long extSize = tManager.DataCore.GetExtensionSize(e.Node.Text);
-            string formattedSize = Grimoire.Utilities.StringExt.FormatToSize(extSize);
+            string formattedSize = StringExt.FormatToSize(extSize);
             if (e.Node.Text != "all")
                 extensions.Nodes[e.Node.Text].Nodes[1].Text += formattedSize;
         }
@@ -214,12 +174,18 @@ namespace Grimoire.Tabs.Styles
                 grid.Rows.Clear();
                 grid.RowCount = FilteredIndex.Count + 1;
             }
-            else if (ext == "all" && FilteredIndex.Count > 0)
+            else if (ext == "all")
             {
-                FilteredIndex.Clear();
+                if (Filtered)
+                    FilteredIndex.Clear();
+
+                if (Searching)
+                    SearchIndex.Clear();
+
                 grid.Rows.Clear();
                 grid.RowCount = tManager.DataCore.RowCount + 1;
             }
+
         }
 
         private void grid_SelectionChanged(object sender, EventArgs e)
@@ -232,35 +198,40 @@ namespace Grimoire.Tabs.Styles
                 {
                     IndexEntry entry = tManager.DataCore.GetEntry(grid.SelectedRows[0].Cells[0].Value.ToString());
                     populate_selection_info(entry);
-                    grid_cs.Items[1].Enabled = true;
+                    grid_cs.Items[0].Enabled = grid_cs.Items[1].Enabled = true;
+                    grid_cs.Items[1].Text = "Export";
                 }
             }
             else
             {
-                populate_selection_info();
-                grid_cs.Items[1].Enabled = false;
-            }
 
-            set_grid_cs_export_text();
+                populate_selection_info();
+                grid_cs.Items[0].Enabled = grid_cs.Items[2].Enabled = false;
+                grid_cs.Items[1].Text = string.Format("Export {0}", rowCount);
+            }
         }
 
         private async void grid_cs_export_Click(object sender, EventArgs e)
         {
-            string buildDirectory = Grimoire.Utilities.OPT.GetString("build.directory");
-            string buildPath;
+            if (grid.Rows.Count == 0)
+                return;
+
+            string buildDir = OPT.GetString("build.directory");
 
             for (int i = 0; i < grid.SelectedRows.Count; i++)
             {
-                buildPath = string.Format(@"{0}\{1}", buildDirectory, grid.SelectedRows[i].Cells[0].Value.ToString());
                 IndexEntry entry = core.GetEntry(grid.SelectedRows[i].Cells[0].Value.ToString());
 
                 ts_status.Text = string.Format("Exporting: {0}...", entry.Name);
 
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Exporting: {0} to path:\n\t- {1}\n\t- Size: {2}", entry.Name, buildPath, entry.Length);
+                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Exporting: {0} to directory:\n\t- {1}\n\t- Size: {2}", entry.Name, buildDir, entry.Length);
 
                 try
                 {
-                    await Task.Run(() => { core.ExportFileEntry(buildPath, entry); }); // TODO: Build path should be buildDirectory
+                    await Task.Run(() =>
+                    {
+                        core.ExportFileEntry(buildDir, entry);
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -274,7 +245,7 @@ namespace Grimoire.Tabs.Styles
 
         private async void extensions_cs_export_Click(object sender, EventArgs e)
         {
-            string buildDirectory = Grimoire.Utilities.OPT.GetString("build.directory");
+            string buildDirectory = OPT.GetString("build.directory");
 
             string ext = extensions.SelectedNode.Text;
             if (ext.Length == 3)
@@ -320,19 +291,14 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private void grid_cs_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            set_grid_cs_export_text();
-        }
-
         private void grid_cs_compare_Click(object sender, EventArgs e)
         {
-            string compareFile = Grimoire.Utilities.Paths.FilePath;
+            string compareFile = Paths.FilePath;
             string filename = grid.SelectedRows[0].Cells[0].Value.ToString();
             string externalHash = null;
             string internalHash = null;
 
-            if (Grimoire.Utilities.Paths.FileResult != DialogResult.OK)
+            if (Paths.FileResult != DialogResult.OK)
                 return;
             try
             {
@@ -356,8 +322,8 @@ namespace Grimoire.Tabs.Styles
 
         private async void grid_cs_insert_Click(object sender, EventArgs e)
         {
-            string filepath = Grimoire.Utilities.Paths.FilePath;
-            if (Grimoire.Utilities.Paths.FileResult == DialogResult.OK)
+            string filepath = Paths.FilePath;
+            if (Paths.FileResult == DialogResult.OK)
             {
                 ts_status.Text = string.Format("Importing: {0}...", Path.GetFileName(filepath));
 
@@ -368,7 +334,7 @@ namespace Grimoire.Tabs.Styles
                     await Task.Run(() =>
                     {
                         core.ImportFileEntry(filepath);
-                        core.Save(Grimoire.Utilities.OPT.GetString("build.directory"));
+                        core.Save(OPT.GetString("build.directory"));
                     });
                 }
                 catch (Exception ex)
@@ -390,13 +356,17 @@ namespace Grimoire.Tabs.Styles
             {
                 if (searchInput.Text.Length > 3)
                 {
-                    FilteredIndex = core.GetEntriesByPartialName(searchInput.Text);
+                    if (Filtered || Searching)
+                        SearchIndex = FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text));
+                    else 
+                        SearchIndex = core.GetEntriesByPartialName(searchInput.Text);
+
                     grid.Rows.Clear();
-                    grid.RowCount = FilteredIndex.Count + 1;
+                    grid.RowCount = SearchIndex.Count + 1;
                 }
                 else
                 {
-                    FilteredIndex.Clear();
+                    SearchIndex.Clear();
                     grid.Rows.Clear();
                     grid.RowCount = tManager.DataCore.RowCount + 1;
                 }
@@ -417,10 +387,11 @@ namespace Grimoire.Tabs.Styles
         {
             grid.Rows.Clear();
             extensions.Nodes.Clear();
-            set_grid_cs_export_text();
             ts_file_load.Enabled = true;
             ts_file_new.Enabled = true;
         }
+
+        public void Load(string path) { load(path); }
 
         #endregion
 
@@ -428,8 +399,8 @@ namespace Grimoire.Tabs.Styles
 
         private void initializeCore()
         {
-            bool backup = Grimoire.Utilities.OPT.GetBool("data.backup");
-            int codepage = Grimoire.Utilities.OPT.GetInt("data.encoding");
+            bool backup = OPT.GetBool("data.backup");
+            int codepage = OPT.GetInt("data.encoding");
             Encoding encoding = Encoding.GetEncoding(codepage);
             core = new Core(backup, encoding);
             core.CurrentMaxDetermined += Core_CurrentMaxDetermined;
@@ -449,27 +420,98 @@ namespace Grimoire.Tabs.Styles
 
         private void populate_selection_info(IndexEntry entry)
         {
-            string ext = Path.GetExtension(entry.Name).Remove(0, 1);
             Invoke(new MethodInvoker(delegate {
+                string ext = entry.Extension;
                 dataId.Text = entry.DataID.ToString();
                 offset.Text = entry.Offset.ToString();
-                size.Text = Grimoire.Utilities.StringExt.FormatToSize(entry.Length);
+                size.Text = StringExt.FormatToSize(entry.Length);
                 encrypted.Text = tManager.DataCore.ExtensionEncrypted(ext).ToString();
                 extension.Text = ext;
+                uploadPath.Text = entry.DataPath;
             }));
 
         }
 
-        private void set_grid_cs_export_text()
+        private async void load(string path)
         {
-            int rowCount = grid.SelectedRows.Count;
+            tab_disabled = true;
 
-            if (grid_cs_enabled && rowCount > 1)
+            try
             {
-                grid_cs.Items[1].Text = (rowCount == 1) ? "Export" : string.Format("Export ({0})", rowCount);
+                await Task.Run(() => { core.Load(path); });
+            }
+            catch (Exception ex)
+            {
+                lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex, "Exception occured while attempting to load file at: {0}", path);
+            }
+            finally
+            {
+                ts_file_load.Enabled = false;
+                ts_file_new.Enabled = false;
+
+                grid.RowCount = core.RowCount + 1;
+                grid.VirtualMode = true;
+                grid.CellValueNeeded += gridUtils.Grid_CellValueNeeded;
+                grid.CellValuePushed += gridUtils.Grid_CellPushed;
+
+                await Task.Run(() => { populate_selection_info(tManager.DataCore.Index[0]); });
+
+                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE,
+                    "{0} entries loaded from data.000 to tab: {1} from path:\n\t- {2}",
+                    core.RowCount,
+                    tManager.Text,
+                    path);
+
+                extStatus.Text = "Analyzing index...";
+
+                extensions.Nodes.Add("all", "all");
+                extensions.Nodes["all"].Nodes.Add(string.Format("Count: {0}", tManager.DataCore.RowCount));
+
+                await Task.Run(() => {
+                    foreach (ExtensionInfo extInfo in Core.ExtensionList)
+                    {
+                        this.Invoke(new MethodInvoker(delegate
+                        {
+                            extensions.Nodes.Add(extInfo.Type, extInfo.Type);
+                            extensions.Nodes[extInfo.Type].Nodes.Add(string.Format("Count: {0}", extInfo.Count));
+                            extensions.Nodes[extInfo.Type].Nodes.Add("Size: ");
+                        }));
+                    }
+                });
+
+                tab_disabled = false;
+                extStatus.ResetText();
             }
         }
 
         #endregion
+
+        private void extensions_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (extensions.Nodes.Count == 0)
+                return;
+
+            extensions.SelectedNode = e.Node;
+
+            if (e.Button == MouseButtons.Right)
+                extensions_cs.Show(extensions, e.Location);
+        }
+
+        private void grid_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (grid.Rows.Count == 0)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                if (grid.SelectedRows.Count == 1)
+                {
+                    grid.ClearSelection();
+                    grid.Rows[e.RowIndex].Selected = true;
+                }
+                
+                grid_cs.Show(grid, grid.PointToClient(Cursor.Position));
+            }
+        }
     }
 }

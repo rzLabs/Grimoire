@@ -7,7 +7,7 @@
         DATA = 2,
         USEFLAG = 4,
         //DROPS = 5,
-        //LOG = 6,
+        ADMIN = 6,
         NONE = 99
     }
 

@@ -99,6 +99,12 @@
     <Compile Include="GUI\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\StructureEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\StructureEditor.Designer.cs">
+      <DependentUpon>StructureEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Structures\Log.cs" />
     <Compile Include="Structures\Settings.cs" />
     <Compile Include="Tabs\Styles\Data.cs">
@@ -165,6 +171,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\StructureEditor.resx">
+      <DependentUpon>StructureEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

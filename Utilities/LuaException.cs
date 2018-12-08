@@ -2,7 +2,6 @@
 
 namespace Grimoire.Utilities
 {
-    // TODO: Merge both print into single which switches based on type of object ex 
     public class LuaException
     {
         public static string Print(string decoratedMessage, string structureName)

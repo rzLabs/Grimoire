@@ -5,7 +5,6 @@ using DataCore.Functions;
 
 namespace Grimoire.Tabs.Styles
 {
-    //TODO: Add hash-to/unhash-from functionality
     public partial class Hasher : UserControl
     {
         #region Properties
@@ -31,41 +30,6 @@ namespace Grimoire.Tabs.Styles
                 output.Text = (StringCipher.IsEncoded(input.Text)) ? StringCipher.Decode(input.Text) : StringCipher.Encode(input.Text);
             }
             else if (input.Text.Length == 0) { output.ResetText(); }
-        }
-
-        private void Hasher_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-                e.Effect = DragDropEffects.Copy;
-        }
-
-        private void Hasher_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] paths = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            if (paths.Length == 1)
-            {
-                if (File.GetAttributes(paths[0]).HasFlag(FileAttributes.Directory))
-                    paths = Directory.GetFiles(paths[0]);
-            }
-
-            foreach (string filePath in paths)
-            {
-                string originalName = Path.GetFileName(filePath);
-
-                if (opt_append_ascii.Checked)
-                    originalName = originalName.Insert(originalName.Length - 4, "(ascii)");
-
-                if (opt_remove_ascii.Checked)
-                    originalName = originalName.Replace("(ascii)", string.Empty);
-
-                string convertedName = (StringCipher.IsEncoded(originalName)) ? StringCipher.Decode(originalName) : StringCipher.Encode(originalName);
-
-                fileGrid.Rows.Add(originalName, convertedName, Path.GetDirectoryName(filePath), "Pending");
-            }
-
-            if (opt_auto_convert.Checked)
-                convertAllEntries();
         }
 
         private void cMenu_clear_Click(object sender, EventArgs e)
@@ -130,6 +94,28 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
+
+        #region Methods (Public)
+
+        public void Add_Dropped_Files(string[] paths)
+        {
+            if (paths.Length == 1)
+            {
+                if (File.GetAttributes(paths[0]).HasFlag(FileAttributes.Directory))
+                    paths = Directory.GetFiles(paths[0]);
+            }
+
+            foreach (string path in paths)
+            {
+                add_file_to_grid(path);
+            }
+
+            if (opt_auto_convert.Checked)
+                convertAllEntries();
+        }
+
+        #endregion
+
 
         #region Methods (private)
 

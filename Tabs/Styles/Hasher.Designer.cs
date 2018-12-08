@@ -351,7 +351,7 @@
             // 
             // Hasher
             // 
-            this.AllowDrop = true;
+            this.AllowDrop = false;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.opt_grid_box);
@@ -362,8 +362,6 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Hasher";
             this.Size = new System.Drawing.Size(781, 454);
-            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Hasher_DragDrop);
-            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Hasher_DragEnter);
             this.instBox.ResumeLayout(false);
             this.instBox.PerformLayout();
             this.opt_name_box.ResumeLayout(false);

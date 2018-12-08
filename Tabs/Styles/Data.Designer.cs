@@ -48,6 +48,8 @@
             this.grid_cs_export = new System.Windows.Forms.ToolStripMenuItem();
             this.grid_cs_insert = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.uploadPath = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.encrypted = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.extension = new System.Windows.Forms.TextBox();
@@ -140,7 +142,6 @@
             // 
             // extensions
             // 
-            this.extensions.ContextMenuStrip = this.extensions_cs;
             this.extensions.Dock = System.Windows.Forms.DockStyle.Fill;
             this.extensions.Location = new System.Drawing.Point(2, 15);
             this.extensions.Margin = new System.Windows.Forms.Padding(2);
@@ -149,10 +150,10 @@
             this.extensions.TabIndex = 0;
             this.extensions.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.extensions_BeforeExpand);
             this.extensions.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.extensions_AfterSelect);
+            this.extensions.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.extensions_NodeMouseClick);
             // 
             // extensions_cs
             // 
-            this.extensions_cs.Enabled = false;
             this.extensions_cs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extensions_cs_export});
             this.extensions_cs.Name = "extensions_cs";
@@ -186,7 +187,6 @@
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ig_name});
-            this.grid.ContextMenuStrip = this.grid_cs;
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(2, 15);
             this.grid.Margin = new System.Windows.Forms.Padding(2);
@@ -197,6 +197,7 @@
             this.grid.Size = new System.Drawing.Size(530, 337);
             this.grid.TabIndex = 0;
             this.grid.VirtualMode = true;
+            this.grid.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseDown);
             this.grid.SelectionChanged += new System.EventHandler(this.grid_SelectionChanged);
             this.grid.DoubleClick += new System.EventHandler(this.grid_DoubleClick);
             // 
@@ -216,7 +217,6 @@
             this.grid_cs_insert});
             this.grid_cs.Name = "grid_cs";
             this.grid_cs.Size = new System.Drawing.Size(124, 70);
-            this.grid_cs.Opening += new System.ComponentModel.CancelEventHandler(this.grid_cs_Opening);
             // 
             // grid_cs_compare
             // 
@@ -245,6 +245,8 @@
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.uploadPath);
+            this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.encrypted);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.extension);
@@ -265,19 +267,40 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Statistics";
             // 
+            // uploadPath
+            // 
+            this.uploadPath.Location = new System.Drawing.Point(123, 142);
+            this.uploadPath.Margin = new System.Windows.Forms.Padding(2);
+            this.uploadPath.Name = "uploadPath";
+            this.uploadPath.ReadOnly = true;
+            this.uploadPath.Size = new System.Drawing.Size(64, 20);
+            this.uploadPath.TabIndex = 12;
+            this.uploadPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(11, 145);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(69, 13);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "Upload Path:";
+            // 
             // encrypted
             // 
-            this.encrypted.Location = new System.Drawing.Point(123, 115);
+            this.encrypted.Location = new System.Drawing.Point(123, 94);
             this.encrypted.Margin = new System.Windows.Forms.Padding(2);
             this.encrypted.Name = "encrypted";
             this.encrypted.ReadOnly = true;
             this.encrypted.Size = new System.Drawing.Size(64, 20);
             this.encrypted.TabIndex = 10;
+            this.encrypted.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(11, 118);
+            this.label6.Location = new System.Drawing.Point(11, 97);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(58, 13);
@@ -286,17 +309,18 @@
             // 
             // extension
             // 
-            this.extension.Location = new System.Drawing.Point(123, 145);
+            this.extension.Location = new System.Drawing.Point(123, 118);
             this.extension.Margin = new System.Windows.Forms.Padding(2);
             this.extension.Name = "extension";
             this.extension.ReadOnly = true;
             this.extension.Size = new System.Drawing.Size(64, 20);
             this.extension.TabIndex = 8;
+            this.extension.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(11, 148);
+            this.label5.Location = new System.Drawing.Point(11, 121);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 13);
@@ -305,17 +329,18 @@
             // 
             // size
             // 
-            this.size.Location = new System.Drawing.Point(85, 86);
+            this.size.Location = new System.Drawing.Point(85, 70);
             this.size.Margin = new System.Windows.Forms.Padding(2);
             this.size.Name = "size";
             this.size.ReadOnly = true;
             this.size.Size = new System.Drawing.Size(102, 20);
             this.size.TabIndex = 6;
+            this.size.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(11, 87);
+            this.label4.Location = new System.Drawing.Point(11, 73);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(30, 13);
@@ -324,17 +349,18 @@
             // 
             // offset
             // 
-            this.offset.Location = new System.Drawing.Point(85, 54);
+            this.offset.Location = new System.Drawing.Point(85, 46);
             this.offset.Margin = new System.Windows.Forms.Padding(2);
             this.offset.Name = "offset";
             this.offset.ReadOnly = true;
             this.offset.Size = new System.Drawing.Size(102, 20);
             this.offset.TabIndex = 4;
+            this.offset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 55);
+            this.label3.Location = new System.Drawing.Point(11, 49);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 13);
@@ -352,17 +378,18 @@
             // 
             // dataId
             // 
-            this.dataId.Location = new System.Drawing.Point(85, 25);
+            this.dataId.Location = new System.Drawing.Point(85, 22);
             this.dataId.Margin = new System.Windows.Forms.Padding(2);
             this.dataId.Name = "dataId";
             this.dataId.ReadOnly = true;
             this.dataId.Size = new System.Drawing.Size(102, 20);
             this.dataId.TabIndex = 1;
+            this.dataId.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 28);
+            this.label1.Location = new System.Drawing.Point(11, 25);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
@@ -466,5 +493,7 @@
         private System.Windows.Forms.ToolStripMenuItem grid_cs_insert;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox searchInput;
+        private System.Windows.Forms.TextBox uploadPath;
+        private System.Windows.Forms.Label label7;
     }
 }

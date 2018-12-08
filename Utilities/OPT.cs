@@ -58,7 +58,6 @@ namespace Grimoire.Utilities
         /// <param name="type"></param>
         public static void Save()
         {
-            //TODO: TRY STATEMENT WHORE!
             if (File.Exists("Grimoire.opt")) { File.Delete("Grimoire.opt"); }
 
             using (StreamWriter sW = new StreamWriter(File.Create("Grimoire.opt")))

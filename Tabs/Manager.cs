@@ -7,7 +7,6 @@ using System.Windows.Forms;
 
 namespace Grimoire.Tabs
 {
-    // TODO: Tabs should send their style via argument on 'Write' for informational purposes
     public class Manager
     {
         readonly GUI.Main main = null;
@@ -109,18 +108,18 @@ namespace Grimoire.Tabs
         {
             get
             {
+                Tabs.Styles.Data ret = null;
+
                 if (Style == Style.DATA)
                 {
-                    Tabs.Styles.Data ret = null;
                     main.Invoke(new MethodInvoker(delegate
                     {
                         ret = (Tabs.Styles.Data)pages[tabs.SelectedIndex].Controls[0];
                     }));
 
-                    return ret;
                 }
 
-                return null;
+                return ret;
             }
         }
 
@@ -128,18 +127,38 @@ namespace Grimoire.Tabs
         {
             get
             {
+                Tabs.Styles.rdbTab ret = null;
+
                 if (Style == Style.RDB)
                 {
-                    Tabs.Styles.rdbTab ret = null;
                     main.Invoke(new MethodInvoker(delegate
                     {
                         ret = (Tabs.Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0];
                     }));
 
-                    return ret;
                 }
 
-                return null;
+                return ret;
+            }
+        }
+
+        public Tabs.Styles.Hasher HashTab
+        {
+            get
+            {
+                Tabs.Styles.Hasher ret = null;
+
+                if (Style == Style.HASHER)
+                {
+                    
+                    main.Invoke(new MethodInvoker(delegate 
+                    {
+                        ret = (Tabs.Styles.Hasher)pages[tabs.SelectedIndex].Controls[0];
+                    }));
+
+                }
+
+                return ret;
             }
         }
 
@@ -167,7 +186,7 @@ namespace Grimoire.Tabs
                     break;
 
                 case Style.USEFLAG:
-                    tab.Controls.Add(new Styles.UseFlag() { Dock = DockStyle.Fill }); // TODO: Ability to open from db_item (rdb)
+                    tab.Controls.Add(new Styles.UseFlag() { Dock = DockStyle.Fill });
                     text = "Use Flag Utility";
                     break;
 

@@ -90,7 +90,6 @@ namespace Grimoire.Utilities
             return 0;
         }
 
-        // TODO: I need to stop defining rTab and just call it as tManager.RDBTab
         public List<Row> FetchTable(int rowCount, string tableName)
         {
             Tabs.Styles.rdbTab rTab = tManager.RDBTab;
@@ -222,7 +221,7 @@ namespace Grimoire.Utilities
                 }
             }
 
-            rTab.ProgressVal = 0; // TODO: STOP THIS BULLSHIT CALLING! Use tManager.RDBTab
+            rTab.ProgressVal = 0;
             rTab.ProgressMax = 100;
             return data;
         }

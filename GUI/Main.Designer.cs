@@ -44,13 +44,13 @@
             this.tabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabs.ContextMenuStrip = this.tabs_cMenu;
             this.tabs.Location = new System.Drawing.Point(9, 32);
             this.tabs.Margin = new System.Windows.Forms.Padding(2);
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
             this.tabs.Size = new System.Drawing.Size(760, 472);
             this.tabs.TabIndex = 1;
+            this.tabs.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabs_MouseClick);
             // 
             // tabs_cMenu
             // 
