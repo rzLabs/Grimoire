@@ -19,7 +19,7 @@ namespace Grimoire.Tabs.Styles
         Database dManager = null;
         rdbCore.Core core = new rdbCore.Core();
         DataCore.Core dCore = null;
-        string dir = string.Format(@"{0}\Structures\", Directory.GetCurrentDirectory());
+        string structsDir = null;
         readonly string key = null;
         readonly Tabs.Utilities.Grid gridUtil;
         readonly Stopwatch actionSW = new Stopwatch();
@@ -63,8 +63,9 @@ namespace Grimoire.Tabs.Styles
             InitializeComponent();
             this.key = key;
             gridUtil = new Utilities.Grid();
-            ts_save_enc.Checked = OPT.GetBool("save.hashed");
-            ts_save_w_ascii.Checked = OPT.GetBool("use.ascii");
+            ts_save_enc.Checked = OPT.GetBool("rdb.save.hashed");
+            ts_save_w_ascii.Checked = OPT.GetBool("rdb.use.ascii");
+            structsDir = OPT.GetString("rdb.structures.directory") ?? string.Format(@"{0}\Structures\", Directory.GetCurrentDirectory());
         }
 
         #endregion
@@ -89,7 +90,7 @@ namespace Grimoire.Tabs.Styles
 
         private async void ts_struct_list_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string path = string.Format(@"{0}\{1}.lua", dir, ts_struct_list.Text);
+            string path = string.Format(@"{0}\{1}.lua", structsDir, ts_struct_list.Text);
             try
             {
                 if (!File.Exists(path))
@@ -122,8 +123,10 @@ namespace Grimoire.Tabs.Styles
                 return;
             }
 
-            string fileName = Grimoire.Utilities.Paths.FilePath;
-            if (Grimoire.Utilities.Paths.FileResult != DialogResult.OK)
+            Paths.DefaultDirectory = OPT.GetString("rdb.load.directory");
+            string fileName = Paths.FilePath;
+
+            if (Paths.FileResult != DialogResult.OK)
             {
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "User cancelled file load on tab: {0}", tManager.Text);
                 return;
@@ -141,9 +144,9 @@ namespace Grimoire.Tabs.Styles
             }
 
             dCore = new DataCore.Core(Encodings.GetByName(ts_enc_list.Text));
-            Grimoire.Utilities.Paths.Title = "Select client data.000";
-            string dataPath = Grimoire.Utilities.Paths.FilePath;
-            if (Grimoire.Utilities.Paths.FileResult == DialogResult.OK)
+            Paths.Title = "Select client data.000";
+            string dataPath = Paths.FilePath;
+            if (Paths.FileResult == DialogResult.OK)
             {
 
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, dataPath);
@@ -368,16 +371,16 @@ namespace Grimoire.Tabs.Styles
 
         private void ts_save_enc_Click(object sender, EventArgs e)
         {
-            bool newVal = OPT.GetBool("save.hashed") ? false : true;
-            OPT.Update("save.hashed", Convert.ToInt32(newVal).ToString());
+            bool newVal = OPT.GetBool("rdb.save.hashed") ? false : true;
+            OPT.Update("rdb.save.hashed", Convert.ToInt32(newVal).ToString());
             ts_save_enc.Checked = newVal;
             lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Save Encoded: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
         }
 
         private void ts_save_w_ascii_Click(object sender, EventArgs e)
         {
-            bool newVal = OPT.GetBool("use.ascii") ? false : true;
-            OPT.Update("use.ascii", Convert.ToInt32(newVal).ToString());
+            bool newVal = OPT.GetBool("rdb.use.ascii") ? false : true;
+            OPT.Update("rdb.use.ascii", Convert.ToInt32(newVal).ToString());
             ts_save_w_ascii.Checked = newVal;
             lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Save With ASCII: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
         }
@@ -414,15 +417,15 @@ namespace Grimoire.Tabs.Styles
 
         void loadStructs()
         {
-            if (!Directory.Exists(dir))
+            if (!Directory.Exists(structsDir))
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "The structures directory does not exist!\n\t- Directory: {0}", dir);
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "The structures directory does not exist!\n\t- Directory: {0}", structsDir);
                 return;
             }
             else
             {
-                string[] structs = Directory.GetFiles(dir);
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} Structure files loaded from:\n\t- {1}", structs.Length, dir);
+                string[] structs = Directory.GetFiles(structsDir);
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} Structure files loaded from:\n\t- {1}", structs.Length, structsDir);
 
                 foreach (string filename in structs)
                 {

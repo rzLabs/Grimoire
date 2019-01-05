@@ -49,35 +49,40 @@ namespace Grimoire.Structures
         [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data"), Category("Database"), DisplayName("Backup Table")]
         public bool BackupTable { get { return OPT.GetBool("db.save.backup"); } set { OPT.Update("db.save.backup", value.ToString()); } }
 
-        // data
-
-        [Description("If defined, this is where any exported/built files will be placed"), Category("Data Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        [Description("If defined, this is where any exported/built files will be placed"), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string BuildDirectory { get { return OPT.GetString("build.directory"); } set { OPT.Update("build.directory", value); } }
 
-        [Description("If defined, Grimoire will read any lua configuration variables from this path. Otherwise it will use the default path"), Category("Data Utility"), DisplayName("LUA Config Path")]
-        public string LuaConfigPath { get { return OPT.GetString("lua.config.path"); } set { OPT.Update("lua.config.path", value); } }
+        // data
+        [Description("The default directory displayed when opening local files in the Data Utility"), Category("Data Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string DataLoadDirectory { get { return OPT.GetString("data.load.directory"); } set { OPT.Update("data.load.directory", value.ToString()); } }
 
         [Description("Determines if files like data.000-008 will be backed up before any changes are made to them. (RECOMMENDED)"), Category("Data Utility"), DisplayName("Backups")]
-        public bool Backups { get { return OPT.GetBool("backups"); } set { OPT.Update("backups", Convert.ToInt32(value).ToString()); } }
+        public bool Backups { get { return OPT.GetBool("data.backup"); } set { OPT.Update("data.backup", Convert.ToInt32(value).ToString()); } }
 
-        // files
+        // rdb
 
         [Description("Determines if the structure you select will be loaded the moment you select it or manually with \"Load\" button"), Category("RDB Utility"), DisplayName("Load on Select")]
-        public bool AutoLoad { get { return OPT.GetBool("structure.autoload"); } set { OPT.Update("structure.autoload", Convert.ToInt32(value).ToString()); } }
+        public bool AutoLoad { get { return OPT.GetBool("rdb.structure.autoload"); } set { OPT.Update("rdb.structure.autoload", Convert.ToInt32(value).ToString()); } }
+        
+        [Description("The path where RDB Structure LUA Files are stored"), Category("RDB Utility"), DisplayName("Structures Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string RDBStructureDirectory {  get { return OPT.GetString("rdb.structure.directory"); } set { OPT.Update("rdb.structure.directory", value.ToString()); } }
+
+        [Description("The default directory displayed when opening local files in the RDB Utility"), Category("RDB Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string RDBLoadDirectory { get { return OPT.GetString("rdb.load.directory"); } set { OPT.Update("rdb.load.directory", value.ToString()); } }
 
         [Description("Determines if (ascii) is appended to file names being loaded or saved"), Category("RDB Utility"), DefaultValue(false), DisplayName("Use ASCII")]
         public bool UseASCII
         {
-            get { return OPT.GetBool("use.ascii"); }
+            get { return OPT.GetBool("rdb.use.ascii"); }
             set
             {
                 Tabs.Manager.Instance.RDBTab.UseASCII = value;
-                OPT.Update("use.ascii", Convert.ToInt32(value).ToString());
+                OPT.Update("rdb.use.ascii", Convert.ToInt32(value).ToString());
             }
         }
 
         [Description("Determines if newly created .RDB files will be saved in their hash name version"), Category("RDB Utility"), DefaultValue(false), DisplayName("Save Hashed")]
-        public bool SaveHashed { get { return OPT.GetBool("save.hashed"); } set { OPT.Update("save.hashed", Convert.ToInt32(value).ToString()); } }
+        public bool SaveHashed { get { return OPT.GetBool("rdb.save.hashed"); } set { OPT.Update("rdb.save.hashed", Convert.ToInt32(value).ToString()); } }
 
         // hasher
         [Description("Determines if the file entries will be cleared from the grid after conversion"), Category("Hasher Utility"), DisplayName("Auto Clear")]

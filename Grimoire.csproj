@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Grimoire</RootNamespace>
     <AssemblyName>Grimoire</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -65,11 +65,12 @@
       <HintPath>..\3rd Party\Microsoft.SqlServer.SqlEnum.dll</HintPath>
     </Reference>
     <Reference Include="MoonSharp.Interpreter">
-      <HintPath>..\MoonSharp.Interpreter.dll</HintPath>
+      <HintPath>..\3rd Party\MoonSharp.Interpreter.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -81,6 +82,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GUI\DataRebuild.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\DataRebuild.Designer.cs">
+      <DependentUpon>DataRebuild.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Input.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +167,9 @@
     <Compile Include="Utilities\OPT.cs" />
     <Compile Include="Utilities\Paths.cs" />
     <Compile Include="Utilities\StringExt.cs" />
+    <EmbeddedResource Include="GUI\DataRebuild.resx">
+      <DependentUpon>DataRebuild.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Input.resx">
       <DependentUpon>Input.cs</DependentUpon>
     </EmbeddedResource>
@@ -217,7 +227,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataCore\DataCore.csproj">
+    <ProjectReference Include="..\DataCore\DataCore\DataCore.csproj">
       <Project>{f234efe9-3104-45fc-a5be-fdc3d0cd888e}</Project>
       <Name>DataCore</Name>
     </ProjectReference>

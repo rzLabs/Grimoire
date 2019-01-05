@@ -10,12 +10,22 @@ namespace Grimoire.Utilities
 {
     public static class Paths
     {
+        public static string DefaultDirectory;
         static string title;
         public static string Title
         {
             set
             {
                 title = value;
+            }
+        }
+
+        static string description;
+        public static string Description
+        {
+            set
+            {
+                description = value;
             }
         }
 
@@ -28,7 +38,11 @@ namespace Grimoire.Utilities
             get
             {
                 title = (title == null) ? "Please select desired file" : title;
-                using (OpenFileDialog ofDlg = new OpenFileDialog() { DefaultExt = "*", Title = title })
+                using (OpenFileDialog ofDlg = new OpenFileDialog()
+                {
+                    DefaultExt = "*", Title = title,
+                    InitialDirectory = DefaultDirectory
+                })
                 {
                     if ((FileResult = ofDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
                     {
@@ -45,7 +59,11 @@ namespace Grimoire.Utilities
             get
             {
                 title = (title == null) ? "Please select save location and file name" : title;
-                using (SaveFileDialog svDlg = new SaveFileDialog() { DefaultExt = "*", Title = title })
+                using (SaveFileDialog svDlg = new SaveFileDialog()
+                {
+                    DefaultExt = "*", Title = title,
+                    InitialDirectory = DefaultDirectory
+                })
                 {
                     if ((SaveResult = svDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
                     {
@@ -61,7 +79,10 @@ namespace Grimoire.Utilities
         {
             get
             {
-                using (FolderBrowserDialog fbDlg = new FolderBrowserDialog() { Description = "Please select desired folder" })
+                using (FolderBrowserDialog fbDlg = new FolderBrowserDialog()
+                {
+                    Description = description ?? "Please select desired folder"
+                })
                 {
                     if ((FolderResult = fbDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
                     {

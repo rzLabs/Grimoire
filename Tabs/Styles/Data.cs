@@ -130,12 +130,24 @@ namespace Grimoire.Tabs.Styles
 
         private async void ts_file_new_Click(object sender, EventArgs e)
         {
+            Paths.Description = "Please select a Dump Directory";
             string dumpDirectory = Paths.FolderPath;
+            if (Paths.FolderResult != DialogResult.OK)
+                return;
+
             string buildDirectory = OPT.GetString("build.directory");
 
             tab_disabled = true;
 
-            await Task.Run(() => { core.BuildDataFiles(dumpDirectory, buildDirectory); });
+            await Task.Run(() => 
+            {
+                try { core.BuildDataFiles(dumpDirectory, buildDirectory); }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            });
 
             // TODO: Core reset
 
@@ -146,6 +158,8 @@ namespace Grimoire.Tabs.Styles
 
         private void ts_file_load_Click(object sender, EventArgs e)
         {
+            Paths.DefaultDirectory = OPT.GetString("data.load.directory");
+
             string filePath = Paths.FilePath;
             if (Paths.FileResult != DialogResult.OK)
                 return;
