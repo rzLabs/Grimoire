@@ -9,7 +9,7 @@ namespace Grimoire.Logs
 {
     public class Manager
     {
-        public List<Grimoire.Structures.Log> Entries = new List<Structures.Log>();
+        public List<Structures.Log> Entries = new List<Structures.Log>();
         public string LogsDirectory;
         public readonly string LogPath;
         static Manager instance;
@@ -34,18 +34,6 @@ namespace Grimoire.Logs
             Enter(Sender.MANAGER, Level.NOTICE, "Log Manager initialized.");
         }
 
-        public void Enter(Sender sender, Level level, string message, string stackTrace)
-        {
-            Entries.Add(new Structures.Log()
-            {
-                Sender = sender,
-                Level = level,
-                DateTime = DateTime.UtcNow,
-                Message = message,
-                StackTrace = stackTrace
-            });
-        }
-
         public void Enter(Sender sender, Level level, string message, params object[] args)
         {
             Entries.Add(new Structures.Log()
@@ -68,6 +56,8 @@ namespace Grimoire.Logs
                 Message = ex.Message,
                 StackTrace = ex.StackTrace
             });
+
+
         }
 
         public void Enter(Sender sender, Level level, Exception ex, string message, params object[] args)
@@ -80,6 +70,8 @@ namespace Grimoire.Logs
                 Message = string.Format(message, args),
                 StackTrace = ex.StackTrace
             });
+
+            Write();
         }
 
         public void Write()
@@ -91,7 +83,7 @@ namespace Grimoire.Logs
                     string text = string.Format("[{0} | {1} | {2}]: {3}\n", log.Sender.ToString(), log.Level.ToString(), log.DateTime.ToString("hh:mm:ss"), log.Message);
 
                     if (log.StackTrace != null)
-                        text += string.Format("\n\t- Stack trace:\n\t{0}\nd", log.StackTrace);
+                        text += string.Format("\n\t- Stack trace:\n\t{0}\n", log.StackTrace);
 
                     byte[] buffer = Encoding.Default.GetBytes(text);
 

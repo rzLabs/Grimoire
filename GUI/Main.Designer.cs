@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.tabs = new System.Windows.Forms.TabControl();
             this.tabs_cMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tabs_cMenu_clear = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,11 +45,11 @@
             this.tabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabs.Location = new System.Drawing.Point(9, 32);
-            this.tabs.Margin = new System.Windows.Forms.Padding(2);
+            this.tabs.Location = new System.Drawing.Point(12, 39);
+            this.tabs.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(760, 472);
+            this.tabs.Size = new System.Drawing.Size(1013, 581);
             this.tabs.TabIndex = 1;
             this.tabs.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabs_MouseClick);
             // 
@@ -59,29 +60,28 @@
             this.tabs_cMenu_clear,
             this.tabs_cMenu_close});
             this.tabs_cMenu.Name = "grid_cMenu";
-            this.tabs_cMenu.Size = new System.Drawing.Size(104, 48);
+            this.tabs_cMenu.Size = new System.Drawing.Size(115, 52);
             // 
             // tabs_cMenu_clear
             // 
             this.tabs_cMenu_clear.Name = "tabs_cMenu_clear";
-            this.tabs_cMenu_clear.Size = new System.Drawing.Size(103, 22);
+            this.tabs_cMenu_clear.Size = new System.Drawing.Size(114, 24);
             this.tabs_cMenu_clear.Text = "Clear";
             this.tabs_cMenu_clear.Click += new System.EventHandler(this.tabs_cMenu_clear_Click);
             // 
             // tabs_cMenu_close
             // 
             this.tabs_cMenu_close.Name = "tabs_cMenu_close";
-            this.tabs_cMenu_close.Size = new System.Drawing.Size(103, 22);
+            this.tabs_cMenu_close.Size = new System.Drawing.Size(114, 24);
             this.tabs_cMenu_close.Text = "Close";
             this.tabs_cMenu_close.Click += new System.EventHandler(this.tabs_cMenu_close_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 10);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(12, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
+            this.label1.Size = new System.Drawing.Size(39, 17);
             this.label1.TabIndex = 2;
             this.label1.Text = "New:";
             // 
@@ -92,10 +92,10 @@
             this.new_list.Items.AddRange(new object[] {
             "RDB",
             "HASHER"});
-            this.new_list.Location = new System.Drawing.Point(43, 7);
-            this.new_list.Margin = new System.Windows.Forms.Padding(2);
+            this.new_list.Location = new System.Drawing.Point(57, 9);
+            this.new_list.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.new_list.Name = "new_list";
-            this.new_list.Size = new System.Drawing.Size(92, 21);
+            this.new_list.Size = new System.Drawing.Size(121, 24);
             this.new_list.TabIndex = 3;
             this.new_list.SelectedIndexChanged += new System.EventHandler(this.new_list_SelectedIndexChanged);
             // 
@@ -103,10 +103,10 @@
             // 
             this.settings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.settings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.settings.Location = new System.Drawing.Point(712, 5);
-            this.settings.Margin = new System.Windows.Forms.Padding(2);
+            this.settings.Location = new System.Drawing.Point(949, 6);
+            this.settings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.settings.Name = "settings";
-            this.settings.Size = new System.Drawing.Size(56, 23);
+            this.settings.Size = new System.Drawing.Size(75, 28);
             this.settings.TabIndex = 4;
             this.settings.Text = "Settings";
             this.settings.UseVisualStyleBackColor = true;
@@ -115,15 +115,16 @@
             // Main
             // 
             this.AllowDrop = true;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(779, 521);
+            this.ClientSize = new System.Drawing.Size(1039, 641);
             this.Controls.Add(this.settings);
             this.Controls.Add(this.new_list);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tabs);
-            this.Margin = new System.Windows.Forms.Padding(2);
-            this.MinimumSize = new System.Drawing.Size(795, 560);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MinimumSize = new System.Drawing.Size(1054, 678);
             this.Name = "Main";
             this.Text = "Grimoire";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);

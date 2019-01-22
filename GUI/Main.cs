@@ -107,7 +107,10 @@ namespace Grimoire.GUI
                     break;
 
                 case Style.DATA:
-                    tManager.DataTab.Load(paths[0]);
+                    if (tManager.DataCore.RowCount > 0)
+                        tManager.DataTab.Insert(paths);
+                    else
+                        tManager.DataTab.Load(paths[0]);
                     break;
 
                 case Style.HASHER:

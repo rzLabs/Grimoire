@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.BatchParser, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -100,6 +103,12 @@
     <Compile Include="GUI\ListSelect.Designer.cs">
       <DependentUpon>ListSelect.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\MessageListBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\MessageListBox.Designer.cs">
+      <DependentUpon>MessageListBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -163,6 +172,7 @@
       <DependentUpon>RDB.cs</DependentUpon>
     </Compile>
     <Compile Include="Utilities\Enums.cs" />
+    <Compile Include="Utilities\FileIO.cs" />
     <Compile Include="Utilities\LuaException.cs" />
     <Compile Include="Utilities\OPT.cs" />
     <Compile Include="Utilities\Paths.cs" />
@@ -178,6 +188,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MessageListBox.resx">
+      <DependentUpon>MessageListBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
@@ -235,6 +248,9 @@
       <Project>{c39638a0-7c6e-4e32-ad9e-fdfb38bf5760}</Project>
       <Name>rdbCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="favicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

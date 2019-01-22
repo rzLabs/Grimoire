@@ -17,6 +17,7 @@ build.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Output
 data.load.directory:
 data.encoding:1252
 data.backup:1
+data.clear_on_create:0
 hash.auto_clear:0
 hash.auto_convert:0
 hash.type:0

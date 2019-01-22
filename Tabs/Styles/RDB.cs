@@ -145,7 +145,9 @@ namespace Grimoire.Tabs.Styles
 
             dCore = new DataCore.Core(Encodings.GetByName(ts_enc_list.Text));
             Paths.Title = "Select client data.000";
+            Paths.DefaultDirectory = OPT.GetString("data.load.directory");
             string dataPath = Paths.FilePath;
+
             if (Paths.FileResult == DialogResult.OK)
             {
 

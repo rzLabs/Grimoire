@@ -25,11 +25,20 @@ All-in-one Rappelz Development Tool
   * Filter index by Extension
   * Export Files
     * Export by Extension
-      * Export all files by 'ALL' Extension
+		* Export all files by 'ALL' Extension
     * Export Selected Files
+  * Insert Files
+	* Right Click 'Insert' 
+	    * Multi-Select capable
+	* Drop Folder/File'(s)
   * Search
     * All Files
     * Extension (by selecting extension then searching)
+  * Compare Files (Stored vs Local Disk File)
+  * Rebuild (Via Rebuild Wizard)
+	* View Current Size | File Count | Data Size | Data Fragmentation %
+	* View Visual Presentation of Sized vs Fragmentation Size via Pie Chart
+	* Statistics and Pie Chart update in real-time during rebuild process
 3. **Hasher Utility**
   * Hash name (on the fly) w/ flip option
   * Add File or Folder via Drag-N-Drop/Right-Click Context menu

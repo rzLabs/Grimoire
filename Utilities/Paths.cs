@@ -29,11 +29,12 @@ namespace Grimoire.Utilities
             }
         }
 
+        public static bool FileMultiSelect = false;
         public static DialogResult FileResult;
         public static DialogResult SaveResult;
         public static DialogResult FolderResult;
 
-        public static string FilePath
+        private static string[] filePaths
         {
             get
             {
@@ -41,17 +42,28 @@ namespace Grimoire.Utilities
                 using (OpenFileDialog ofDlg = new OpenFileDialog()
                 {
                     DefaultExt = "*", Title = title,
-                    InitialDirectory = DefaultDirectory
+                    InitialDirectory = DefaultDirectory,
+                    Multiselect = FileMultiSelect
                 })
                 {
                     if ((FileResult = ofDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
                     {
-                        return File.Exists(ofDlg.FileName) ? ofDlg.FileName : null;
+                        return File.Exists(ofDlg.FileName) ? ofDlg.FileNames : null;
                     }
                 }
 
                 return null;
             }
+        }
+
+        public static string FilePath // TODO: If cancel causes bug
+        {
+            get { return filePaths?[0]; }
+        }
+
+        public static string[] FilePaths
+        {
+            get { return filePaths; }
         }
 
         public static string SavePath

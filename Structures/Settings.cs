@@ -59,6 +59,9 @@ namespace Grimoire.Structures
         [Description("Determines if files like data.000-008 will be backed up before any changes are made to them. (RECOMMENDED)"), Category("Data Utility"), DisplayName("Backups")]
         public bool Backups { get { return OPT.GetBool("data.backup"); } set { OPT.Update("data.backup", Convert.ToInt32(value).ToString()); } }
 
+        [Description("Determines if the DataCore.Core will be cleared after a successful 'New' client has been created. If set to False the newly created client will be displayed as if loaded."), Category("Data Utility"), DisplayName("Clear on Create")]
+        public bool ClearCreate { get { return OPT.GetBool("data.clear_on_create"); } set { OPT.Update("data.clear_on_create", Convert.ToInt32(value).ToString()); } }
+
         // rdb
 
         [Description("Determines if the structure you select will be loaded the moment you select it or manually with \"Load\" button"), Category("RDB Utility"), DisplayName("Load on Select")]

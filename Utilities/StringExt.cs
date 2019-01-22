@@ -8,7 +8,7 @@ namespace Grimoire.Utilities
 
         public static string FormatToSize(long length)
         {
-            long len = length;
+            double len = length;
             int order = 0;
 
             while (len >= 1024 && order < sizes.Length - 1)

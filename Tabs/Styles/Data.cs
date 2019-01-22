@@ -28,6 +28,7 @@ namespace Grimoire.Tabs.Styles
         public List<IndexEntry> SearchIndex = new List<IndexEntry>();
         public bool Searching { get { return SearchIndex.Count > 0; } }
         public int SearchCount { get { return SearchIndex.Count; } }
+        public bool IndexLoaded { get { return Core.Index.Count > 0; } }
 
         public DataCore.Core Core
         {
@@ -137,19 +138,37 @@ namespace Grimoire.Tabs.Styles
 
             string buildDirectory = OPT.GetString("build.directory");
 
+            lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Building new client to:\n\t-{0}", buildDirectory);
+
             tab_disabled = true;
 
             await Task.Run(() => 
             {
-                try { core.BuildDataFiles(dumpDirectory, buildDirectory); }
+                try
+                {
+                    core.Backups = false;
+                    core.BuildDataFiles(dumpDirectory, buildDirectory);
+                }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
                     return;
                 }
-            });
+                finally
+                {
+                    string msg = "Client build completed!";
+                    MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, msg);
 
-            // TODO: Core reset
+                    if (OPT.GetBool("data.clear_on_create"))
+                        core.Clear();
+                    else
+                        display_data();
+
+                    core.Backups = true;
+                }
+            });           
 
             ts_status.Text = string.Empty;
 
@@ -167,12 +186,24 @@ namespace Grimoire.Tabs.Styles
             load(filePath);
         }
 
+        private void ts_file_rebuild_Click(object sender, EventArgs e)
+        {
+            unhook_core_events();
+
+            using (GUI.DataRebuild rebuildGUI = new GUI.DataRebuild())
+            {
+                rebuildGUI.ShowDialog(GUI.Main.Instance);
+            }
+
+            hook_core_events();
+        }
+
         private void extensions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             long extSize = tManager.DataCore.GetExtensionSize(e.Node.Text);
             string formattedSize = StringExt.FormatToSize(extSize);
             if (e.Node.Text != "all")
-                extensions.Nodes[e.Node.Text].Nodes[1].Text += formattedSize;
+                extensions.Nodes[e.Node.Text].Nodes[1].Text = "Size: " + formattedSize;
         }
 
         private void extensions_AfterSelect(object sender, TreeViewEventArgs e)
@@ -204,6 +235,8 @@ namespace Grimoire.Tabs.Styles
 
         private void grid_SelectionChanged(object sender, EventArgs e)
         {
+            grid_cs.Items[2].Enabled = true;
+
             int rowCount = grid.SelectedRows.Count;
 
             if (rowCount == 1)
@@ -336,31 +369,12 @@ namespace Grimoire.Tabs.Styles
 
         private async void grid_cs_insert_Click(object sender, EventArgs e)
         {
-            string filepath = Paths.FilePath;
+            Paths.FileMultiSelect = true;
+            string[] filePaths = Paths.FilePaths;
+
             if (Paths.FileResult == DialogResult.OK)
             {
-                ts_status.Text = string.Format("Importing: {0}...", Path.GetFileName(filepath));
-
-                tab_disabled = true;
-
-                try
-                {
-                    await Task.Run(() =>
-                    {
-                        core.ImportFileEntry(filepath);
-                        core.Save(OPT.GetString("build.directory"));
-                    });
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Import Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
-                }
-                finally
-                {
-                    tab_disabled = false;
-                    ts_status.Text = string.Empty;
-                }
+                await Task.Run(() => { insert_files(filePaths); });
             }
         }
 
@@ -368,9 +382,9 @@ namespace Grimoire.Tabs.Styles
         {
             if (grid.Rows.Count > 0)
             {
-                if (searchInput.Text.Length > 3)
+                if (searchInput.Text.Length > 2)
                 {
-                    if (Filtered || Searching)
+                    if (Filtered)
                         SearchIndex = FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text));
                     else 
                         SearchIndex = core.GetEntriesByPartialName(searchInput.Text);
@@ -405,7 +419,11 @@ namespace Grimoire.Tabs.Styles
             ts_file_new.Enabled = true;
         }
 
+        public void Hook_Core_Events() { hook_core_events(); }
+
         public void Load(string path) { load(path); }
+
+        public void Insert(string[] filePaths) { insert_files(filePaths); }
 
         #endregion
 
@@ -417,10 +435,23 @@ namespace Grimoire.Tabs.Styles
             int codepage = OPT.GetInt("data.encoding");
             Encoding encoding = Encoding.GetEncoding(codepage);
             core = new Core(backup, encoding);
+            hook_core_events();
+        }
+
+        private void hook_core_events()
+        {
             core.CurrentMaxDetermined += Core_CurrentMaxDetermined;
             core.CurrentProgressChanged += Core_CurrentProgressChanged;
             core.CurrentProgressReset += Core_CurrentProgressReset;
             core.MessageOccured += Core_MessageOccured;
+        }
+
+        private void unhook_core_events()
+        {
+            core.CurrentMaxDetermined -= Core_CurrentMaxDetermined;
+            core.CurrentProgressChanged -= Core_CurrentProgressChanged;
+            core.CurrentProgressReset -= Core_CurrentProgressReset;
+            core.MessageOccured -= Core_MessageOccured;
         }
 
         private void populate_selection_info()
@@ -463,41 +494,83 @@ namespace Grimoire.Tabs.Styles
                 ts_file_load.Enabled = false;
                 ts_file_new.Enabled = false;
 
-                grid.RowCount = core.RowCount + 1;
-                grid.VirtualMode = true;
-                grid.CellValueNeeded += gridUtils.Grid_CellValueNeeded;
-                grid.CellValuePushed += gridUtils.Grid_CellPushed;
-
-                await Task.Run(() => { populate_selection_info(tManager.DataCore.Index[0]); });
-
                 lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE,
-                    "{0} entries loaded from data.000 to tab: {1} from path:\n\t- {2}",
-                    core.RowCount,
-                    tManager.Text,
-                    path);
+                "{0} entries loaded from data.000 to tab: {1} from path:\n\t- {2}",
+                core.RowCount,
+                tManager.Text,
+                path);
 
-                extStatus.Text = "Analyzing index...";
-
-                extensions.Nodes.Add("all", "all");
-                extensions.Nodes["all"].Nodes.Add(string.Format("Count: {0}", tManager.DataCore.RowCount));
-
-                await Task.Run(() => {
-                    foreach (ExtensionInfo extInfo in Core.ExtensionList)
-                    {
-                        this.Invoke(new MethodInvoker(delegate
-                        {
-                            extensions.Nodes.Add(extInfo.Type, extInfo.Type);
-                            extensions.Nodes[extInfo.Type].Nodes.Add(string.Format("Count: {0}", extInfo.Count));
-                            extensions.Nodes[extInfo.Type].Nodes.Add("Size: ");
-                        }));
-                    }
-                });
+                display_data();
 
                 tab_disabled = false;
-                extStatus.ResetText();
+                ts_file_new.Visible = false;
+                ts_file_rebuild.Visible = true;
             }
         }
 
+        private async void display_data()
+        {
+            grid.RowCount = core.RowCount + 1;
+            grid.VirtualMode = true;
+            grid.CellValueNeeded += gridUtils.Grid_CellValueNeeded;
+            grid.CellValuePushed += gridUtils.Grid_CellPushed;
+
+            await Task.Run(() => { populate_selection_info(tManager.DataCore.Index[0]); });
+
+            extStatus.Text = "Analyzing index...";
+
+            extensions.Nodes.Add("all", "all");
+            extensions.Nodes["all"].Nodes.Add(string.Format("Count: {0}", tManager.DataCore.RowCount));
+
+            await Task.Run(() => {
+                foreach (ExtensionInfo extInfo in Core.ExtensionList)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        extensions.Nodes.Add(extInfo.Type, extInfo.Type);
+                        extensions.Nodes[extInfo.Type].Nodes.Add(string.Format("Count: {0}", extInfo.Count));
+                        extensions.Nodes[extInfo.Type].Nodes.Add("Size: ");
+                    }));
+                }
+            });
+
+            extStatus.ResetText();
+        }
+
+        private void insert_files(string[] filePaths)
+        {
+            using (GUI.MessageListBox msgbox = new GUI.MessageListBox("Review Files", "You are about to import the following files!\r\n\r\nAre you sure you want to do that?", filePaths))
+            {
+                msgbox.ShowDialog(GUI.Main.Instance);
+                if (msgbox.DialogResult == DialogResult.Cancel)
+                    return;
+            }
+
+            try
+            {
+                foreach (string filePath in filePaths)
+                {
+                    tab_disabled = true;
+                    string msg = string.Format("Importing: {0}...", Path.GetFileName(filePath));
+                    ts_status.Text = msg;
+                    lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, msg);
+
+                    core.ImportFileEntry(filePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Import Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
+            }
+            finally
+            {
+                core.Save(OPT.GetString("build.directory"));
+
+                tab_disabled = false;
+                ts_status.Text = string.Empty;
+            }
+        }
         #endregion
 
         private void extensions_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
