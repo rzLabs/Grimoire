@@ -66,20 +66,19 @@ namespace Grimoire.Tabs.Styles
 
         private void cMenu_convert_all_Click(object sender, EventArgs e)
         {
-            convertAllEntries();
-
-            if (autoClear_chk.Checked)
-                cMenu_clear_Click(null, EventArgs.Empty);
+            convertAllEntries();            
         }
 
         private void autoClear_chk_CheckStateChanged(object sender, EventArgs e)
         {
             Grimoire.Utilities.OPT.Update("hash.auto_clear", Convert.ToInt32(autoClear_chk.Checked).ToString());
+            Grimoire.Utilities.OPT.Save();
         }
 
         private void opt_auto_convert_CheckStateChanged(object sender, EventArgs e)
         {
             Grimoire.Utilities.OPT.Update("hash.auto_convert", Convert.ToInt32(opt_auto_convert.Checked).ToString());
+            Grimoire.Utilities.OPT.Save();
         }
 
         private void cMenu_add_folder_Click(object sender, EventArgs e)
@@ -122,6 +121,7 @@ namespace Grimoire.Tabs.Styles
         private void set_checks()
         {
             autoClear_chk.Checked = Grimoire.Utilities.OPT.GetBool("hash.auto_clear");
+            opt_auto_convert.Checked = Grimoire.Utilities.OPT.GetBool("hash.auto_convert");
 
             switch (Grimoire.Utilities.OPT.GetInt("hash.type"))
             {
@@ -143,6 +143,9 @@ namespace Grimoire.Tabs.Styles
         {
             foreach (DataGridViewRow row in fileGrid.Rows)
                 convertEntry(row.Index);
+
+            if (autoClear_chk.Checked)
+                cMenu_clear_Click(null, EventArgs.Empty);
         }
 
         private void convertEntry(int rowIndex)
@@ -189,7 +192,7 @@ namespace Grimoire.Tabs.Styles
             if (opt_remove_ascii.Checked)
                 originalName = originalName.Replace("(ascii)", string.Empty);
 
-            string convertedName = StringCipher.Encode(originalName);
+            string convertedName = StringCipher.IsEncoded(originalName) ? StringCipher.Decode(originalName) : StringCipher.Encode(originalName);
 
             fileGrid.Rows.Add(originalName, convertedName, Path.GetDirectoryName(path), "Pending");
         }

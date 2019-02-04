@@ -36,6 +36,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.ts_file_new = new System.Windows.Forms.ToolStripButton();
             this.ts_status = new System.Windows.Forms.ToolStripLabel();
+            this.ts_file_rebuild = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.extensions = new System.Windows.Forms.TreeView();
             this.extensions_cs = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -64,7 +65,6 @@
             this.extStatus = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.searchInput = new System.Windows.Forms.TextBox();
-            this.ts_file_rebuild = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.extensions_cs.SuspendLayout();
@@ -128,6 +128,17 @@
             this.ts_status.Name = "ts_status";
             this.ts_status.Size = new System.Drawing.Size(0, 27);
             // 
+            // ts_file_rebuild
+            // 
+            this.ts_file_rebuild.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ts_file_rebuild.Image = ((System.Drawing.Image)(resources.GetObject("ts_file_rebuild.Image")));
+            this.ts_file_rebuild.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ts_file_rebuild.Name = "ts_file_rebuild";
+            this.ts_file_rebuild.Size = new System.Drawing.Size(64, 27);
+            this.ts_file_rebuild.Text = "Rebuild";
+            this.ts_file_rebuild.Visible = false;
+            this.ts_file_rebuild.Click += new System.EventHandler(this.ts_file_rebuild_Click);
+            // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -187,6 +198,8 @@
             // 
             // grid
             // 
+            this.grid.AllowUserToAddRows = false;
+            this.grid.AllowUserToDeleteRows = false;
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ig_name});
@@ -409,9 +422,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.searchInput);
             this.groupBox4.Location = new System.Drawing.Point(21, 469);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(707, 68);
             this.groupBox4.TabIndex = 5;
             this.groupBox4.TabStop = false;
@@ -422,24 +435,13 @@
             this.searchInput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.searchInput.Enabled = false;
             this.searchInput.Location = new System.Drawing.Point(79, 25);
-            this.searchInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.searchInput.Margin = new System.Windows.Forms.Padding(4);
             this.searchInput.MaxLength = 50;
             this.searchInput.Name = "searchInput";
             this.searchInput.Size = new System.Drawing.Size(535, 22);
             this.searchInput.TabIndex = 0;
             this.searchInput.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.searchInput.TextChanged += new System.EventHandler(this.searchInput_TextChanged);
-            // 
-            // ts_file_rebuild
-            // 
-            this.ts_file_rebuild.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ts_file_rebuild.Image = ((System.Drawing.Image)(resources.GetObject("ts_file_rebuild.Image")));
-            this.ts_file_rebuild.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ts_file_rebuild.Name = "ts_file_rebuild";
-            this.ts_file_rebuild.Size = new System.Drawing.Size(64, 27);
-            this.ts_file_rebuild.Text = "Rebuild";
-            this.ts_file_rebuild.Visible = false;
-            this.ts_file_rebuild.Click += new System.EventHandler(this.ts_file_rebuild_Click);
             // 
             // Data
             // 

@@ -25,6 +25,8 @@ namespace Grimoire.Tabs
             }
         }
 
+        public int RightClick_TabIdx = 0;
+
         public Manager()
         {
             main = GUI.Main.Instance;
@@ -195,10 +197,10 @@ namespace Grimoire.Tabs
                 //    text = "Drop Utility";
                 //    break;
 
-                //case Style.LOG:
-                //    tab.Controls.Add(new Styles.Log() { Dock = DockStyle.Fill });
-                //    text = "Log Utility";
-                //    break;
+                case Style.LOG:
+                    tab.Controls.Add(new Styles.Log() { Dock = DockStyle.Fill });
+                    text = "Log Utility";
+                    break;
             }
 
             pages.Add(tab);
@@ -232,8 +234,9 @@ namespace Grimoire.Tabs
         public void Destroy()
         {
             lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE,"Tab: {0} has been closed.", Page.Text);
+            pages.RemoveAt(RightClick_TabIdx);
             tabs.SelectedIndex = pages.Count - 1;
-            pages.Remove(Page);
+            
         }
     }
 }

@@ -141,6 +141,12 @@
     <Compile Include="Tabs\Styles\Hasher.Designer.cs">
       <DependentUpon>Hasher.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tabs\Styles\Log.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tabs\Styles\Log.Designer.cs">
+      <DependentUpon>Log.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tabs\Styles\UseFlag.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -216,6 +222,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\Hasher.resx">
       <DependentUpon>Hasher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tabs\Styles\Log.resx">
+      <DependentUpon>Log.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\RDB.resx">
       <DependentUpon>RDB.cs</DependentUpon>

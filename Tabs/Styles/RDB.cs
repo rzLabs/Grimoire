@@ -327,6 +327,9 @@ namespace Grimoire.Tabs.Styles
                 return;
             }
 
+            if (MessageBox.Show("You are about to save to the SQL Table!\n\nAre you sure you want to do that?", "Input Required", MessageBoxButtons.YesNo, MessageBoxIcon.Hand) != DialogResult.Yes)
+                return;
+
             string tablename = core.TableName;
             if (string.IsNullOrEmpty(tablename))
             {

@@ -179,7 +179,11 @@ namespace Grimoire.Utilities
                                         break;
 
                                     case "stringbylen":
-                                        newRow[i] = Convert.ToString(sqlRdr[field.Name]);
+                                        {
+                                            string szVal = Convert.ToString(sqlRdr[field.Name]);
+                                            newRow[field.Dependency] = szVal.Length + 1;
+                                            newRow[i] = szVal;
+                                        }
                                         break;
 
                                     case "stringbyref":

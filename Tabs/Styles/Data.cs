@@ -390,13 +390,13 @@ namespace Grimoire.Tabs.Styles
                         SearchIndex = core.GetEntriesByPartialName(searchInput.Text);
 
                     grid.Rows.Clear();
-                    grid.RowCount = SearchIndex.Count + 1;
+                    grid.RowCount = SearchIndex.Count;
                 }
                 else
                 {
                     SearchIndex.Clear();
                     grid.Rows.Clear();
-                    grid.RowCount = tManager.DataCore.RowCount + 1;
+                    grid.RowCount = tManager.DataCore.RowCount;
                 }
             }
         }
@@ -510,7 +510,7 @@ namespace Grimoire.Tabs.Styles
 
         private async void display_data()
         {
-            grid.RowCount = core.RowCount + 1;
+            grid.RowCount = core.RowCount;
             grid.VirtualMode = true;
             grid.CellValueNeeded += gridUtils.Grid_CellValueNeeded;
             grid.CellValuePushed += gridUtils.Grid_CellPushed;
