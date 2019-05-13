@@ -123,6 +123,8 @@
     </Compile>
     <Compile Include="Structures\Log.cs" />
     <Compile Include="Structures\Settings.cs" />
+    <Compile Include="Tabs\Enums\ItemBase.cs" />
+    <Compile Include="Tabs\Structures\ItemInfo.cs" />
     <Compile Include="Tabs\Styles\Data.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -140,6 +142,12 @@
     </Compile>
     <Compile Include="Tabs\Styles\Hasher.Designer.cs">
       <DependentUpon>Hasher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tabs\Styles\Item.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tabs\Styles\Item.Designer.cs">
+      <DependentUpon>Item.cs</DependentUpon>
     </Compile>
     <Compile Include="Tabs\Styles\Log.cs">
       <SubType>UserControl</SubType>
@@ -182,6 +190,7 @@
     <Compile Include="Utilities\LuaException.cs" />
     <Compile Include="Utilities\OPT.cs" />
     <Compile Include="Utilities\Paths.cs" />
+    <Compile Include="Utilities\SPR.cs" />
     <Compile Include="Utilities\StringExt.cs" />
     <EmbeddedResource Include="GUI\DataRebuild.resx">
       <DependentUpon>DataRebuild.cs</DependentUpon>
@@ -223,6 +232,9 @@
     <EmbeddedResource Include="Tabs\Styles\Hasher.resx">
       <DependentUpon>Hasher.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tabs\Styles\Item.resx">
+      <DependentUpon>Item.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\Log.resx">
       <DependentUpon>Log.cs</DependentUpon>
     </EmbeddedResource>
@@ -249,17 +261,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Daedalus\Daedalus.csproj">
+      <Project>{8591ef8a-cd35-494d-9cba-0efe0df646fe}</Project>
+      <Name>Daedalus</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DataCore\DataCore\DataCore.csproj">
       <Project>{f234efe9-3104-45fc-a5be-fdc3d0cd888e}</Project>
       <Name>DataCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\rdbCore\rdbCore.csproj">
-      <Project>{c39638a0-7c6e-4e32-ad9e-fdfb38bf5760}</Project>
-      <Name>rdbCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

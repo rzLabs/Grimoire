@@ -86,18 +86,24 @@ namespace Grimoire.Tabs
                     GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Tabs.Styles.Data)pages[tabs.SelectedIndex].Controls[0]).Core; }));
                     return ret;
                 }
+                else if (Style == Style.ITEM)
+                {
+                    DataCore.Core ret = null;
+                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Tabs.Styles.Item)pages[tabs.SelectedIndex].Controls[0]).Core; }));
+                    return ret;
+                }
 
                 return null;
             }
         }
 
-        public rdbCore.Core RDBCore
+        public Daedalus.Core RDBCore
         {
             get
             {
                 if (Style == Style.RDB)
                 {
-                    rdbCore.Core ret = null;
+                    Daedalus.Core ret = null;
                     GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Tabs.Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0]).Core; }));
                     return ret;
                 }
@@ -192,6 +198,11 @@ namespace Grimoire.Tabs
                     text = "Use Flag Utility";
                     break;
 
+                case Style.ITEM:
+                    tab.Controls.Add(new Styles.Item() { Dock = DockStyle.Fill });
+                    text = "Item Utility";
+                    break;
+
                 //case Style.DROPS:
                 //    tab.Controls.Add(new Styles.DropEditor() { Dock = DockStyle.Fill });
                 //    text = "Drop Utility";
@@ -204,8 +215,8 @@ namespace Grimoire.Tabs
             }
 
             pages.Add(tab);
+            SetText(key, text);
             tabs.SelectedTab = pages[key];
-            tabs.SelectedTab.Text = text;
             lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE,"Tab created with name: {0} and style: {1}", text, ((Style)style).ToString());
         }
 
@@ -237,6 +248,16 @@ namespace Grimoire.Tabs
             pages.RemoveAt(RightClick_TabIdx);
             tabs.SelectedIndex = pages.Count - 1;
             
+        }
+
+        public void SetText(string key, string text)
+        {
+            if (pages.ContainsKey(key))
+            {
+                pages[key].Text = text;
+            }
+            else
+                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.ERROR, "Tab Manager could not SetText because tab with key: {0} does not exist!", key);
         }
     }
 }

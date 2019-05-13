@@ -64,7 +64,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid.Location = new System.Drawing.Point(0, 32);
-            this.grid.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.grid.Margin = new System.Windows.Forms.Padding(4);
             this.grid.Name = "grid";
             this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.grid.Size = new System.Drawing.Size(1040, 527);
@@ -114,7 +114,7 @@
             this.ts_load_file.Name = "ts_load_file";
             this.ts_load_file.Size = new System.Drawing.Size(116, 26);
             this.ts_load_file.Text = "File";
-            this.ts_load_file.Click += new System.EventHandler(this.ts_load_file_Click);
+            this.ts_load_file.Click += new System.EventHandler(this.TS_Load_File_Click);
             // 
             // ts_load_sql
             // 
@@ -129,7 +129,7 @@
             this.ts_load_data.Name = "ts_load_data";
             this.ts_load_data.Size = new System.Drawing.Size(116, 26);
             this.ts_load_data.Text = "Data";
-            this.ts_load_data.Click += new System.EventHandler(this.ts_load_data_Click);
+            this.ts_load_data.Click += new System.EventHandler(this.TS_Load_Data_Click);
             // 
             // ts_save
             // 
@@ -149,7 +149,7 @@
             this.ts_save_file.Name = "ts_save_file";
             this.ts_save_file.Size = new System.Drawing.Size(110, 26);
             this.ts_save_file.Text = "File";
-            this.ts_save_file.Click += new System.EventHandler(this.ts_save_file_Click);
+            this.ts_save_file.Click += new System.EventHandler(this.TS_Save_File_Click);
             // 
             // ts_save_sql
             // 
@@ -248,7 +248,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.grid);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "rdbTab";
             this.Size = new System.Drawing.Size(1040, 559);
             this.Load += new System.EventHandler(this.rdbTab_Load);

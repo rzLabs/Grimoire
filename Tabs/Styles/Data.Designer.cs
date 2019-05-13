@@ -99,7 +99,7 @@
             this.ts_file_load.Name = "ts_file_load";
             this.ts_file_load.Size = new System.Drawing.Size(46, 27);
             this.ts_file_load.Text = "Load";
-            this.ts_file_load.Click += new System.EventHandler(this.ts_file_load_Click);
+            this.ts_file_load.Click += new System.EventHandler(this.TS_File_Load_Click);
             // 
             // ts_progress
             // 
@@ -120,7 +120,7 @@
             this.ts_file_new.Name = "ts_file_new";
             this.ts_file_new.Size = new System.Drawing.Size(43, 27);
             this.ts_file_new.Text = "New";
-            this.ts_file_new.Click += new System.EventHandler(this.ts_file_new_Click);
+            this.ts_file_new.Click += new System.EventHandler(this.TS_File_New_Click);
             // 
             // ts_status
             // 
@@ -137,7 +137,7 @@
             this.ts_file_rebuild.Size = new System.Drawing.Size(64, 27);
             this.ts_file_rebuild.Text = "Rebuild";
             this.ts_file_rebuild.Visible = false;
-            this.ts_file_rebuild.Click += new System.EventHandler(this.ts_file_rebuild_Click);
+            this.ts_file_rebuild.Click += new System.EventHandler(this.TS_File_Rebuild_Click);
             // 
             // groupBox1
             // 

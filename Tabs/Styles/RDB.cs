@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 using Grimoire.Utilities;
+using Daedalus;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -17,7 +18,7 @@ namespace Grimoire.Tabs.Styles
         Logs.Manager lManager = Logs.Manager.Instance;
         Manager tManager = Manager.Instance;
         Database dManager = null;
-        rdbCore.Core core = new rdbCore.Core();
+        public Daedalus.Core core = new Daedalus.Core();
         DataCore.Core dCore = null;
         string structsDir = null;
         readonly string key = null;
@@ -27,11 +28,11 @@ namespace Grimoire.Tabs.Styles
         bool structLoaded { get { return (ts_struct_list.SelectedIndex != -1); } }
         readonly string buildDir = string.Format(@"{0}\Output\", Directory.GetCurrentDirectory());
 
-        public rdbCore.Core Core
+        public Core Core
         {
             get
             {
-                if (core == null) { throw new Exception("rdbCore is null!"); }
+                if (core == null) { throw new Exception("Daedalus is null!"); }
                 return core;
             }
         }
@@ -99,7 +100,8 @@ namespace Grimoire.Tabs.Styles
                     return;
                 }
 
-                await Task.Run(() => { core.Initialize(path); });
+                core.LuaPath = path;
+                core.Initialize();
             }
             catch (MoonSharp.Interpreter.SyntaxErrorException sEx) { lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "Exception Occured:\n\t- {0}", LuaException.Print(sEx.DecoratedMessage, ts_struct_list.Text)); }
             catch (Exception ex) { lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex); }
@@ -115,7 +117,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private void ts_load_file_Click(object sender, EventArgs e)
+        public void TS_Load_File_Click(object sender, EventArgs e)
         {
             if (!structLoaded)
             {
@@ -135,7 +137,7 @@ namespace Grimoire.Tabs.Styles
             load_file(fileName);
         }
 
-        private async void ts_load_data_Click(object sender, EventArgs e)
+        public async void TS_Load_Data_Click(object sender, EventArgs e)
         {
             if (!structLoaded)
             {
@@ -150,7 +152,6 @@ namespace Grimoire.Tabs.Styles
 
             if (Paths.FileResult == DialogResult.OK)
             {
-
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, dataPath);
 
                 List<DataCore.Structures.IndexEntry> results = null;
@@ -173,8 +174,9 @@ namespace Grimoire.Tabs.Styles
                             DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
                             byte[] fileBytes = dCore.GetFileBytes(finalResult);
 
-                            if (fileBytes.Length > 0)
+                            if (fileBytes.Length > 0)                        
                                 load_file(fileName, fileBytes);
+                            
                         }
                         else
                         {
@@ -187,7 +189,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private async void ts_save_file_Click(object sender, EventArgs e)
+        public async void TS_Save_File_Click(object sender, EventArgs e)
         {
             string buildPath = null;
 
@@ -228,17 +230,24 @@ namespace Grimoire.Tabs.Styles
                 }
 
                 if (!filename.Contains("ascii") && ts_save_w_ascii.Checked)
-                {
                     filename = string.Format(@"{0}(ascii).rdb", filename.Split('.')[0]);
-                }
-                if (ts_save_enc.Checked) { filename = DataCore.Functions.StringCipher.Encode(filename); }
+                
+                if (ts_save_enc.Checked)
+                    filename = DataCore.Functions.StringCipher.Encode(filename);
 
                 buildPath = string.Format(@"{0}\{1}", buildDir, filename);
 
-                if (!Directory.Exists(buildDir)) { Directory.CreateDirectory(buildDir); }
-                if (File.Exists(buildPath)) { File.Delete(buildPath); }
+                if (!Directory.Exists(buildDir))
+                    Directory.CreateDirectory(buildDir);
 
-                await Task.Run(() => { core.WriteRDB(buildPath); });
+                if (File.Exists(buildPath))
+                    File.Delete(buildPath);
+
+                await Task.Run(() => 
+                {
+                    core.RdbPath = buildPath;
+                    core.Write();
+                });
             }
             catch (Exception ex)
             {
@@ -286,19 +295,19 @@ namespace Grimoire.Tabs.Styles
 
             dManager = new Database();
             int rowCount = dManager.FetchRowCount(tablename);
-            List<rdbCore.Structures.Row> table_data = new List<rdbCore.Structures.Row>();
+            Daedalus.Structures.Row[] table_data = new Daedalus.Structures.Row[0];
 
             try
             {
                 await Task.Run(() => { table_data = dManager.FetchTable(rowCount, tablename); });
 
-                if (table_data.Count == 0)
+                if (table_data.Length == 0)
                 {
                     lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "No results were loaded from the table!");
                     return;
                 }
 
-                await Task.Run(() => { core.SetData(table_data); });
+                core.SetData(table_data);
             }
             catch (System.Data.SqlClient.SqlException ex)
             {
@@ -312,7 +321,7 @@ namespace Grimoire.Tabs.Styles
             }
             finally
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} rows were loaded from table: {1} into tab: {2}", table_data.Count, tablename, tManager.Text);
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} rows were loaded from table: {1} into tab: {2}", table_data.Length, tablename, tManager.Text);
 
                 tManager.Text = Path.GetFileNameWithoutExtension(tablename);
                 initializeGrid();
@@ -357,7 +366,13 @@ namespace Grimoire.Tabs.Styles
 
             Database dManager = new Database();
 
-            try { await Task.Run(() => { dManager.ExportToTable(tablename, tManager.RDBCore.Data); }); }
+            try
+            {
+                await Task.Run(() => 
+                {
+                    dManager.ExportToTable(tablename, tManager.RDBCore.Rows);
+                });
+            }
             catch (System.Data.SqlClient.SqlException ex)
             {
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.SQL_ERROR, ex);
@@ -440,30 +455,19 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private async void load_file(string filePath)
+        private void load_file(string filePath)
         {
-            try
-            {
-                await Task.Run(() => { core.ParseRDB(filePath); });
-            }
-            catch (Exception ex)
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
-                MessageBox.Show(ex.Message, "RDB Load Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries loaded from {1}", core.RowCount, Path.GetFileName(filePath));
-                tManager.Text = Path.GetFileNameWithoutExtension(filePath);
-                initializeGrid();
-            }
+            core.RdbPath = filePath;
+            string fileName = Path.GetFileName(filePath);
+            byte[] buffer = File.ReadAllBytes(filePath);
+            load_file(fileName, buffer);
         }
 
         private async void load_file(string fileName, byte[] fileBytes)
         {
             try
             {
-                await Task.Run(() => { core.ParseRDB(fileBytes); });
+                await Task.Run(() => { core.ParseBuffer(fileBytes); });
             }
             catch (Exception ex)
             {
@@ -473,7 +477,7 @@ namespace Grimoire.Tabs.Styles
             finally
             {
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries loaded from {1}", core.RowCount, fileName);
-                tManager.Text = fileName;
+                tManager.SetText(key, fileName);
                 initializeGrid();
             }
         }
@@ -483,7 +487,7 @@ namespace Grimoire.Tabs.Styles
             grid.VirtualMode = true;
             grid.CellValueNeeded += gridUtil.Grid_CellValueNeeded;
             grid.CellValuePushed += gridUtil.Grid_CellPushed;
-            grid.RowCount = core.Data.Count + 1;
+            grid.RowCount = tManager.RDBCore.RowCount + 1; //core.Data.Count + 1;
         }
 
         #endregion

@@ -129,7 +129,7 @@ namespace Grimoire.Tabs.Styles
             }));
         }
 
-        private async void ts_file_new_Click(object sender, EventArgs e)
+        public async void TS_File_New_Click(object sender, EventArgs e)
         {
             Paths.Description = "Please select a Dump Directory";
             string dumpDirectory = Paths.FolderPath;
@@ -175,7 +175,7 @@ namespace Grimoire.Tabs.Styles
             tab_disabled = false;
         }
 
-        private void ts_file_load_Click(object sender, EventArgs e)
+        public void TS_File_Load_Click(object sender, EventArgs e)
         {
             Paths.DefaultDirectory = OPT.GetString("data.load.directory");
 
@@ -186,7 +186,7 @@ namespace Grimoire.Tabs.Styles
             load(filePath);
         }
 
-        private void ts_file_rebuild_Click(object sender, EventArgs e)
+        public void TS_File_Rebuild_Click(object sender, EventArgs e)
         {
             unhook_core_events();
 
@@ -367,15 +367,13 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private async void grid_cs_insert_Click(object sender, EventArgs e)
+        private void grid_cs_insert_Click(object sender, EventArgs e)
         {
             Paths.FileMultiSelect = true;
             string[] filePaths = Paths.FilePaths;
 
             if (Paths.FileResult == DialogResult.OK)
-            {
-                await Task.Run(() => { insert_files(filePaths); });
-            }
+                insert_files(filePaths);
         }
 
         private void searchInput_TextChanged(object sender, EventArgs e)
@@ -537,7 +535,7 @@ namespace Grimoire.Tabs.Styles
             extStatus.ResetText();
         }
 
-        private void insert_files(string[] filePaths)
+        private async void insert_files(string[] filePaths)
         {
             using (GUI.MessageListBox msgbox = new GUI.MessageListBox("Review Files", "You are about to import the following files!\r\n\r\nAre you sure you want to do that?", filePaths))
             {
@@ -555,7 +553,7 @@ namespace Grimoire.Tabs.Styles
                     ts_status.Text = msg;
                     lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, msg);
 
-                    core.ImportFileEntry(filePath);
+                    await Task.Run(() => { core.ImportFileEntry(filePath); });
                 }
             }
             catch (Exception ex)
@@ -565,7 +563,7 @@ namespace Grimoire.Tabs.Styles
             }
             finally
             {
-                core.Save(OPT.GetString("build.directory"));
+                core.Save();
 
                 tab_disabled = false;
                 ts_status.Text = string.Empty;

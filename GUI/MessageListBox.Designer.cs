@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessageListBox));
             this.list = new System.Windows.Forms.ListBox();
             this.yes_btn = new System.Windows.Forms.Button();
             this.no_btn = new System.Windows.Forms.Button();
@@ -63,6 +64,7 @@
             // no_btn
             // 
             this.no_btn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.no_btn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.no_btn.Location = new System.Drawing.Point(444, 368);
             this.no_btn.Name = "no_btn";
             this.no_btn.Size = new System.Drawing.Size(57, 31);
@@ -104,6 +106,7 @@
             this.Controls.Add(this.yes_btn);
             this.Controls.Add(this.list);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MessageListBox";
             this.msgGrp.ResumeLayout(false);
             this.msgGrp.PerformLayout();

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.IO;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -96,8 +98,6 @@ namespace Grimoire.GUI
 
         private void Main_DragDrop(object sender, DragEventArgs e)
         {
-            //TODO: Move Hasher to here so that we don't have a drag operation per tab style
-            // Make sure (FOR HASHER) that we provide proper string[] of paths from possible dir drop
             string[] paths = ((string[])e.Data.GetData(DataFormats.FileDrop));
 
             switch (tManager.Style)
@@ -127,7 +127,6 @@ namespace Grimoire.GUI
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             Utilities.OPT.Save();
-            lManager.Write();
         }
 
         private void tabs_MouseClick(object sender, MouseEventArgs e)
@@ -145,6 +144,57 @@ namespace Grimoire.GUI
                     }
                 }
             }
+        }
+
+        private void Main_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.O)
+            {
+                switch (tManager.Style)
+                {
+                    case Style.DATA:
+                        tManager.DataTab.TS_File_Load_Click(this, EventArgs.Empty);
+                        break;
+
+                    case Style.RDB:
+                        tManager.RDBTab.TS_Load_File_Click(this, EventArgs.Empty);
+                        break;
+                }
+            }
+            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
+            {
+                switch (tManager.Style)
+                {
+                    case Style.DATA:
+                        break;
+
+                    case Style.RDB:
+                        tManager.RDBTab.TS_Save_File_Click(this, EventArgs.Empty);
+                        break;
+                }
+            }
+            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.N)
+            {
+                if (tManager.Style == Style.DATA)
+                    tManager.DataTab.TS_File_New_Click(this, EventArgs.Empty);
+            }
+            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.R)
+            {
+                if (tManager.Style == Style.DATA)
+                    tManager.DataTab.TS_File_Rebuild_Click(this, EventArgs.Empty);
+            }
+        }
+
+        private void aboutLbl_Click(object sender, EventArgs e)
+        {
+            string gVersion = System.Windows.Forms.Application.ProductVersion;
+            string dCore_Version = FileVersionInfo.GetVersionInfo("DataCore.dll").FileVersion;
+            string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
+            string aboutStr = string.Format("Grimoire v{0}\nnDataCore v{1}\n\nDaedalus v{2}\n\nWritten by: iSmokeDrow" + 
+                                            "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- XavierDeFawks\n\t- ThunderNikk\n\t-Exterminator\n\n"+
+                                            "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
+                                            gVersion, dCore_Version, rCore_Version);
+            MessageBox.Show(aboutStr, "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

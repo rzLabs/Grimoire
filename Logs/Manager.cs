@@ -44,6 +44,8 @@ namespace Grimoire.Logs
                 Message = string.Format(message, args),
                 StackTrace = null
             });
+
+            writeLast();
         }
 
         public void Enter(Sender sender, Level level, Exception ex)
@@ -57,7 +59,7 @@ namespace Grimoire.Logs
                 StackTrace = ex.StackTrace
             });
 
-
+            writeLast();
         }
 
         public void Enter(Sender sender, Level level, Exception ex, string message, params object[] args)
@@ -71,10 +73,25 @@ namespace Grimoire.Logs
                 StackTrace = ex.StackTrace
             });
 
-            Write();
+            writeLast();
         }
 
-        public void Write()
+        void read()
+        {
+            if (System.IO.File.Exists(LogPath))
+            {
+                using (StreamReader sr = new StreamReader(LogPath, Encoding.Default))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] lineVals = line.Split(']');
+                    }
+                }
+            }
+        }
+
+        public void writeAll()
         {
             using (FileStream fs = new FileStream(LogPath, FileMode.Append, FileAccess.Write, FileShare.None))
             {
@@ -92,14 +109,21 @@ namespace Grimoire.Logs
             }
         }
 
-        public string Read()
+        public void writeLast()
         {
-            return (File.Exists(LogPath)) ? File.ReadAllText(LogPath) : null;
-        }
+            using (FileStream fs = new FileStream(LogPath, FileMode.Append, FileAccess.Write, FileShare.None))
+            {
+                Structures.Log log = Entries[Entries.Count - 1];
 
-        public string Read(string path)
-        {
-            return (File.Exists(path)) ? File.ReadAllText(path) : null;
+                string text = string.Format("[{0} | {1} | {2}]: {3}\n", log.Sender.ToString(), log.Level.ToString(), log.DateTime.ToString("hh:mm:ss"), log.Message);
+
+                if (log.StackTrace != null)
+                    text += string.Format("\n\t- Stack trace:\n\t{0}\n", log.StackTrace);
+
+                byte[] buffer = Encoding.Default.GetBytes(text);
+
+                fs.Write(buffer, 0, buffer.Length);
+            }
         }
     }
 }

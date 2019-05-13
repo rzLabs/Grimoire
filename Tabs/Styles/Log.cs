@@ -22,7 +22,7 @@ namespace Grimoire.Tabs.Styles
 
         public void Read_Logs()
         {
-            foreach (Structures.Log log in lManager.Entries)
+            foreach (Grimoire.Structures.Log log in lManager.Entries)
             {
                 logGrid.Rows.Add(log.Sender.ToString(),
                     log.Level.ToString(),

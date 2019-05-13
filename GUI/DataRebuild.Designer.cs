@@ -39,6 +39,7 @@
             System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Data.006");
             System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Data.007");
             System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Data.008");
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DataRebuild));
             this.dataChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.currentProgress = new System.Windows.Forms.ProgressBar();
             this.dataList = new System.Windows.Forms.ListView();
@@ -171,6 +172,7 @@
             this.Controls.Add(this.currentProgress);
             this.Controls.Add(this.dataChart);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DataRebuild";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Rebuild Wizard";

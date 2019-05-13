@@ -5,7 +5,8 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
-using rdbCore.Structures;
+using Daedalus.Enums;
+using Daedalus.Structures;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
@@ -17,7 +18,7 @@ namespace Grimoire.Utilities
 
         readonly Tabs.Manager tManager;
         readonly Logs.Manager lManager;
-        readonly rdbCore.Core rCore;
+        readonly Daedalus.Core rCore;
 
         static Database instance;
         public static Database Instance
@@ -54,6 +55,7 @@ namespace Grimoire.Utilities
         }
 
         static SqlConnection sqlCon { get { return new SqlConnection(connectionString); } }
+        public SqlConnection SqlConnection { get { return sqlCon; } }
         static ServerConnection con = new ServerConnection(sqlCon);
         static Server sv = new Server(con);
         static Microsoft.SqlServer.Management.Smo.Database db = sv.Databases[OPT.GetString("db.world.name")];
@@ -66,7 +68,8 @@ namespace Grimoire.Utilities
         {
             tManager = Tabs.Manager.Instance;
             lManager = Logs.Manager.Instance;
-            rCore = tManager.RDBCore;
+            if (tManager.Style == Tabs.Style.RDB)
+                rCore = tManager.RDBCore;
         }
 
         #endregion
@@ -90,15 +93,15 @@ namespace Grimoire.Utilities
             return 0;
         }
 
-        public List<Row> FetchTable(int rowCount, string tableName)
+        public Row[] FetchTable(int rowCount, string tableName)
         {
             Tabs.Styles.rdbTab rTab = tManager.RDBTab;
 
             rTab.ProgressMax = rowCount;
 
-            List<Row> data = new List<Row>(rowCount);
+            Row[] data = new Row[rowCount];
 
-            List<LuaField> fieldList = rCore.FieldList;
+            Cell[] fieldList = rCore.CellTemplate;
 
             string selectStatement = generateSelect(tableName);
 
@@ -113,81 +116,95 @@ namespace Grimoire.Utilities
 
                     while (sqlRdr.Read())
                     {
-                        Row newRow = new Row(fieldList);
+                        Row newRow = new Row((Cell[])fieldList.Clone());
 
-                        for (int i = 0; i < fieldList.Count; i++)
+                        for (int i = 0; i < fieldList.Length; i++)
                         {
-                            LuaField field = fieldList[i];
+                            Cell field = fieldList[i];                            
 
-                            if (field.Show)
+                            if (field.Visible)
                             {
-                                object fieldVal = sqlRdr[field.Name];
+                                int fieldOrdinal = sqlRdr.GetOrdinal(field.Name);
 
                                 switch (field.Type)
                                 {
-                                    case "short":
-                                        newRow[i] = Convert.ToInt16(sqlRdr[field.Name]);
+                                    case CellType.TYPE_SHORT:
+                                        goto case CellType.TYPE_INT_16;
+
+                                    case CellType.TYPE_INT_16:
+                                        newRow[i] = Convert.ToInt16(sqlRdr[fieldOrdinal]);
                                         break;
 
-                                    case "ushort":
-                                        newRow[i] = Convert.ToUInt16(sqlRdr[field.Name]);
+                                    case CellType.TYPE_USHORT:
+                                        goto case CellType.TYPE_UINT_16;
+
+                                    case CellType.TYPE_UINT_16:
+                                        newRow[i] = Convert.ToUInt16(sqlRdr[fieldOrdinal]);
                                         break;
 
-                                    case "int":
-                                        newRow[i] = (fieldVal.GetType() == typeof(DBNull)) ? 0 : Convert.ToInt32(fieldVal);
+                                    case CellType.TYPE_INT:
+                                        goto case CellType.TYPE_INT_32;
+
+                                    case CellType.TYPE_INT_32:
+                                        newRow[i] = Convert.ToInt32(sqlRdr[fieldOrdinal]);
                                         break;
 
-                                    case "uint":
-                                        newRow[i] = Convert.ToInt32(sqlRdr[field.Name]);
+                                    case CellType.TYPE_UINT:
+                                        goto case CellType.TYPE_UINT_32;
+
+                                    case CellType.TYPE_UINT_32:
+                                        newRow[i] = Convert.ToUInt32(sqlRdr[fieldOrdinal]);
                                         break;
 
-                                    case "long":
-                                        newRow[i] = Convert.ToInt64(sqlRdr[field.Name]);
+                                    case CellType.TYPE_LONG:
+                                        newRow[i] = Convert.ToInt64(sqlRdr[fieldOrdinal]);
                                         break;
 
-                                    case "byte":
-                                        byte val = new byte();
-                                        newRow[i] = (Byte.TryParse(fieldVal.ToString(), out val)) ? val : 0;
-                                        break;
-
-                                    case "bitfromvector":
-                                        newRow[i] = Convert.ToInt32(sqlRdr[field.Name]);
-                                        break;
-
-                                    case "datetime":
-                                        newRow[i] = Convert.ToDateTime(sqlRdr[field.Name]);
-                                        break;
-
-                                    case "decimal":
-                                        newRow[i] = Convert.ToDecimal(sqlRdr[field.Name]);
-                                        break;
-
-                                    case "single":
-                                        newRow[i] = Convert.ToSingle(sqlRdr[field.Name]);
-                                        break;
-
-                                    case "double":
-                                        newRow[i] = Convert.ToDouble(sqlRdr[field.Name]);
-                                        break;
-
-                                    case "sid":
-                                        newRow[i] = Convert.ToInt32(sqlRdr[field.Name]);
-                                        break;
-
-                                    case "string":
-                                        newRow[i] = Convert.ToString(sqlRdr[field.Name]);
-                                        break;
-
-                                    case "stringbylen":
+                                    case CellType.TYPE_BYTE:
                                         {
-                                            string szVal = Convert.ToString(sqlRdr[field.Name]);
+                                            object fieldVal = sqlRdr[fieldOrdinal];
+                                            byte val = new byte();
+                                            newRow[i] = (Byte.TryParse(fieldVal.ToString(), out val)) ? val : 0;
+                                        }
+                                        break;
+
+                                    case CellType.TYPE_BIT_FROM_VECTOR:
+                                        newRow[i] = Convert.ToInt32(sqlRdr[fieldOrdinal]);
+                                        break;
+
+                                    case CellType.TYPE_DECIMAL:
+                                        newRow[i] = Convert.ToDecimal(sqlRdr[fieldOrdinal]);
+                                        break;
+
+                                    case CellType.TYPE_SINGLE:
+                                        {
+                                            decimal v1 = sqlRdr[fieldOrdinal] as decimal? ?? default(decimal);
+                                            newRow[i] = decimal.ToSingle(v1);
+                                            break;
+                                        }
+
+                                    case CellType.TYPE_DOUBLE:
+                                        newRow[i] = Convert.ToDouble(sqlRdr[fieldOrdinal]);
+                                        break;
+
+                                    case CellType.TYPE_SID:
+                                        newRow[i] = sqlRdr[fieldOrdinal] as int? ?? default(int);
+                                        break;
+
+                                    case CellType.TYPE_STRING:
+                                        newRow[i] = Convert.ToString(sqlRdr[fieldOrdinal]);
+                                        break;
+
+                                    case CellType.TYPE_STRING_BY_LEN:
+                                        {
+                                            string szVal = Convert.ToString(sqlRdr[fieldOrdinal]);
                                             newRow[field.Dependency] = szVal.Length + 1;
                                             newRow[i] = szVal;
                                         }
                                         break;
 
-                                    case "stringbyref":
-                                        newRow[i] = Convert.ToString(sqlRdr[field.Name]);
+                                    case CellType.TYPE_STRING_BY_REF:
+                                        newRow[i] = Convert.ToString(sqlRdr[fieldOrdinal]);
                                         break;
                                 }
                             }
@@ -195,32 +212,34 @@ namespace Grimoire.Utilities
                             {
                                 switch (field.Type)
                                 {
-                                    case "bitvector":
+                                    case CellType.TYPE_BIT_VECTOR:
                                         newRow[i] = new BitVector32(0);
                                         break;
 
-                                    case "byte":
+                                    case CellType.TYPE_BYTE:
                                         newRow[i] = Convert.ToByte(field.Default);
                                         break;
 
-                                    case "int":
-                                        newRow[i] = (newRow.KeyIsDuplicate(field.Name)) ? newRow.GetShownValue(field.Name) : field.Default;
+                                    case CellType.TYPE_INT:
+                                        newRow[i] = newRow.KeyIsDuplicate(field.Name) ? newRow.GetShownValue(field.Name) : field.Default;
                                         break;
 
-                                    case "short":
+                                    case CellType.TYPE_SHORT:
                                         newRow[i] = Convert.ToInt16(field.Default);
                                         break;
 
-                                    case "string":
+                                    case CellType.TYPE_STRING:
                                         newRow[i] = field.Default.ToString();
                                         break;
                                 }
                             }
                         }
 
-                        data.Add(newRow);
+                        data[curRow] = newRow;
                         curRow++;
-                        if (((curRow * 100) / rowCount) != ((curRow - 1) * 100 / rowCount)) { rTab.ProgressVal = curRow; }
+
+                        if ((curRow * 100 / rowCount) != ((curRow - 1) * 100 / rowCount))
+                            rTab.ProgressVal = curRow; 
                     }
                 }
             }
@@ -230,13 +249,14 @@ namespace Grimoire.Utilities
             return data;
         }
 
-        public void ExportToTable(string tableName, List<Row> data)
+        public void ExportToTable(string tableName, Row[] data)
         {
             if (OPT.GetBool("db.save.backup")) { scriptTable(tableName, true); }
 
             using (SqlCommand sqlCmd = new SqlCommand("", sqlCon))
             {
                 sqlCmd.Connection.Open();
+
                 if (OPT.GetBool("db.save.drop"))
                 {
                     scriptTable(tableName, false);
@@ -245,7 +265,8 @@ namespace Grimoire.Utilities
                     string script = new StreamReader(string.Format(@"{0}\{1}_{2}_so.sql", scriptDir, tableName, DateTime.Now.ToString("hhMMddyyy"))).ReadToEnd();
                     db.ExecuteNonQuery(script);
                 }
-                else { sqlCmd.CommandText = string.Format("TRUNCATE TABLE {0}", tableName); sqlCmd.ExecuteNonQuery(); }
+                else
+                    sqlCmd.CommandText = string.Format("TRUNCATE TABLE {0}", tableName); sqlCmd.ExecuteNonQuery();
 
                 sqlCmd.Connection.Close();
             }
@@ -254,36 +275,59 @@ namespace Grimoire.Utilities
             insertCmd.Connection = sqlCon;
             insertCmd.CommandText = insertCmd.CommandText.Replace("<tableName>", tableName);
 
-            int rows = data.Count;
+            int rows = data.Length;
             tManager.RDBTab.ProgressMax = rows;
-            for (int rowIdx = 0; rowIdx < rows; rowIdx++)
+
+            for (int r = 0; r < rows; r++)
             {
-                Row row = data[rowIdx];
+                Row row = data[r];
                 using (SqlCommand sqlCmd = insertCmd)
                 {
-                    foreach (SqlParameter sqlParam in sqlCmd.Parameters) { sqlParam.Value = row[sqlParam.ParameterName]; }
+                    foreach (SqlParameter sqlParam in sqlCmd.Parameters)
+                        sqlParam.Value = row[sqlParam.ParameterName];
+
                     sqlCmd.Connection.Open();
                     sqlCmd.ExecuteNonQuery();
                     sqlCmd.Connection.Close();
                 }
 
-                if (((rowIdx * 100) / rows) != ((rowIdx - 1) * 100 / rows)) { tManager.RDBTab.ProgressVal = rowIdx; }
+                if ((r * 100 / rows) != ((r - 1) * 100 / rows))
+                    tManager.RDBTab.ProgressVal = r;
             }
 
             tManager.RDBTab.ProgressVal = 0;
             tManager.RDBTab.ProgressMax = 100;
         }
 
-        public void Execute(string commandText, QueryType type)
+        public string ExecuteScalar(string commandText)
         {
-            execute(new SqlCommand() { Connection = sqlCon, CommandText = commandText }, type);
+            return execute(new SqlCommand() { Connection = sqlCon, CommandText = commandText }, QueryType.Execute_Scalar).ToString();
         }
 
-        public void Execute(string commandText, QueryType type, params SqlParameter[] sqlParams)
+        public string ExecuteScalar(string commandText, params SqlParameter[] sqlParams)
         {
             SqlCommand newCmd = new SqlCommand() { Connection = sqlCon, CommandText = commandText };
             newCmd.Parameters.AddRange(sqlParams);
-            execute(newCmd, type);
+            return execute(newCmd, QueryType.Execute_Scalar).ToString();
+        }
+
+        public SqlDataReader ExecuteReader(string commandText)
+        {
+            using (SqlCommand sqlCmd = new SqlCommand(commandText, sqlCon))
+            {
+                sqlCmd.Connection.Open();
+                return sqlCmd.ExecuteReader(CommandBehavior.CloseConnection);
+            }
+        }
+
+        public SqlDataReader ExecuteReader(string commandText, params SqlParameter[] sqlParameters)
+        {
+            using (SqlCommand sqlCmd = new SqlCommand(commandText, sqlCon))
+            {
+                sqlCmd.Parameters.AddRange(sqlParameters);
+                sqlCmd.Connection.Open();
+                return sqlCmd.ExecuteReader(CommandBehavior.CloseConnection);
+            }
         }
 
         #endregion
@@ -294,21 +338,18 @@ namespace Grimoire.Utilities
         {
             using (sqlCmd)
             {
-                if (sqlCmd.Connection.State != ConnectionState.Open)
-                {
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.SQL_ERROR, "Failed to execute SQL Command because the connection is: {0}\n\nSQL Command: {1}", sqlCmd.Connection.State.ToString(), sqlCmd.CommandText);
-                }
-                else
-                {
-                    switch (type)
-                    {
-                        case QueryType.Execute:
-                            return sqlCmd.ExecuteScalar();
+                sqlCmd.Connection.Open();
 
-                        case QueryType.Execute_Silent:
-                            return sqlCmd.ExecuteNonQuery();
-                    }
+                switch (type)
+                {
+                    case QueryType.Execute_Scalar:
+                        return sqlCmd.ExecuteScalar();
+
+                    case QueryType.Execute_Silent:
+                        return sqlCmd.ExecuteNonQuery();
                 }
+
+                sqlCmd.Connection.Close();
             }
 
             return null;
@@ -323,15 +364,15 @@ namespace Grimoire.Utilities
             {
                 statement = "SELECT ";
 
-                List<LuaField> fieldList = rCore.FieldList;
+                Cell[] fieldList = rCore.CellTemplate;
 
-                foreach (LuaField field in fieldList)
+                foreach (Cell field in fieldList)
                 {
-                    if (field.Show)
+                    if (field.Visible)
                         statement += string.Format("[{0}],", field.Name);
                 }
 
-                statement = string.Format("{0} FROM dbo.{1}", statement.Remove(statement.Length - 1, 1), tableName);
+                statement = string.Format("{0} FROM dbo.{1} with (NOLOCK)", statement.Remove(statement.Length - 1, 1), tableName);
             }
 
             return statement;
@@ -350,5 +391,9 @@ namespace Grimoire.Utilities
         }
 
         #endregion
-    }
+
+        public const string SelectItemInfo = "select i.id, s.[value], i.icon_file_name from dbo.ItemResource i left join dbo.StringResource s on s.code = i.name_id order by i.id asc";
+        public const string Select_Item_Tooltip = "select top(1) s.[value] from dbo.ItemResource i left join dbo.StringResource s on s.code = i.tooltip_id where i.id = @id";
+        public const string Select_Item = "select top(1) t.[value],i.rank,i.[level],i.enhance,i.socket,i.wear_type,i.[class],i.[group] from dbo.ItemResource i left join dbo.StringResource t on t.code = i.tooltip_id where i.id = @id";
+    }  
 }

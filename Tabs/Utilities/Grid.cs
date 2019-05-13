@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using rdbCore.Structures;
 using DataCore.Structures;
 
 namespace Grimoire.Tabs.Utilities
@@ -17,22 +16,20 @@ namespace Grimoire.Tabs.Utilities
 
         public void GenerateColumns()
         {
-            int colCount = 0;
             DataGridViewTextBoxColumn[] columns;
-            List<LuaField> fields = null;
+            Daedalus.Structures.Cell[] fields = new Daedalus.Structures.Cell[tManager.RDBCore.CellCount];
 
             switch (tManager.Style)
             {
                 case Style.RDB:
-                    colCount = tManager.RDBTab.Core.FieldCount;
-                    columns = new DataGridViewTextBoxColumn[colCount];
-                    fields = tManager.RDBTab.Core.FieldList;
+                    columns = new DataGridViewTextBoxColumn[fields.Length];
+                    fields = tManager.RDBCore.CellTemplate;
 
-                    tManager.RDBTab.ProgressMax = fields.Count;
+                    tManager.RDBTab.ProgressMax = fields.Length; /*Count*/
 
-                    for (int i = 0; i < fields.Count; i++)
+                    for (int i = 0; i < fields.Length; /*Count*/ i++)
                     {
-                        LuaField field = fields[i];
+                        /*LuaField*/ Daedalus.Structures.Cell field = fields[i];
 
                         columns[i] = new DataGridViewTextBoxColumn()
                         {
@@ -40,7 +37,7 @@ namespace Grimoire.Tabs.Utilities
                             HeaderText = field.Name,
                             Width = 100,
                             Resizable = DataGridViewTriState.True,
-                            Visible = field.Show
+                            Visible = field.Visible /*Show*/
                         };
 
                         tManager.RDBTab.ProgressVal = i;
@@ -62,8 +59,7 @@ namespace Grimoire.Tabs.Utilities
                         int rowCount = tManager.RDBCore.RowCount;
                         if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
                         if (e.RowIndex == 0 & rowCount == 0) { return; }
-                        Row row = tManager.RDBTab.Core.GetRow(e.RowIndex);
-                        e.Value = row[e.ColumnIndex];
+                        e.Value = tManager.RDBCore.Rows[e.RowIndex][e.ColumnIndex];
                     }
                     break;
 

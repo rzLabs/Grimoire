@@ -37,6 +37,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.new_list = new System.Windows.Forms.ComboBox();
             this.settings = new System.Windows.Forms.Button();
+            this.aboutLbl = new System.Windows.Forms.Label();
             this.tabs_cMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +50,7 @@
             this.tabs.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(1013, 581);
+            this.tabs.Size = new System.Drawing.Size(1051, 581);
             this.tabs.TabIndex = 1;
             this.tabs.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tabs_MouseClick);
             // 
@@ -103,7 +104,7 @@
             // 
             this.settings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.settings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.settings.Location = new System.Drawing.Point(949, 6);
+            this.settings.Location = new System.Drawing.Point(987, 6);
             this.settings.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.settings.Name = "settings";
             this.settings.Size = new System.Drawing.Size(75, 28);
@@ -112,17 +113,30 @@
             this.settings.UseVisualStyleBackColor = true;
             this.settings.Click += new System.EventHandler(this.settings_Click);
             // 
+            // aboutLbl
+            // 
+            this.aboutLbl.AutoSize = true;
+            this.aboutLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.aboutLbl.Location = new System.Drawing.Point(1016, 622);
+            this.aboutLbl.Name = "aboutLbl";
+            this.aboutLbl.Size = new System.Drawing.Size(45, 17);
+            this.aboutLbl.TabIndex = 5;
+            this.aboutLbl.Text = "About";
+            this.aboutLbl.Click += new System.EventHandler(this.aboutLbl_Click);
+            // 
             // Main
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1039, 641);
+            this.ClientSize = new System.Drawing.Size(1077, 641);
+            this.Controls.Add(this.aboutLbl);
             this.Controls.Add(this.settings);
             this.Controls.Add(this.new_list);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MinimumSize = new System.Drawing.Size(1054, 678);
             this.Name = "Main";
@@ -131,6 +145,7 @@
             this.Shown += new System.EventHandler(this.Main_Shown);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Main_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Main_DragEnter);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
             this.tabs_cMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -145,6 +160,7 @@
         private System.Windows.Forms.ToolStripMenuItem tabs_cMenu_clear;
         private System.Windows.Forms.ToolStripMenuItem tabs_cMenu_close;
         private System.Windows.Forms.Button settings;
+        private System.Windows.Forms.Label aboutLbl;
     }
 }
 

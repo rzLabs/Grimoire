@@ -8,7 +8,8 @@
         USEFLAG = 4,
         //DROPS = 5,
         ADMIN = 6,
-        LOG = 7,
+        ITEM = 7,
+        LOG = 98,
         NONE = 99
     }
 
@@ -18,4 +19,6 @@
         ASCII = 1,
         NON_ASCII = 2
     }
+
+
 }

@@ -8,7 +8,8 @@ namespace Grimoire.Utilities
 {
     public enum QueryType
     {
-        Execute = 0,
+        Execute_Scalar = 0,
         Execute_Silent = 1,
+        Execute_Reader = 2
     }
 }

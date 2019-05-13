@@ -33,6 +33,12 @@ namespace Grimoire.Tabs.Styles
         private void UseFlag_Load(object sender, EventArgs e)
         {
             string flagsPath = Grimoire.Utilities.OPT.GetString("useflag.list_path");
+            if (flagsPath == null)
+            {
+                MessageBox.Show("No path for flag file defined!", "Flag Path Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
             int flags = 0;
             
             if (File.Exists(flagsPath))
