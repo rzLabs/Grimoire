@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.IO;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Grimoire.Tabs;
-using Grimoire.Logs;
 
 namespace Grimoire.GUI
 {
@@ -85,9 +77,7 @@ namespace Grimoire.GUI
         private void settings_Click(object sender, EventArgs e)
         {
             using (GUI.Settings settings = new GUI.Settings())
-            {
                 settings.ShowDialog(this);
-            }
         }
 
         private void Main_DragEnter(object sender, DragEventArgs e)
@@ -163,15 +153,8 @@ namespace Grimoire.GUI
             }
             else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
             {
-                switch (tManager.Style)
-                {
-                    case Style.DATA:
-                        break;
-
-                    case Style.RDB:
-                        tManager.RDBTab.TS_Save_File_Click(this, EventArgs.Empty);
-                        break;
-                }
+                if (tManager.Style == Style.RDB)
+                    tManager.RDBTab.TS_Save_File_Click(this, EventArgs.Empty);
             }
             else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.N)
             {
@@ -190,7 +173,7 @@ namespace Grimoire.GUI
             string gVersion = System.Windows.Forms.Application.ProductVersion;
             string dCore_Version = FileVersionInfo.GetVersionInfo("DataCore.dll").FileVersion;
             string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
-            string aboutStr = string.Format("Grimoire v{0}\nnDataCore v{1}\n\nDaedalus v{2}\n\nWritten by: iSmokeDrow" + 
+            string aboutStr = string.Format("Grimoire v{0}\nDataCore v{1}\nDaedalus v{2}\nWritten by: iSmokeDrow" + 
                                             "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- XavierDeFawks\n\t- ThunderNikk\n\t-Exterminator\n\n"+
                                             "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
                                             gVersion, dCore_Version, rCore_Version);

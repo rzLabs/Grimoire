@@ -20,9 +20,23 @@ namespace Grimoire.Utilities
 
         public static double GetDouble(string key) { return (exists(key)) ? Convert.ToDouble(settings[key]) : 0.0; }
 
+        public object this[string key] //TODO cannot be implemented in a static class :(
+        {
+            get
+            {
+                return (settings.ContainsKey(key)) ? settings[key] : null;
+            }
+            set
+            {
+                if (settings.ContainsKey(key))
+                    settings[key] = value.ToString();
+            }
+        }
+
         public static bool Update(string key, string value)
         {
-            if (settings[key] != null) { settings[key] = value; return true; }
+            if (settings[key] != null) { settings[key] = value;
+                                                   return true; }
 
             return false;
         }
@@ -49,20 +63,19 @@ namespace Grimoire.Utilities
 
                 lManager.Enter(Logs.Sender.OPT, Logs.Level.NOTICE, "OPT Manager Initialized.\n\t- {0} settings loaded from Grimoire.opt", settings.Count);
             }
-            else { lManager.Enter(Logs.Sender.OPT, Logs.Level.ERROR, "Failed to load Grimoire.opt, it does not exist"); }
+            else
+                lManager.Enter(Logs.Sender.OPT, Logs.Level.ERROR, "Failed to load Grimoire.opt, it does not exist");
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="type"></param>
         public static void Save()
         {
-            if (File.Exists("Grimoire.opt")) { File.Delete("Grimoire.opt"); }
+            if (File.Exists("Grimoire.opt"))
+                File.Delete("Grimoire.opt");
 
             using (StreamWriter sW = new StreamWriter(File.Create("Grimoire.opt")))
             {
-                foreach (KeyValuePair<string, string> pair in settings) { sW.Write(string.Format("{0}:{1}\n", pair.Key, pair.Value)); }
+                foreach (KeyValuePair<string, string> pair in settings)
+                    sW.Write(string.Format("{0}:{1}\n", pair.Key, pair.Value));
             }
 
             lManager.Enter(Logs.Sender.OPT, Logs.Level.NOTICE, "Grimoire.opt saved.");

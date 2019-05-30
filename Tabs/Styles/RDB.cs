@@ -175,8 +175,7 @@ namespace Grimoire.Tabs.Styles
                             byte[] fileBytes = dCore.GetFileBytes(finalResult);
 
                             if (fileBytes.Length > 0)                        
-                                load_file(fileName, fileBytes);
-                            
+                                load_file(fileName, fileBytes);                           
                         }
                         else
                         {

@@ -49,6 +49,9 @@ namespace Grimoire.Structures
         [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data"), Category("Database"), DisplayName("Backup Table")]
         public bool BackupTable { get { return OPT.GetBool("db.save.backup"); } set { OPT.Update("db.save.backup", value.ToString()); } }
 
+        [Description("Determines the period of time (in seconds) a SQL Connection attempt will last before timing out (expiring)."), Category("Database"), DisplayName("Timeout")]
+        public int ConnTimeout { get { return OPT.GetInt("db.connection.timeout"); } set { OPT.Update("db.connection.timeout", value.ToString()); } }
+
         [Description("If defined, this is where any exported/built files will be placed"), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string BuildDirectory { get { return OPT.GetString("build.directory"); } set { OPT.Update("build.directory", value); } }
 

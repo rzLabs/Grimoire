@@ -9,7 +9,7 @@
         //DROPS = 5,
         ADMIN = 6,
         ITEM = 7,
-        LOG = 98,
+        //LOG = 98,
         NONE = 99
     }
 

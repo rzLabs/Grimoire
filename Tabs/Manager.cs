@@ -83,13 +83,13 @@ namespace Grimoire.Tabs
                 if (Style == Style.DATA)
                 {
                     DataCore.Core ret = null;
-                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Tabs.Styles.Data)pages[tabs.SelectedIndex].Controls[0]).Core; }));
+                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.Data)pages[tabs.SelectedIndex].Controls[0]).Core; }));
                     return ret;
                 }
                 else if (Style == Style.ITEM)
                 {
                     DataCore.Core ret = null;
-                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Tabs.Styles.Item)pages[tabs.SelectedIndex].Controls[0]).Core; }));
+                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.Item)pages[tabs.SelectedIndex].Controls[0]).Core; }));
                     return ret;
                 }
 
@@ -104,7 +104,7 @@ namespace Grimoire.Tabs
                 if (Style == Style.RDB)
                 {
                     Daedalus.Core ret = null;
-                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Tabs.Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0]).Core; }));
+                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0]).Core; }));
                     return ret;
                 }
 
@@ -112,17 +112,17 @@ namespace Grimoire.Tabs
             }
         }
 
-        public Tabs.Styles.Data DataTab
+        public Styles.Data DataTab
         {
             get
             {
-                Tabs.Styles.Data ret = null;
+                Styles.Data ret = null;
 
                 if (Style == Style.DATA)
                 {
                     main.Invoke(new MethodInvoker(delegate
                     {
-                        ret = (Tabs.Styles.Data)pages[tabs.SelectedIndex].Controls[0];
+                        ret = (Styles.Data)pages[tabs.SelectedIndex].Controls[0];
                     }));
 
                 }
@@ -131,17 +131,17 @@ namespace Grimoire.Tabs
             }
         }
 
-        public Tabs.Styles.rdbTab RDBTab
+        public Styles.rdbTab RDBTab
         {
             get
             {
-                Tabs.Styles.rdbTab ret = null;
+                Styles.rdbTab ret = null;
 
                 if (Style == Style.RDB)
                 {
                     main.Invoke(new MethodInvoker(delegate
                     {
-                        ret = (Tabs.Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0];
+                        ret = (Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0];
                     }));
 
                 }
@@ -150,18 +150,18 @@ namespace Grimoire.Tabs
             }
         }
 
-        public Tabs.Styles.Hasher HashTab
+        public Styles.Hasher HashTab
         {
             get
             {
-                Tabs.Styles.Hasher ret = null;
+                Styles.Hasher ret = null;
 
                 if (Style == Style.HASHER)
                 {
                     
                     main.Invoke(new MethodInvoker(delegate 
                     {
-                        ret = (Tabs.Styles.Hasher)pages[tabs.SelectedIndex].Controls[0];
+                        ret = (Styles.Hasher)pages[tabs.SelectedIndex].Controls[0];
                     }));
 
                 }
@@ -208,10 +208,10 @@ namespace Grimoire.Tabs
                 //    text = "Drop Utility";
                 //    break;
 
-                case Style.LOG:
-                    tab.Controls.Add(new Styles.Log() { Dock = DockStyle.Fill });
-                    text = "Log Utility";
-                    break;
+                //case Style.LOG:
+                //    tab.Controls.Add(new Styles.Log() { Dock = DockStyle.Fill });
+                //    text = "Log Utility";
+                //    break;
             }
 
             pages.Add(tab);
@@ -246,8 +246,7 @@ namespace Grimoire.Tabs
         {
             lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE,"Tab: {0} has been closed.", Page.Text);
             pages.RemoveAt(RightClick_TabIdx);
-            tabs.SelectedIndex = pages.Count - 1;
-            
+            tabs.SelectedIndex = pages.Count - 1;          
         }
 
         public void SetText(string key, string text)

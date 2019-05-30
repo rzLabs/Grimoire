@@ -46,9 +46,16 @@ namespace Grimoire.Utilities
         {
             get
             {
-                string conString = string.Format("Server={0};Database={1};", OPT.GetString("db.ip"), OPT.GetString("db.world.name"));
-                if (OPT.GetString("db.trusted.connection") == "1") { conString += "Trusted_Connection=True;"; }
-                else { conString += string.Format("uid={0};pwd={1};", OPT.GetString("db.world.user"), OPT.GetString("db.world.password")); }
+                string conString = string.Format("Server={0};Database={1};", 
+                                                 OPT.GetString("db.ip"),
+                                                 OPT.GetString("db.world.name"));
+
+                if (OPT.GetBool("db.trusted.connection"))
+                    conString += "Trusted_Connection=True;"; 
+                else
+                    conString += string.Format("uid={0};pwd={1};", 
+                                                OPT.GetString("db.world.user"),
+                                                OPT.GetString("db.world.password"));
 
                 return conString;
             }
@@ -68,8 +75,7 @@ namespace Grimoire.Utilities
         {
             tManager = Tabs.Manager.Instance;
             lManager = Logs.Manager.Instance;
-            if (tManager.Style == Tabs.Style.RDB)
-                rCore = tManager.RDBCore;
+            rCore = tManager.RDBCore;
         }
 
         #endregion
@@ -107,7 +113,7 @@ namespace Grimoire.Utilities
 
             using (SqlCommand sqlCmd = new SqlCommand(selectStatement, sqlCon))
             {
-                sqlCmd.CommandTimeout = 0;
+                sqlCmd.CommandTimeout = OPT.GetInt("db.connection.timeout");
                 sqlCmd.Connection.Open();
 
                 using (SqlDataReader sqlRdr = sqlCmd.ExecuteReader())
@@ -132,32 +138,32 @@ namespace Grimoire.Utilities
                                         goto case CellType.TYPE_INT_16;
 
                                     case CellType.TYPE_INT_16:
-                                        newRow[i] = Convert.ToInt16(sqlRdr[fieldOrdinal]);
+                                        newRow[i] = sqlRdr[fieldOrdinal] as short? ?? default(short);
                                         break;
 
                                     case CellType.TYPE_USHORT:
                                         goto case CellType.TYPE_UINT_16;
 
                                     case CellType.TYPE_UINT_16:
-                                        newRow[i] = Convert.ToUInt16(sqlRdr[fieldOrdinal]);
+                                        newRow[i] = sqlRdr[fieldOrdinal] as ushort? ?? default(ushort);
                                         break;
 
                                     case CellType.TYPE_INT:
                                         goto case CellType.TYPE_INT_32;
 
                                     case CellType.TYPE_INT_32:
-                                        newRow[i] = Convert.ToInt32(sqlRdr[fieldOrdinal]);
+                                        newRow[i] = sqlRdr[fieldOrdinal] as int? ?? default(int);
                                         break;
 
                                     case CellType.TYPE_UINT:
                                         goto case CellType.TYPE_UINT_32;
 
                                     case CellType.TYPE_UINT_32:
-                                        newRow[i] = Convert.ToUInt32(sqlRdr[fieldOrdinal]);
+                                        newRow[i] = sqlRdr[fieldOrdinal] as uint? ?? default(uint);
                                         break;
 
                                     case CellType.TYPE_LONG:
-                                        newRow[i] = Convert.ToInt64(sqlRdr[fieldOrdinal]);
+                                        newRow[i] = sqlRdr[fieldOrdinal] as long? ?? default(long);
                                         break;
 
                                     case CellType.TYPE_BYTE:
@@ -184,11 +190,7 @@ namespace Grimoire.Utilities
                                         }
 
                                     case CellType.TYPE_DOUBLE:
-                                        newRow[i] = Convert.ToDouble(sqlRdr[fieldOrdinal]);
-                                        break;
-
-                                    case CellType.TYPE_SID:
-                                        newRow[i] = sqlRdr[fieldOrdinal] as int? ?? default(int);
+                                        newRow[i] = sqlRdr[fieldOrdinal] as double? ?? default(double);
                                         break;
 
                                     case CellType.TYPE_STRING:
@@ -209,7 +211,7 @@ namespace Grimoire.Utilities
                                 }
                             }
                             else
-                            {
+                            { // TODO: Look me over closer
                                 switch (field.Type)
                                 {
                                     case CellType.TYPE_BIT_VECTOR:
@@ -251,7 +253,8 @@ namespace Grimoire.Utilities
 
         public void ExportToTable(string tableName, Row[] data)
         {
-            if (OPT.GetBool("db.save.backup")) { scriptTable(tableName, true); }
+            if (OPT.GetBool("db.save.backup"))
+                scriptTable(tableName, true);
 
             using (SqlCommand sqlCmd = new SqlCommand("", sqlCon))
             {
@@ -262,7 +265,10 @@ namespace Grimoire.Utilities
                     scriptTable(tableName, false);
                     sqlCmd.CommandText = string.Format("DROP TABLE {0}", tableName);
                     sqlCmd.ExecuteNonQuery();
-                    string script = new StreamReader(string.Format(@"{0}\{1}_{2}_so.sql", scriptDir, tableName, DateTime.Now.ToString("hhMMddyyy"))).ReadToEnd();
+                    string script = new StreamReader(string.Format(@"{0}\{1}_{2}_so.sql",
+                                                                               scriptDir,
+                                                                               tableName,
+                                        DateTime.Now.ToString("hhMMddyyy"))).ReadToEnd();
                     db.ExecuteNonQuery(script);
                 }
                 else
@@ -359,7 +365,8 @@ namespace Grimoire.Utilities
         {
             string statement = string.Empty;
 
-            if (rCore.UseSelectStatement) { statement = rCore.SelectStatement; }
+            if (rCore.UseSelectStatement)
+                statement = rCore.SelectStatement;
             else
             {
                 statement = "SELECT ";
@@ -385,7 +392,11 @@ namespace Grimoire.Utilities
                 ScriptData = scriptData,
                 ScriptDrops = false,
                 ScriptSchema = true,
-                FileName = string.Format(@"{0}\{1}_{2}{3}.sql", scriptDir, tableName, DateTime.Now.ToString("hhMMddyyyy"), (!scriptData) ? "_so" : string.Empty)
+                FileName = string.Format(@"{0}\{1}_{2}{3}.sql",
+                                                     scriptDir, 
+                                                     tableName, 
+                                                     DateTime.Now.ToString("hhMMddyyyy"),
+                                                     (!scriptData) ? "_so" : string.Empty)
             };
             db.Tables[tableName].EnumScript(opts);
         }

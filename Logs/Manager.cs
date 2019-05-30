@@ -29,7 +29,8 @@ namespace Grimoire.Logs
             LogsDirectory = string.Format(@"{0}\Logs\", System.IO.Directory.GetCurrentDirectory());
             LogPath = string.Format(@"{0}\{1}.txt", LogsDirectory, DateTime.UtcNow.ToString("MM-dd-yyyy"));
 
-            if (!System.IO.Directory.Exists(LogsDirectory)) { System.IO.Directory.CreateDirectory(LogsDirectory); }
+            if (!Directory.Exists(LogsDirectory))
+                Directory.CreateDirectory(LogsDirectory);
 
             Enter(Sender.MANAGER, Level.NOTICE, "Log Manager initialized.");
         }

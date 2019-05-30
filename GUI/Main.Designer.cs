@@ -115,6 +115,7 @@
             // 
             // aboutLbl
             // 
+            this.aboutLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.aboutLbl.AutoSize = true;
             this.aboutLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.aboutLbl.Location = new System.Drawing.Point(1016, 622);
