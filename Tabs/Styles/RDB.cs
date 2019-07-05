@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -6,6 +7,8 @@ using System.IO;
 using System.Windows.Forms;
 using Grimoire.Utilities;
 using Daedalus;
+using Daedalus.Structures;
+using Daedalus.Enums;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -71,7 +74,7 @@ namespace Grimoire.Tabs.Styles
 
         #endregion
 
-        #region Events
+        #region Private Events
 
         private void rdbTab_Load(object sender, EventArgs e)
         {
@@ -114,148 +117,6 @@ namespace Grimoire.Tabs.Styles
                 ts_struct_list.Enabled = false;
 
                 await Task.Run(() => { gridUtil.GenerateColumns(); });
-            }
-        }
-
-        public void TS_Load_File_Click(object sender, EventArgs e)
-        {
-            if (!structLoaded)
-            {
-                MessageBox.Show("You can not do that until a structure has been loaded!", "Structure Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                return;
-            }
-
-            Paths.DefaultDirectory = OPT.GetString("rdb.load.directory");
-            string fileName = Paths.FilePath;
-
-            if (Paths.FileResult != DialogResult.OK)
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "User cancelled file load on tab: {0}", tManager.Text);
-                return;
-            }
-
-            load_file(fileName);
-        }
-
-        public async void TS_Load_Data_Click(object sender, EventArgs e)
-        {
-            if (!structLoaded)
-            {
-                MessageBox.Show("You can not do that until a structure has been loaded!", "Structure Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                return;
-            }
-
-            dCore = new DataCore.Core(Encodings.GetByName(ts_enc_list.Text));
-            Paths.Title = "Select client data.000";
-            Paths.DefaultDirectory = OPT.GetString("data.load.directory");
-            string dataPath = Paths.FilePath;
-
-            if (Paths.FileResult == DialogResult.OK)
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, dataPath);
-
-                List<DataCore.Structures.IndexEntry> results = null;
-
-                await Task.Run(() =>
-                {
-                    dCore.Load(dataPath);
-                    results = dCore.GetEntriesByExtensions("rdb", "ref");
-                });
-
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "File list retrived successfully!\n\t- Selections available: {0}", results.Count);
-
-                using (Grimoire.GUI.ListSelect selectGUI = new GUI.ListSelect("Select RDB", results))
-                {
-                    selectGUI.FormClosing += (o, x) =>
-                    {
-                        if (selectGUI.DialogResult == DialogResult.OK)
-                        {
-                            string fileName = selectGUI.SelectedText;
-                            DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
-                            byte[] fileBytes = dCore.GetFileBytes(finalResult);
-
-                            if (fileBytes.Length > 0)                        
-                                load_file(fileName, fileBytes);                           
-                        }
-                        else
-                        {
-                            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User cancelled Data load on RDB Tab: {0}", tManager.Text);
-                            return;
-                        }
-                    };
-                    selectGUI.ShowDialog(Grimoire.GUI.Main.Instance);
-                }
-            }
-        }
-
-        public async void TS_Save_File_Click(object sender, EventArgs e)
-        {
-            string buildPath = null;
-
-            if (core is null)
-            {
-                MessageBox.Show("You cannot do that without having loaded data first!", "Save File Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                return;
-            }
-
-            try
-            {
-                string filename = core.FileName;
-                if (string.IsNullOrEmpty(filename))
-                {
-                    DialogResult result = MessageBox.Show("It seems the structure lua does not have a filename listed, would you like to define one?\n\nReminder: Choosing no will cause me use this tabs name instead!", "Input Required", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                    switch (result)
-                    {
-                        case DialogResult.Cancel:
-                            return;
-
-                        case DialogResult.No:
-                            lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to use the tab name as Filename for save operation.\n\t- Filename provided: {0}", tManager.Text);
-                            filename = string.Format("{0}.rdb", tManager.Text);
-                            break;
-
-                        case DialogResult.Yes:
-                            using (GUI.InputBox input = new GUI.InputBox("Enter desired filename", false))
-                            {
-                                if (input.ShowDialog(this) != DialogResult.OK)
-                                    return;
-
-                                lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to provide Filename for save operation.\n\t- Filename provided: {0}", input.Value);
-                                filename = input.Value;
-                            }
-
-                            break;
-                    }
-                }
-
-                if (!filename.Contains("ascii") && ts_save_w_ascii.Checked)
-                    filename = string.Format(@"{0}(ascii).rdb", filename.Split('.')[0]);
-                
-                if (ts_save_enc.Checked)
-                    filename = DataCore.Functions.StringCipher.Encode(filename);
-
-                buildPath = string.Format(@"{0}\{1}", buildDir, filename);
-
-                if (!Directory.Exists(buildDir))
-                    Directory.CreateDirectory(buildDir);
-
-                if (File.Exists(buildPath))
-                    File.Delete(buildPath);
-
-                await Task.Run(() => 
-                {
-                    core.RdbPath = buildPath;
-                    core.Write();
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "RDB Save Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
-            }
-            finally
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries written from tab: {1} into file: {2}", core.RowCount, tManager.Text, buildPath);
             }
         }
 
@@ -367,13 +228,14 @@ namespace Grimoire.Tabs.Styles
 
             try
             {
-                await Task.Run(() => 
+                await Task.Run(() =>
                 {
                     dManager.ExportToTable(tablename, tManager.RDBCore.Rows);
                 });
             }
             catch (System.Data.SqlClient.SqlException ex)
             {
+                //if (ex.Number == -2) <-- Timeout expired
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.SQL_ERROR, ex);
                 return;
             }
@@ -406,6 +268,192 @@ namespace Grimoire.Tabs.Styles
 
         #endregion
 
+        #region Public Events
+
+        public void TS_Load_File_Click(object sender, EventArgs e)
+        {
+            if (!structLoaded)
+            {
+                MessageBox.Show("You can not do that until a structure has been loaded!", "Structure Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
+            Paths.DefaultDirectory = OPT.GetString("rdb.load.directory");
+            string fileName = Paths.FilePath;
+
+            if (Paths.FileResult != DialogResult.OK)
+            {
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "User cancelled file load on tab: {0}", tManager.Text);
+                return;
+            }
+
+            string ext = Path.GetExtension(fileName).ToLower();
+
+            switch (ext)
+            {
+                case ".rdb":
+                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "Loading RDB from physical file with .rdb extension");
+                    load_file(fileName);
+                    break;
+
+                case ".000":
+                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "Loading RDB from Rappelz Client");
+                    load_data_file(fileName);
+                    break;
+            }
+        }
+
+        public async void TS_Save_File_Click(object sender, EventArgs e)
+        {
+            string buildPath = null;
+
+            if (core is null)
+            {
+                MessageBox.Show("You cannot do that without having loaded data first!", "Save File Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
+            try
+            {
+                string filename = core.FileName;
+                if (string.IsNullOrEmpty(filename))
+                {
+                    DialogResult result = MessageBox.Show("It seems the structure lua does not have a filename listed, would you like to define one?\n\nReminder: Choosing no will cause me use this tabs name instead!", "Input Required", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                    switch (result)
+                    {
+                        case DialogResult.Cancel:
+                            return;
+
+                        case DialogResult.No:
+                            lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to use the tab name as Filename for save operation.\n\t- Filename provided: {0}", tManager.Text);
+                            filename = string.Format("{0}.rdb", tManager.Text);
+                            break;
+
+                        case DialogResult.Yes:
+                            using (GUI.InputBox input = new GUI.InputBox("Enter desired filename", false))
+                            {
+                                if (input.ShowDialog(this) != DialogResult.OK)
+                                    return;
+
+                                lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to provide Filename for save operation.\n\t- Filename provided: {0}", input.Value);
+                                filename = input.Value;
+                            }
+
+                            break;
+                    }
+                }
+
+                if (!filename.Contains("ascii") && ts_save_w_ascii.Checked)
+                    filename = string.Format(@"{0}(ascii).rdb", filename.Split('.')[0]);
+
+                if (ts_save_enc.Checked)
+                    filename = DataCore.Functions.StringCipher.Encode(filename);
+
+                buildPath = string.Format(@"{0}\{1}", buildDir, filename);
+
+                if (!Directory.Exists(buildDir))
+                    Directory.CreateDirectory(buildDir);
+
+                if (File.Exists(buildPath))
+                    File.Delete(buildPath);
+
+                await Task.Run(() =>
+                {
+                    core.RdbPath = buildPath;
+                    core.Write();
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "RDB Save Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
+            }
+            finally
+            {
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries written from tab: {1} into file: {2}", core.RowCount, tManager.Text, buildPath);
+            }
+        }
+
+        public void Search(string field, string term)
+        {
+            if (!structLoaded)
+            {
+                MessageBox.Show("You can not do that until a structure has been loaded!", "Structure Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
+            if (core.RowCount == 0)
+            {
+                MessageBox.Show("You can not search nothing for something!", "Search Exception", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            for (int r = 0; r < core.RowCount; r++)
+            {
+                Row row = core.Rows[r];
+
+                for (int c = 0; c < row.Length; c++)
+                {
+                    Cell cell = row.GetCell(c);
+
+                    if (cell.Name == field && cell.Value.ToString() == term)
+                    {
+                        grid.CurrentCell = grid.Rows[r].Cells[c];
+                        grid.Rows[r].Selected = true;
+                    }
+                }
+            }
+        }
+
+        public void Sort(Cell cell, SortOrder order)
+        {
+            switch (cell.Type)
+            {
+                case CellType.TYPE_SHORT: case CellType.TYPE_INT_16: case CellType.TYPE_INT: case CellType.TYPE_INT_32:
+
+                    if (order == SortOrder.Ascending)
+                        Array.Sort(core.Rows, (a, b) => ((int)a[cell.Name]).CompareTo((int)b[cell.Name]));
+                    else
+                        Array.Sort(core.Rows, (a, b) => ((int)b[cell.Name]).CompareTo((int)a[cell.Name]));
+
+                    break;
+
+                case CellType.TYPE_FLOAT: case CellType.TYPE_FLOAT_32: case CellType.TYPE_SINGLE:
+
+                    if (order == SortOrder.Ascending)
+                        Array.Sort(core.Rows, (a, b) => ((float)a[cell.Name]).CompareTo((float)b[cell.Name]));
+                    else
+                        Array.Sort(core.Rows, (a, b) => ((float)b[cell.Name]).CompareTo((float)a[cell.Name]));
+
+                    break;
+
+                case CellType.TYPE_DOUBLE: case CellType.TYPE_INT_64: case CellType.TYPE_LONG:
+
+                    if (order == SortOrder.Ascending)
+                        Array.Sort(core.Rows, (a, b) => ((long)a[cell.Name]).CompareTo((long)b[cell.Name]));
+                    else
+                        Array.Sort(core.Rows, (a, b) => ((long)b[cell.Name]).CompareTo((long)a[cell.Name]));
+
+                    break;
+
+                case CellType.TYPE_STRING:
+
+                    if (order == SortOrder.Ascending)
+                        Array.Sort(core.Rows, (a, b) => a[cell.Name].ToString().CompareTo(b[cell.Name].ToString()));
+                    else
+                        Array.Sort(core.Rows, (a, b) => b[cell.Name].ToString().CompareTo(a[cell.Name].ToString()));
+
+                    break;
+            }
+
+            grid.Columns[cell.Name].HeaderCell.SortGlyphDirection = order;
+
+            grid.Rows.Clear();
+            initializeGrid();
+        }
+
+        #endregion
+
         #region Methods (Public)
 
         public void ResetProgress()
@@ -419,7 +467,11 @@ namespace Grimoire.Tabs.Styles
             this.Invoke(new MethodInvoker(delegate { grid.Columns.AddRange(columns); }));
         }
 
-        public void Clear() { grid.Rows.Clear(); }
+        public void Clear()
+        {
+            grid.Rows.Clear();
+            grid.RowCount = 0;
+        }
 
         public void LoadFile(string filePath) { load_file(filePath); }
 
@@ -481,6 +533,52 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
+        private async void load_data_file(string filePath)
+        {
+            dCore = new DataCore.Core(Encodings.GetByName(ts_enc_list.Text));
+
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, filePath);
+
+            List<DataCore.Structures.IndexEntry> results = null;
+
+            actionSW.Reset();
+            actionSW.Start();
+
+            await Task.Run(() =>
+            {
+                dCore.Load(filePath);
+                results = dCore.GetEntriesByExtensions("rdb", "ref");
+            });
+
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "File list retrived successfully! ({0}ms)\n\t- Selections available: {1}",
+                                                                                            actionSW.ElapsedMilliseconds.ToString("D4"),
+                                                                                                                         results.Count);
+
+            using (Grimoire.GUI.ListSelect selectGUI = new GUI.ListSelect("Select RDB", results))
+            {
+                selectGUI.FormClosing += (o, x) =>
+                {
+                    if (selectGUI.DialogResult == DialogResult.OK)
+                    {
+                        string fileName = selectGUI.SelectedText;
+                        DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
+                        byte[] fileBytes = dCore.GetFileBytes(finalResult);
+
+                        lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User selected rdb: {0}", fileName);
+
+                        if (fileBytes.Length > 0)
+                            load_file(fileName, fileBytes);
+                    }
+                    else
+                    {
+                        lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User cancelled Data load on RDB Tab: {0}", tManager.Text);
+                        return;
+                    }
+                };
+                selectGUI.ShowDialog(Grimoire.GUI.Main.Instance);
+            }
+        }
+
         private void initializeGrid()
         {
             grid.VirtualMode = true;
@@ -490,5 +588,33 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
+
+        private void grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            Cell cell = core.Rows[0].GetCell(grid.Columns[e.ColumnIndex].Name);
+            SortOrder curOrder = grid.Columns[cell.Name].HeaderCell.SortGlyphDirection;
+            SortOrder newOrder = SortOrder.None;
+
+            switch (curOrder)
+            {
+                case SortOrder.None:
+                    newOrder = SortOrder.Ascending;
+                    break;
+
+                case SortOrder.Ascending:
+                    newOrder = SortOrder.Descending;
+                    break;
+
+                case SortOrder.Descending:
+                    newOrder = SortOrder.Ascending;
+                    break;
+            }
+
+            if (e.ColumnIndex > 0)
+                foreach (DataGridViewColumn dgvColumn in grid.Columns)
+                    dgvColumn.HeaderCell.SortGlyphDirection = SortOrder.None;
+
+            Sort(cell, newOrder);
+        }
     }
 }

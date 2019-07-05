@@ -44,10 +44,10 @@ namespace Grimoire.Structures
         public string WorldPass { get { return OPT.GetString("db.world.password"); } set { OPT.Update("db.world.password", value.ToString()); } }
 
         [Description("Determines if the target table of the save operation will be dropped and recreate or truncated before inserting the .rdb data"), Category("Database"), DisplayName("Drop Table")]
-        public bool DropTable { get { return OPT.GetBool("db.save.drop"); } set { OPT.Update("db.save.drop", value.ToString()); } }
+        public bool DropTable { get { return OPT.GetBool("db.save.drop"); } set { OPT.Update("db.save.drop", Convert.ToInt32(value).ToString()); } }
 
         [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data"), Category("Database"), DisplayName("Backup Table")]
-        public bool BackupTable { get { return OPT.GetBool("db.save.backup"); } set { OPT.Update("db.save.backup", value.ToString()); } }
+        public bool BackupTable { get { return OPT.GetBool("db.save.backup"); } set { OPT.Update("db.save.backup", Convert.ToInt32(value).ToString()); } }
 
         [Description("Determines the period of time (in seconds) a SQL Connection attempt will last before timing out (expiring)."), Category("Database"), DisplayName("Timeout")]
         public int ConnTimeout { get { return OPT.GetInt("db.connection.timeout"); } set { OPT.Update("db.connection.timeout", value.ToString()); } }

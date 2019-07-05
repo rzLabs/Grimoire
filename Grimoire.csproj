@@ -97,6 +97,12 @@
     <Compile Include="GUI\Input.Designer.cs">
       <DependentUpon>Input.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\ListInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ListInput.Designer.cs">
+      <DependentUpon>ListInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ListSelect.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +121,12 @@
     <Compile Include="GUI\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Setup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Setup.Designer.cs">
+      <DependentUpon>Setup.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\StructureEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,7 +136,9 @@
     <Compile Include="Structures\Log.cs" />
     <Compile Include="Structures\Settings.cs" />
     <Compile Include="Tabs\Enums\ItemBase.cs" />
+    <Compile Include="Tabs\Enums\SortDirection.cs" />
     <Compile Include="Tabs\Structures\ItemInfo.cs" />
+    <Compile Include="Tabs\Structures\StructureInfo.cs" />
     <Compile Include="Tabs\Styles\Data.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -163,6 +177,7 @@
     </Compile>
     <Compile Include="Tabs\Utilities\Enums.cs" />
     <Compile Include="Tabs\Utilities\Grid.cs" />
+    <Compile Include="Tabs\Utilities\Structures.cs" />
     <Compile Include="Utilities\BitConverterExt.cs" />
     <Compile Include="Utilities\ByteConverterExt.cs" />
     <Compile Include="Utilities\Database.cs" />
@@ -198,6 +213,9 @@
     <EmbeddedResource Include="GUI\Input.resx">
       <DependentUpon>Input.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ListInput.resx">
+      <DependentUpon>ListInput.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\ListSelect.resx">
       <DependentUpon>ListSelect.cs</DependentUpon>
     </EmbeddedResource>
@@ -209,6 +227,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Setup.resx">
+      <DependentUpon>Setup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\StructureEditor.resx">
       <DependentUpon>StructureEditor.cs</DependentUpon>

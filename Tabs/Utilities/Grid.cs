@@ -25,11 +25,11 @@ namespace Grimoire.Tabs.Utilities
                     columns = new DataGridViewTextBoxColumn[fields.Length];
                     fields = tManager.RDBCore.CellTemplate;
 
-                    tManager.RDBTab.ProgressMax = fields.Length; /*Count*/
+                    tManager.RDBTab.ProgressMax = fields.Length;
 
-                    for (int i = 0; i < fields.Length; /*Count*/ i++)
+                    for (int i = 0; i < fields.Length; i++)
                     {
-                        /*LuaField*/ Daedalus.Structures.Cell field = fields[i];
+                        Daedalus.Structures.Cell field = fields[i];
 
                         columns[i] = new DataGridViewTextBoxColumn()
                         {
@@ -37,7 +37,8 @@ namespace Grimoire.Tabs.Utilities
                             HeaderText = field.Name,
                             Width = 100,
                             Resizable = DataGridViewTriState.True,
-                            Visible = field.Visible /*Show*/
+                            Visible = field.Visible, /*Show*/
+                            SortMode = DataGridViewColumnSortMode.Programmatic
                         };
 
                         tManager.RDBTab.ProgressVal = i;

@@ -43,7 +43,6 @@
             this.extensions_cs_export = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.grid = new System.Windows.Forms.DataGridView();
-            this.ig_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.grid_cs = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.grid_cs_compare = new System.Windows.Forms.ToolStripMenuItem();
             this.grid_cs_export = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,6 +64,7 @@
             this.extStatus = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.searchInput = new System.Windows.Forms.TextBox();
+            this.ig_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.extensions_cs.SuspendLayout();
@@ -216,13 +216,6 @@
             this.grid.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseDown);
             this.grid.SelectionChanged += new System.EventHandler(this.grid_SelectionChanged);
             this.grid.DoubleClick += new System.EventHandler(this.grid_DoubleClick);
-            // 
-            // ig_name
-            // 
-            this.ig_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ig_name.HeaderText = "File Name";
-            this.ig_name.Name = "ig_name";
-            this.ig_name.ReadOnly = true;
             // 
             // grid_cs
             // 
@@ -443,6 +436,13 @@
             this.searchInput.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.searchInput.TextChanged += new System.EventHandler(this.searchInput_TextChanged);
             // 
+            // ig_name
+            // 
+            this.ig_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ig_name.HeaderText = "File Name";
+            this.ig_name.Name = "ig_name";
+            this.ig_name.ReadOnly = true;
+            // 
             // Data
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -493,7 +493,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox dataId;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ig_name;
         private System.Windows.Forms.ContextMenuStrip grid_cs;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.Label extStatus;
@@ -510,5 +509,6 @@
         private System.Windows.Forms.TextBox uploadPath;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ToolStripButton ts_file_rebuild;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ig_name;
     }
 }

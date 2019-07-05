@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.readHead_off = new System.Windows.Forms.RadioButton();
-            this.readHead_on = new System.Windows.Forms.RadioButton();
-            this.label3 = new System.Windows.Forms.Label();
             this.specialCase_list = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.ext = new System.Windows.Forms.TextBox();
@@ -82,51 +79,16 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.readHead_off);
-            this.groupBox1.Controls.Add(this.readHead_on);
-            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.specialCase_list);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.ext);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 156);
+            this.groupBox1.Location = new System.Drawing.Point(12, 180);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(290, 118);
+            this.groupBox1.Size = new System.Drawing.Size(290, 94);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Engine Options";
-            // 
-            // readHead_off
-            // 
-            this.readHead_off.AutoSize = true;
-            this.readHead_off.Location = new System.Drawing.Point(223, 83);
-            this.readHead_off.Name = "readHead_off";
-            this.readHead_off.Size = new System.Drawing.Size(48, 21);
-            this.readHead_off.TabIndex = 5;
-            this.readHead_off.TabStop = true;
-            this.readHead_off.Text = "Off";
-            this.readHead_off.UseVisualStyleBackColor = true;
-            // 
-            // readHead_on
-            // 
-            this.readHead_on.AutoSize = true;
-            this.readHead_on.Checked = true;
-            this.readHead_on.Location = new System.Drawing.Point(169, 83);
-            this.readHead_on.Name = "readHead_on";
-            this.readHead_on.Size = new System.Drawing.Size(48, 21);
-            this.readHead_on.TabIndex = 4;
-            this.readHead_on.TabStop = true;
-            this.readHead_on.Text = "On";
-            this.readHead_on.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 85);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(93, 17);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Read Header";
             // 
             // specialCase_list
             // 
@@ -219,7 +181,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Location = new System.Drawing.Point(12, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(290, 138);
+            this.groupBox3.Size = new System.Drawing.Size(290, 162);
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Basic";
@@ -230,7 +192,7 @@
             this.path.Multiline = true;
             this.path.Name = "path";
             this.path.ReadOnly = true;
-            this.path.Size = new System.Drawing.Size(260, 41);
+            this.path.Size = new System.Drawing.Size(260, 65);
             this.path.TabIndex = 4;
             // 
             // label7
@@ -392,7 +354,6 @@
             this.editSelect_btn.TabIndex = 9;
             this.editSelect_btn.Text = "...";
             this.editSelect_btn.UseVisualStyleBackColor = true;
-            //this.editSelect_btn.Click += new System.EventHandler(this.editSelect_btn_Click);
             // 
             // label11
             // 
@@ -529,9 +490,6 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton readHead_off;
-        private System.Windows.Forms.RadioButton readHead_on;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox specialCase_list;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox ext;

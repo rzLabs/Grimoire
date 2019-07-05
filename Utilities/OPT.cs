@@ -64,7 +64,12 @@ namespace Grimoire.Utilities
                 lManager.Enter(Logs.Sender.OPT, Logs.Level.NOTICE, "OPT Manager Initialized.\n\t- {0} settings loaded from Grimoire.opt", settings.Count);
             }
             else
-                lManager.Enter(Logs.Sender.OPT, Logs.Level.ERROR, "Failed to load Grimoire.opt, it does not exist");
+            {
+                string error = "Failed to load Grimoire.opt, it does not exist! Cannot continue! Closing.";
+                System.Windows.Forms.MessageBox.Show(error, "Fatal Exception", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                lManager.Enter(Logs.Sender.OPT, Logs.Level.ERROR, error);
+                GUI.Main.Instance.Close();
+            }
         }
 
         public static void Save()

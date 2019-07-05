@@ -182,6 +182,9 @@ namespace Grimoire.Utilities
                                         newRow[i] = Convert.ToDecimal(sqlRdr[fieldOrdinal]);
                                         break;
 
+                                    case CellType.TYPE_FLOAT: case CellType.TYPE_FLOAT_32:
+                                        goto case CellType.TYPE_SINGLE;
+
                                     case CellType.TYPE_SINGLE:
                                         {
                                             decimal v1 = sqlRdr[fieldOrdinal] as decimal? ?? default(decimal);
@@ -272,7 +275,10 @@ namespace Grimoire.Utilities
                     db.ExecuteNonQuery(script);
                 }
                 else
-                    sqlCmd.CommandText = string.Format("TRUNCATE TABLE {0}", tableName); sqlCmd.ExecuteNonQuery();
+                {
+                    sqlCmd.CommandText = string.Format("TRUNCATE TABLE {0}", tableName);
+                    sqlCmd.ExecuteNonQuery();
+                }
 
                 sqlCmd.Connection.Close();
             }
@@ -392,13 +398,24 @@ namespace Grimoire.Utilities
                 ScriptData = scriptData,
                 ScriptDrops = false,
                 ScriptSchema = true,
+                IncludeDatabaseContext = true,
                 FileName = string.Format(@"{0}\{1}_{2}{3}.sql",
                                                      scriptDir, 
                                                      tableName, 
                                                      DateTime.Now.ToString("hhMMddyyyy"),
                                                      (!scriptData) ? "_so" : string.Empty)
             };
-            db.Tables[tableName].EnumScript(opts);
+
+            if (db != null)
+            {
+                if (db.Tables.Contains(tableName))
+                    db.Tables[tableName].EnumScript(opts);
+                else
+                    throw new KeyNotFoundException(string.Format("Database object does not contain table with key: {0}", tableName));
+            }
+                
+            else
+                throw new NullReferenceException("Database object is null!") { Source = "Grimoire.Utilities.Database.db" };           
         }
 
         #endregion

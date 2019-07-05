@@ -34,7 +34,6 @@
             this.ts_load = new System.Windows.Forms.ToolStripDropDownButton();
             this.ts_load_file = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_load_sql = new System.Windows.Forms.ToolStripMenuItem();
-            this.ts_load_data = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_save = new System.Windows.Forms.ToolStripDropDownButton();
             this.ts_save_file = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_save_sql = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +69,7 @@
             this.grid.Size = new System.Drawing.Size(1040, 527);
             this.grid.TabIndex = 17;
             this.grid.VirtualMode = true;
+            this.grid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_ColumnHeaderMouseClick);
             // 
             // toolStrip1
             // 
@@ -100,8 +100,7 @@
             this.ts_load.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_load.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ts_load_file,
-            this.ts_load_sql,
-            this.ts_load_data});
+            this.ts_load_sql});
             this.ts_load.Image = ((System.Drawing.Image)(resources.GetObject("ts_load.Image")));
             this.ts_load.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ts_load.Name = "ts_load";
@@ -112,7 +111,7 @@
             // 
             this.ts_load_file.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_load_file.Name = "ts_load_file";
-            this.ts_load_file.Size = new System.Drawing.Size(116, 26);
+            this.ts_load_file.Size = new System.Drawing.Size(110, 26);
             this.ts_load_file.Text = "File";
             this.ts_load_file.Click += new System.EventHandler(this.TS_Load_File_Click);
             // 
@@ -120,16 +119,9 @@
             // 
             this.ts_load_sql.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_load_sql.Name = "ts_load_sql";
-            this.ts_load_sql.Size = new System.Drawing.Size(116, 26);
+            this.ts_load_sql.Size = new System.Drawing.Size(110, 26);
             this.ts_load_sql.Text = "SQL";
             this.ts_load_sql.Click += new System.EventHandler(this.ts_load_sql_Click);
-            // 
-            // ts_load_data
-            // 
-            this.ts_load_data.Name = "ts_load_data";
-            this.ts_load_data.Size = new System.Drawing.Size(116, 26);
-            this.ts_load_data.Text = "Data";
-            this.ts_load_data.Click += new System.EventHandler(this.TS_Load_Data_Click);
             // 
             // ts_save
             // 
@@ -281,6 +273,5 @@
         private System.Windows.Forms.ToolStripButton ts_save_enc;
         private System.Windows.Forms.ToolStripButton ts_save_w_ascii;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem ts_load_data;
     }
 }
