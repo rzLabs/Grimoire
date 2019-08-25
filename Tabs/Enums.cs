@@ -5,7 +5,7 @@
         RDB = 0,
         HASHER = 1,
         DATA = 2,
-        USEFLAG = 4,
+        FLAG = 4,
         //DROPS = 5,
         ADMIN = 6,
         ITEM = 7,

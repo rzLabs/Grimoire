@@ -12,7 +12,6 @@ using Daedalus.Enums;
 
 namespace Grimoire.Tabs.Styles
 {
-    // TODO: Reorganize my events/methods into read/write file/sql/data!
     public partial class rdbTab : UserControl
     {
         #region Properties
@@ -106,7 +105,10 @@ namespace Grimoire.Tabs.Styles
                 core.LuaPath = path;
                 core.Initialize();
             }
-            catch (MoonSharp.Interpreter.SyntaxErrorException sEx) { lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "Exception Occured:\n\t- {0}", LuaException.Print(sEx.DecoratedMessage, ts_struct_list.Text)); }
+            catch (MoonSharp.Interpreter.SyntaxErrorException sEx)
+            {
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "Exception Occured:\n\t- {0}", LuaException.Print(sEx.DecoratedMessage, ts_struct_list.Text));
+            }
             catch (Exception ex) { lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex); }
             finally
             {
@@ -266,6 +268,36 @@ namespace Grimoire.Tabs.Styles
             lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Save With ASCII: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
         }
 
+        private void grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            Cell cell = core.Rows[0].GetCell(grid.Columns[e.ColumnIndex].Name);
+            SortOrder curOrder = grid.Columns[cell.Name].HeaderCell.SortGlyphDirection;
+            SortOrder newOrder = SortOrder.None;
+
+            switch (curOrder)
+            {
+                case SortOrder.None:
+                    newOrder = SortOrder.Ascending;
+                    break;
+
+                case SortOrder.Ascending:
+                    newOrder = SortOrder.Descending;
+                    break;
+
+                case SortOrder.Descending:
+                    newOrder = SortOrder.Ascending;
+                    break;
+            }
+
+            if (e.ColumnIndex >= 0)
+                foreach (DataGridViewColumn dgvColumn in grid.Columns)
+                    dgvColumn.HeaderCell.SortGlyphDirection = SortOrder.None;
+
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "Sorting data-set by: {0} ({1}) on tab: {2}", cell.Name, newOrder.ToString(), tManager.Text);
+
+            Sort(cell, newOrder);
+        }
+
         #endregion
 
         #region Public Events
@@ -325,7 +357,7 @@ namespace Grimoire.Tabs.Styles
                             return;
 
                         case DialogResult.No:
-                            lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to use the tab name as Filename for save operation.\n\t- Filename provided: {0}", tManager.Text);
+                            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User opted to use the tab name as Filename for save operation.\n\t- Filename provided: {0}", tManager.Text);
                             filename = string.Format("{0}.rdb", tManager.Text);
                             break;
 
@@ -335,7 +367,7 @@ namespace Grimoire.Tabs.Styles
                                 if (input.ShowDialog(this) != DialogResult.OK)
                                     return;
 
-                                lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to provide Filename for save operation.\n\t- Filename provided: {0}", input.Value);
+                                lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User opted to provide Filename for save operation.\n\t- Filename provided: {0}", input.Value);
                                 filename = input.Value;
                             }
 
@@ -374,6 +406,29 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
+        #endregion
+
+        #region Methods (Public)
+
+        public void ResetProgress()
+        {
+            this.Invoke(new MethodInvoker(delegate { ts_prog.Maximum = 100; ts_prog.Value = 0; }));
+        }
+
+        public void SetColumns(DataGridViewTextBoxColumn[] columns)
+        {
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} columns set into tab: {1}", columns.Length, tManager.Text);
+            this.Invoke(new MethodInvoker(delegate { grid.Columns.AddRange(columns); }));
+        }
+
+        public void Clear()
+        {
+            grid.Rows.Clear();
+            grid.RowCount = 0;
+        }
+
+        public void LoadFile(string filePath) { load_file(filePath); }
+
         public void Search(string field, string term)
         {
             if (!structLoaded)
@@ -409,7 +464,10 @@ namespace Grimoire.Tabs.Styles
         {
             switch (cell.Type)
             {
-                case CellType.TYPE_SHORT: case CellType.TYPE_INT_16: case CellType.TYPE_INT: case CellType.TYPE_INT_32:
+                case CellType.TYPE_SHORT:
+                case CellType.TYPE_INT_16:
+                case CellType.TYPE_INT:
+                case CellType.TYPE_INT_32:
 
                     if (order == SortOrder.Ascending)
                         Array.Sort(core.Rows, (a, b) => ((int)a[cell.Name]).CompareTo((int)b[cell.Name]));
@@ -418,7 +476,9 @@ namespace Grimoire.Tabs.Styles
 
                     break;
 
-                case CellType.TYPE_FLOAT: case CellType.TYPE_FLOAT_32: case CellType.TYPE_SINGLE:
+                case CellType.TYPE_FLOAT:
+                case CellType.TYPE_FLOAT_32:
+                case CellType.TYPE_SINGLE:
 
                     if (order == SortOrder.Ascending)
                         Array.Sort(core.Rows, (a, b) => ((float)a[cell.Name]).CompareTo((float)b[cell.Name]));
@@ -427,7 +487,9 @@ namespace Grimoire.Tabs.Styles
 
                     break;
 
-                case CellType.TYPE_DOUBLE: case CellType.TYPE_INT_64: case CellType.TYPE_LONG:
+                case CellType.TYPE_DOUBLE:
+                case CellType.TYPE_INT_64:
+                case CellType.TYPE_LONG:
 
                     if (order == SortOrder.Ascending)
                         Array.Sort(core.Rows, (a, b) => ((long)a[cell.Name]).CompareTo((long)b[cell.Name]));
@@ -451,29 +513,6 @@ namespace Grimoire.Tabs.Styles
             grid.Rows.Clear();
             initializeGrid();
         }
-
-        #endregion
-
-        #region Methods (Public)
-
-        public void ResetProgress()
-        {
-            this.Invoke(new MethodInvoker(delegate { ts_prog.Maximum = 100; ts_prog.Value = 0; }));
-        }
-
-        public void SetColumns(DataGridViewTextBoxColumn[] columns)
-        {
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} columns set into tab: {1}", columns.Length, tManager.Text);
-            this.Invoke(new MethodInvoker(delegate { grid.Columns.AddRange(columns); }));
-        }
-
-        public void Clear()
-        {
-            grid.Rows.Clear();
-            grid.RowCount = 0;
-        }
-
-        public void LoadFile(string filePath) { load_file(filePath); }
 
         #endregion
 
@@ -518,6 +557,9 @@ namespace Grimoire.Tabs.Styles
         {
             try
             {
+                actionSW.Reset();
+                actionSW.Start();
+
                 await Task.Run(() => { core.ParseBuffer(fileBytes); });
             }
             catch (Exception ex)
@@ -527,7 +569,9 @@ namespace Grimoire.Tabs.Styles
             }
             finally
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries loaded from {1}", core.RowCount, fileName);
+                actionSW.Stop();
+
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries loaded from: {1} ({2}) in {3}ms", core.RowCount, fileName, StringExt.FormatToSize(fileBytes.Length), actionSW.ElapsedMilliseconds.ToString("D4"));
                 tManager.SetText(key, fileName);
                 initializeGrid();
             }
@@ -556,26 +600,24 @@ namespace Grimoire.Tabs.Styles
 
             using (Grimoire.GUI.ListSelect selectGUI = new GUI.ListSelect("Select RDB", results))
             {
-                selectGUI.FormClosing += (o, x) =>
-                {
-                    if (selectGUI.DialogResult == DialogResult.OK)
-                    {
-                        string fileName = selectGUI.SelectedText;
-                        DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
-                        byte[] fileBytes = dCore.GetFileBytes(finalResult);
-
-                        lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User selected rdb: {0}", fileName);
-
-                        if (fileBytes.Length > 0)
-                            load_file(fileName, fileBytes);
-                    }
-                    else
-                    {
-                        lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User cancelled Data load on RDB Tab: {0}", tManager.Text);
-                        return;
-                    }
-                };
                 selectGUI.ShowDialog(Grimoire.GUI.Main.Instance);
+
+                if (selectGUI.DialogResult == DialogResult.OK)
+                {
+                    string fileName = selectGUI.SelectedText;
+                    DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
+                    byte[] fileBytes = dCore.GetFileBytes(finalResult);
+
+                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User selected rdb: {0}", fileName);
+
+                    if (fileBytes.Length > 0)
+                        load_file(fileName, fileBytes);
+                }
+                else
+                {
+                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User cancelled Data load on RDB Tab: {0}", tManager.Text);
+                    return;
+                }
             }
         }
 
@@ -588,33 +630,5 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
-
-        private void grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            Cell cell = core.Rows[0].GetCell(grid.Columns[e.ColumnIndex].Name);
-            SortOrder curOrder = grid.Columns[cell.Name].HeaderCell.SortGlyphDirection;
-            SortOrder newOrder = SortOrder.None;
-
-            switch (curOrder)
-            {
-                case SortOrder.None:
-                    newOrder = SortOrder.Ascending;
-                    break;
-
-                case SortOrder.Ascending:
-                    newOrder = SortOrder.Descending;
-                    break;
-
-                case SortOrder.Descending:
-                    newOrder = SortOrder.Ascending;
-                    break;
-            }
-
-            if (e.ColumnIndex > 0)
-                foreach (DataGridViewColumn dgvColumn in grid.Columns)
-                    dgvColumn.HeaderCell.SortGlyphDirection = SortOrder.None;
-
-            Sort(cell, newOrder);
-        }
     }
 }

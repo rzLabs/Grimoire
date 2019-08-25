@@ -102,10 +102,13 @@ namespace Grimoire.Structures
         //public int LogLevel { get { return OPT.GetInt("log.level"); } set { OPT.UpdateSetting("log.evel", value.ToString()); } }
 
         // use flag
-        [Description("Path to the list of item_use_flag sub flags"), Category("Use Flag Utility"), DisplayName("Flag List Path"), EditorAttribute(typeof(FileNameEditor), typeof(UITypeEditor))]
-        public string FlagPath { get { return OPT.GetString("useflag.list_path"); } set { OPT.Update("useflag.list_path", value.ToString()); } }
+        [Description("Directory where flag files are stored"), DisplayName("Flag Files Directory"), Category("Flag Utility"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string FlagDirectory { get { return OPT.GetString("useflag.directory"); } set { OPT.Update("useflag.directory", value.ToString()); } }
 
-        [Description("Determines if input flag will be decoded each time you change the current input or paste a new input"), Category("Use Flag Utility"), DisplayName("Auto Reverse Flags")]
+        [Description("Path of the flag file to be loaded by default"), Category("Flag Utility"), DisplayName("Flag List Path"), EditorAttribute(typeof(FileNameEditor), typeof(UITypeEditor))]
+        public string DefaultPath { get { return OPT.GetString("useflag.default.list"); } set { OPT.Update("useflag.default.list", value.ToString()); } }
+
+        [Description("Determines if input flag will be decoded each time you change the current input or paste a new input"), Category("Flag Utility"), DisplayName("Auto Reverse Flags")]
         public bool AutoReverse { get { return OPT.GetBool("useflag.auto_reverse"); } set { OPT.Update("useflag.auto_reverse", Convert.ToInt32(value).ToString()); } }
     }
 }

@@ -66,29 +66,27 @@ namespace Grimoire.Tabs.Utilities
 
                 case Style.DATA:
                    {
-                        int rowCount = 0;
+                        int rowCount = tManager.DataTab.RowCount;
 
-                        if (tManager.DataTab.Filtered)
+                        if (rowCount == 0)
                         {
-                            rowCount = tManager.DataTab.FilterCount;
-                            if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
-                            if (e.RowIndex == 0 & rowCount == 0) { return; }
-                            e.Value = tManager.DataTab.FilteredIndex[e.RowIndex].Name;
+                            string msg = "[Grimoire.Tabs.Utilities.Grid Grid_CellValueNeeded() expects rows, there are none!";
+
+                            Logs.Manager.Instance.Enter(Logs.Sender.MAIN, Logs.Level.ERROR, msg);
+                            MessageBox.Show(msg, "Grid Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        else if (tManager.DataTab.Searching)
-                        {
-                            rowCount = tManager.DataTab.SearchCount;
-                            if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
-                            if (e.RowIndex == 0 & rowCount == 0) { return; }
+
+                        if (e.RowIndex >= rowCount)
+                            return;
+
+                        if (tManager.DataTab.Filtered && tManager.DataTab.Searching)
                             e.Value = tManager.DataTab.SearchIndex[e.RowIndex].Name;
-                        }
+                        else if (tManager.DataTab.Filtered && !tManager.DataTab.Searching)
+                            e.Value = tManager.DataTab.FilteredIndex[e.RowIndex].Name;
+                        else if (!tManager.DataTab.Filtered && tManager.DataTab.Searching)
+                            e.Value = tManager.DataTab.SearchIndex[e.RowIndex].Name;
                         else
-                        {
-                            rowCount = tManager.DataCore.RowCount;
-                            if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
-                            if (e.RowIndex == 0 & rowCount == 0) { return; }
                             e.Value = tManager.DataCore.Index[e.RowIndex].Name;
-                        }                       
                     }
                     break;
             }

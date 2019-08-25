@@ -134,6 +134,7 @@
       <DependentUpon>StructureEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Structures\Log.cs" />
+    <Compile Include="Structures\RdbStructure.cs" />
     <Compile Include="Structures\Settings.cs" />
     <Compile Include="Tabs\Enums\ItemBase.cs" />
     <Compile Include="Tabs\Enums\SortDirection.cs" />
@@ -169,11 +170,11 @@
     <Compile Include="Tabs\Styles\Log.Designer.cs">
       <DependentUpon>Log.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tabs\Styles\UseFlag.cs">
+    <Compile Include="Tabs\Styles\Flag.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tabs\Styles\UseFlag.Designer.cs">
-      <DependentUpon>UseFlag.cs</DependentUpon>
+    <Compile Include="Tabs\Styles\Flag.Designer.cs">
+      <DependentUpon>Flag.cs</DependentUpon>
     </Compile>
     <Compile Include="Tabs\Utilities\Enums.cs" />
     <Compile Include="Tabs\Utilities\Grid.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Utilities\Paths.cs" />
     <Compile Include="Utilities\SPR.cs" />
     <Compile Include="Utilities\StringExt.cs" />
+    <Compile Include="Utilities\StructureManager.cs" />
     <EmbeddedResource Include="GUI\DataRebuild.resx">
       <DependentUpon>DataRebuild.cs</DependentUpon>
     </EmbeddedResource>
@@ -262,8 +264,8 @@
     <EmbeddedResource Include="Tabs\Styles\RDB.resx">
       <DependentUpon>RDB.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tabs\Styles\UseFlag.resx">
-      <DependentUpon>UseFlag.cs</DependentUpon>
+    <EmbeddedResource Include="Tabs\Styles\Flag.resx">
+      <DependentUpon>Flag.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

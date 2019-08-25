@@ -31,7 +31,7 @@ namespace Grimoire.Logs
         DATA = 2,
         GM = 3,
         DROPS = 4,
-        USEFLAG = 5,
+        FLAG = 5,
         DATABASE = 91,
         OPT = 92,
         MANAGER = 93,

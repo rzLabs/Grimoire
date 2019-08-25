@@ -22,13 +22,28 @@ namespace Grimoire.Tabs.Styles
         public List<IndexEntry> FilteredIndex = new List<IndexEntry>();
         public bool Filtered
         {
-            get { return FilteredIndex.Count > 0 && !Searching; }
+            get { return FilteredIndex.Count > 0; }
         }
         public int FilterCount { get { return FilteredIndex.Count; } }
         public List<IndexEntry> SearchIndex = new List<IndexEntry>();
         public bool Searching { get { return SearchIndex.Count > 0; } }
         public int SearchCount { get { return SearchIndex.Count; } }
         public bool IndexLoaded { get { return Core.Index.Count > 0; } }
+
+        public int RowCount
+        {
+            get
+            {
+                if (!Filtered && !Searching)
+                    return core.RowCount;
+                else if (Filtered && !Searching)
+                    return FilteredIndex.Count;
+                else if (!Filtered && Searching)
+                    return SearchIndex.Count;
+                else
+                    return 0;
+            }
+        }
 
         public DataCore.Core Core
         {
@@ -378,31 +393,57 @@ namespace Grimoire.Tabs.Styles
 
         private void searchInput_TextChanged(object sender, EventArgs e)
         {
-            if (grid.Rows.Count > 0)
+            if (searchInput.Text.Length > 2)
             {
-                if (searchInput.Text.Length > 2)
-                {
-                    if (Filtered)
-                        SearchIndex = FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text));
-                    else 
-                        SearchIndex = core.GetEntriesByPartialName(searchInput.Text);
-
-                    grid.Rows.Clear();
-                    grid.RowCount = SearchIndex.Count;
-                }
+                if (Filtered)
+                    SearchIndex = FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text));
                 else
-                {
-                    SearchIndex.Clear();
-                    grid.Rows.Clear();
-                    grid.RowCount = tManager.DataCore.RowCount;
-                }
+                    SearchIndex = core.GetEntriesByPartialName(searchInput.Text);
+
+                grid.Rows.Clear();
+                grid.RowCount = SearchIndex.Count;
             }
+            else
+            {
+                SearchIndex.Clear();
+                grid.Rows.Clear();
+                grid.RowCount = tManager.DataCore.RowCount;
+            }
+
         }
 
         private void grid_DoubleClick(object sender, EventArgs e)
         {
             if (grid.SelectedRows.Count == 1)
                 grid_cs_export_Click(null, EventArgs.Empty);
+        }
+
+        private void extensions_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (extensions.Nodes.Count == 0)
+                return;
+
+            extensions.SelectedNode = e.Node;
+
+            if (e.Button == MouseButtons.Right)
+                extensions_cs.Show(extensions, e.Location);
+        }
+
+        private void grid_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (grid.Rows.Count == 0)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                if (grid.SelectedRows.Count == 1)
+                {
+                    grid.ClearSelection();
+                    grid.Rows[e.RowIndex].Selected = true;
+                }
+
+                grid_cs.Show(grid, grid.PointToClient(Cursor.Position));
+            }
         }
 
         #endregion
@@ -571,32 +612,5 @@ namespace Grimoire.Tabs.Styles
         }
         #endregion
 
-        private void extensions_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (extensions.Nodes.Count == 0)
-                return;
-
-            extensions.SelectedNode = e.Node;
-
-            if (e.Button == MouseButtons.Right)
-                extensions_cs.Show(extensions, e.Location);
-        }
-
-        private void grid_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (grid.Rows.Count == 0)
-                return;
-
-            if (e.Button == MouseButtons.Right)
-            {
-                if (grid.SelectedRows.Count == 1)
-                {
-                    grid.ClearSelection();
-                    grid.Rows[e.RowIndex].Selected = true;
-                }
-                
-                grid_cs.Show(grid, grid.PointToClient(Cursor.Position));
-            }
-        }
     }
 }

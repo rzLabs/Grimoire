@@ -47,13 +47,12 @@ namespace Grimoire.Utilities
             {
                 using (StreamReader sR = new StreamReader("Grimoire.opt"))
                 {
-                    string currentLineValue = null;
-                    while ((currentLineValue = sR.ReadLine()) != null)
+                    string lineVal = null;
+                    while ((lineVal = sR.ReadLine()) != null)
                     {
-                        if (!currentLineValue.StartsWith("#"))
+                        if (!lineVal.StartsWith("#"))
                         {
-                            //Break the line 
-                            string[] lineBlocks = currentLineValue.Split(new char[] { ':' }, 2);
+                            string[] lineBlocks = lineVal.Split(new char[] { ':' }, 2);
                             string settingName = lineBlocks[0];
                             string settingValue = lineBlocks[1];
                             settings.Add(settingName, settingValue);

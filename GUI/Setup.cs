@@ -15,6 +15,13 @@ namespace Grimoire.GUI
         List<Panel> panels = new List<Panel>();
         int pnl_idx = 0;
 
+        List<string> infoStrings = new List<string>()
+        {
+            string.Format("Welcome to Grimoire v{0}\n\n", System.Windows.Forms.Application.ProductVersion) +
+                        "Before you get into the chocolately goodness that is Grimoire, we will need to setup the grimoire.opt!\n\n" +
+                        "First I need to know the locations for some of my awesome features to work right.",
+            "Alright!\n\nGreat, now that I know where to find things, I will need you to help me understand how you want your SQL to work."        };
+
         public Setup()
         {
             InitializeComponent();
@@ -22,22 +29,28 @@ namespace Grimoire.GUI
 
         private void Setup_Shown(object sender, EventArgs e)
         {
-            info.Text = string.Format("Welcome to Grimoire v{0}\n\n", System.Windows.Forms.Application.ProductVersion) +
-                        "Before you get into the chocolately goodness that is Grimoire, we will need to setup the grimoire.opt!\n\n" +
-                        "First I need to know the locations for some of my awesome features to work right.";
+            info.Text = infoStrings[0];
         }
 
         private void next_btn_Click(object sender, EventArgs e)
         {
             if (pnl_idx < panels.Count - 1)
-                panels[++pnl_idx].Visible = true;
+            {
+                ++pnl_idx;
+                panels[pnl_idx].Visible = true;
+                info.Text = infoStrings[pnl_idx];
+            }
         }
 
         private void back_btn_Click(object sender, EventArgs e)
         {
             if (pnl_idx > 0)
             {
-                panels[pnl_idx--].Visible = false;
+                panels[pnl_idx].Visible = false;
+                pnl_idx--;
+
+                info.Text = infoStrings[pnl_idx];
+
                 panels[pnl_idx].Visible = true;
             }
         }

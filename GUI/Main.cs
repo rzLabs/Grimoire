@@ -26,11 +26,13 @@ namespace Grimoire.GUI
 
         private void check_first_start()
         {
-            if (Properties.Settings.Default.FirstStart)
-            {
-                //using (Setup setup = new Setup())
-                    //setup.ShowDialog(this);
-            }
+            //if (Properties.Settings.Default.FirstStart)
+            //{
+            //    lManager.Enter(Logs.Sender.MAIN, Logs.Level.DEBUG, "First start detected!\n\tRunning setup...");
+
+            //    using (Setup setup = new Setup())
+            //        setup.ShowDialog(this);
+            //}
         }
 
         private void generate_new_list()
@@ -127,6 +129,7 @@ namespace Grimoire.GUI
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
+            lManager.Enter(Logs.Sender.MAIN, Logs.Level.DEBUG, "Closing down...");
             Utilities.OPT.Save();
         }
 
@@ -203,7 +206,8 @@ namespace Grimoire.GUI
             string dCore_Version = FileVersionInfo.GetVersionInfo("DataCore.dll").FileVersion;
             string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
             string aboutStr = string.Format("Grimoire v{0}\nDataCore v{1}\nDaedalus v{2}\n\nWritten by: iSmokeDrow" + 
-                                            "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- InkDevil\n\t- XavierDeFawks\n\t- ThunderNikk\n\t- Exterminator\n\n"+
+                                            "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- InkDevil\n\t- XavierDeFawks\n\t- ThunderNikk\n\t- Exterminator\n\t"+
+                                            "- Medaion\n\t- AziaMafia \n\n" +
                                             "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
                                             gVersion, dCore_Version, rCore_Version);
             MessageBox.Show(aboutStr, "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);

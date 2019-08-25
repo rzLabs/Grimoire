@@ -193,9 +193,9 @@ namespace Grimoire.Tabs
                     text = "Hash Utility";
                     break;
 
-                case Style.USEFLAG:
-                    tab.Controls.Add(new Styles.UseFlag() { Dock = DockStyle.Fill });
-                    text = "Use Flag Utility";
+                case Style.FLAG:
+                    tab.Controls.Add(new Styles.Flag() { Dock = DockStyle.Fill });
+                    text = "Flag Utility";
                     break;
 
                 case Style.ITEM:
