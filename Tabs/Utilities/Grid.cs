@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using DataCore.Structures;
+using System.Linq;
 
 namespace Grimoire.Tabs.Utilities
 {
@@ -66,25 +67,10 @@ namespace Grimoire.Tabs.Utilities
 
                 case Style.DATA:
                    {
-                        int rowCount = tManager.DataTab.RowCount;
-
-                        if (rowCount == 0)
-                        {
-                            string msg = "[Grimoire.Tabs.Utilities.Grid Grid_CellValueNeeded() expects rows, there are none!";
-
-                            Logs.Manager.Instance.Enter(Logs.Sender.MAIN, Logs.Level.ERROR, msg);
-                            MessageBox.Show(msg, "Grid Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-
-                        if (e.RowIndex >= rowCount)
-                            return;
-
-                        if (tManager.DataTab.Filtered && tManager.DataTab.Searching)
+                        if (tManager.DataTab.Filtered && tManager.DataTab.Searching || !tManager.DataTab.Filtered && tManager.DataTab.Searching)
                             e.Value = tManager.DataTab.SearchIndex[e.RowIndex].Name;
                         else if (tManager.DataTab.Filtered && !tManager.DataTab.Searching)
                             e.Value = tManager.DataTab.FilteredIndex[e.RowIndex].Name;
-                        else if (!tManager.DataTab.Filtered && tManager.DataTab.Searching)
-                            e.Value = tManager.DataTab.SearchIndex[e.RowIndex].Name;
                         else
                             e.Value = tManager.DataCore.Index[e.RowIndex].Name;
                     }

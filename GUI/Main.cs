@@ -140,7 +140,7 @@ namespace Grimoire.GUI
                 for (int i = 0; i < tabs.TabCount; ++i)
                 {
                     Rectangle r = tabs.GetTabRect(i);
-                    if (r.Contains(e.Location) /* && it is the header that was clicked*/)
+                    if (r.Contains(e.Location)) /* && it is the header that was clicked*/
                     {
                         tManager.RightClick_TabIdx = i; // Set in case user intends to destroy the selected tab
                         tabs_cMenu.Show(tabs, e.Location);

@@ -90,6 +90,9 @@ namespace Grimoire.Structures
         [Description("Determines if newly created .RDB files will be saved in their hash name version"), Category("RDB Utility"), DefaultValue(false), DisplayName("Save Hashed")]
         public bool SaveHashed { get { return OPT.GetBool("rdb.save.hashed"); } set { OPT.Update("rdb.save.hashed", Convert.ToInt32(value).ToString()); } }
 
+        [Description("The directory where all .csv will be saved to."), Category("RDB Utility"), DisplayName("CSV Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string CSVDirectory { get { return OPT.GetString("rdb.csv.directory"); } set { OPT.Update("rdb.csv.directory", value); } }
+
         // hasher
         [Description("Determines if the file entries will be cleared from the grid after conversion"), Category("Hasher Utility"), DisplayName("Auto Clear")]
         public bool AutoClear { get { return OPT.GetBool("hash.auto_clear"); } set { OPT.Update("hash.auto_clear", Convert.ToInt32(value).ToString()); } }

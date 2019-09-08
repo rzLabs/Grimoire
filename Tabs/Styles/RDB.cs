@@ -5,10 +5,12 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using System.Text;
 using Grimoire.Utilities;
 using Daedalus;
 using Daedalus.Structures;
 using Daedalus.Enums;
+using System.Linq;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -298,6 +300,39 @@ namespace Grimoire.Tabs.Styles
             Sort(cell, newOrder);
         }
 
+        private async void ts_save_file_csv_Click(object sender, EventArgs e)
+        {
+            actionSW.Reset();
+            actionSW.Start();
+
+            ts_prog.Maximum = core.RowCount;
+            ts_prog.Value = 0;
+
+            string csvStr = string.Empty;
+
+            await Task.Run(() => { csvStr = generateCSV(); });
+
+            actionSW.Stop();
+
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "\t-Ready! ({0}ms)", actionSW.ElapsedMilliseconds.ToString("D4"));
+
+            string csvDir = OPT.GetString("rdb.csv.directory") ?? string.Concat(Directory.GetCurrentDirectory(), @"\CSV");
+            string csvPath = string.Format(@"{0}\{1}_{2}.csv", csvDir, core.FileName, DateTime.UtcNow.ToString("MM-dd-yyyy"));
+
+            if (!Directory.Exists(csvDir))
+                Directory.CreateDirectory(csvDir);
+
+            File.WriteAllText(csvPath, csvStr.ToString());
+
+            string msg = string.Format("{0} written to .csv file at: {1}", tManager.Text, csvPath);
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, msg);
+
+            ts_prog.Value = 0;
+            ts_prog.Maximum = 100;
+
+            MessageBox.Show(msg, "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        }
+
         #endregion
 
         #region Public Events
@@ -311,6 +346,7 @@ namespace Grimoire.Tabs.Styles
             }
 
             Paths.DefaultDirectory = OPT.GetString("rdb.load.directory");
+            Paths.DefaultFileName = core.FileName;
             string fileName = Paths.FilePath;
 
             if (Paths.FileResult != DialogResult.OK)
@@ -627,6 +663,57 @@ namespace Grimoire.Tabs.Styles
             grid.CellValueNeeded += gridUtil.Grid_CellValueNeeded;
             grid.CellValuePushed += gridUtil.Grid_CellPushed;
             grid.RowCount = tManager.RDBCore.RowCount + 1; //core.Data.Count + 1;
+        }
+
+        private string generateCSV()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            string[] names = core.VisibleCellNames;
+            sb.Append(string.Join(",", names));
+
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Preparing to export {0} columns and {1} rows to CSV", names.Length, core.RowCount);
+
+            for (int r = 0; r < core.RowCount; r++)
+            {
+                Row row = core[r];
+
+                string valStr = null;
+
+                int len = row.VisibleLength;
+                Cell[] cells = row.VisibleCells;
+
+                for (int c = 0; c < len; c++)
+                {
+                    if (c == len)
+                        break;
+                    else if (c == 0)
+                        valStr = string.Concat(valStr, "\n");
+                    else if (c > 0)
+                        valStr = string.Concat(valStr, ",");
+
+                    string cVal = cells[c].Value.ToString();
+                    if (cVal.Contains(","))
+                        cVal = string.Format("\"{0}\"", cVal);
+
+                    valStr = string.Concat(valStr, cVal);
+                }
+
+                sb.Append(valStr);
+
+                if ((r * 100 / core.RowCount) != ((r - 1) * 100 / core.RowCount))
+                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ts_prog.Value = r; }));
+            }
+
+            if (sb.Length == 0)
+            {
+                string msg = "generateCSV failed to generate a csv string!";
+
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, msg);
+                MessageBox.Show(msg, "CSV Generate Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return sb.ToString();
         }
 
         #endregion

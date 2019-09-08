@@ -229,10 +229,6 @@ namespace Grimoire.Tabs
                     RDBCore.ClearData();
                     break;
 
-                case Style.HASHER:
-                    //TODO: Time to implement me bruh
-                    break;
-
                 case Style.DATA:
                     DataTab.Clear();
                     DataCore.Clear();

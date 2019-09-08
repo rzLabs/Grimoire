@@ -14,6 +14,7 @@ rdb.structure.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Struc
 rdb.load.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Output\rdb
 rdb.use.ascii:1
 rdb.save.hashed:1
+rdb.csv.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\CSV
 build.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Output
 data.load.directory:D:\Rappelz\Rappelz_94_US
 data.encoding:1252

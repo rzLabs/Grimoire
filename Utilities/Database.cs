@@ -380,10 +380,8 @@ namespace Grimoire.Utilities
                 Cell[] fieldList = rCore.CellTemplate;
 
                 foreach (Cell field in fieldList)
-                {
                     if (field.Visible)
                         statement += string.Format("[{0}],", field.Name);
-                }
 
                 statement = string.Format("{0} FROM dbo.{1} with (NOLOCK)", statement.Remove(statement.Length - 1, 1), tableName);
             }

@@ -11,6 +11,7 @@ namespace Grimoire.Utilities
     public static class Paths
     {
         public static string DefaultDirectory;
+        public static string DefaultFileName = string.Empty;
         static string title;
         public static string Title
         {
@@ -41,9 +42,11 @@ namespace Grimoire.Utilities
                 title = (title == null) ? "Please select desired file" : title;
                 using (OpenFileDialog ofDlg = new OpenFileDialog()
                 {
-                    DefaultExt = "*", Title = title,
+                    DefaultExt = "*",
+                    Title = title,
                     InitialDirectory = DefaultDirectory,
-                    Multiselect = FileMultiSelect
+                    Multiselect = FileMultiSelect,
+                    FileName = DefaultFileName
                 })
                 {
                     if ((FileResult = ofDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
