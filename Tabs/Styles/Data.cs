@@ -61,7 +61,7 @@ namespace Grimoire.Tabs.Styles
                 if (grid.SelectedRows.Count > 1)
                     return !grid_cs.Items[0].Enabled && grid_cs.Items[1].Enabled && grid_cs.Items[2].Enabled;
                 else
-                    return grid_cs.Items[0].Enabled && grid_cs.Items[1].Enabled && grid_cs.Items[2].Enabled;
+                    return false;
             }
             set
             {
@@ -193,6 +193,7 @@ namespace Grimoire.Tabs.Styles
         public void TS_File_Load_Click(object sender, EventArgs e)
         {
             Paths.DefaultDirectory = OPT.GetString("data.load.directory");
+            Paths.DefaultFileName = "data.000";
 
             string filePath = Paths.FilePath;
             if (Paths.FileResult != DialogResult.OK)
@@ -232,7 +233,7 @@ namespace Grimoire.Tabs.Styles
             {
                 FilteredIndex = tManager.DataCore.GetEntriesByExtension(ext, SortType.Name);
                 grid.Rows.Clear();
-                grid.RowCount = FilteredIndex.Count + 1;
+                grid.RowCount = FilteredIndex.Count;
             }
             else if (ext == "all")
             {
@@ -243,7 +244,7 @@ namespace Grimoire.Tabs.Styles
                     SearchIndex.Clear();
 
                 grid.Rows.Clear();
-                grid.RowCount = tManager.DataCore.RowCount + 1;
+                grid.RowCount = tManager.DataCore.RowCount;
             }
 
         }
@@ -260,16 +261,17 @@ namespace Grimoire.Tabs.Styles
                 {
                     IndexEntry entry = tManager.DataCore.GetEntry(grid.SelectedRows[0].Cells[0].Value.ToString());
                     populate_selection_info(entry);
-                    grid_cs.Items[0].Enabled = grid_cs.Items[1].Enabled = true;
-                    grid_cs.Items[1].Text = "Export";
+                    grid_cs.Items[0].Enabled = true;
+                    grid_cs.Items[1].Enabled = true;
+                    grid_cs.Items[2].Text = "Export";
                 }
             }
             else
             {
 
                 populate_selection_info();
-                grid_cs.Items[0].Enabled = grid_cs.Items[2].Enabled = false;
-                grid_cs.Items[1].Text = string.Format("Export {0}", rowCount);
+                grid_cs.Items[0].Enabled = grid_cs.Items[3].Enabled = false;
+                grid_cs.Items[2].Text = string.Format("Export {0}", rowCount);
             }
         }
 
@@ -310,7 +312,7 @@ namespace Grimoire.Tabs.Styles
             string buildDirectory = OPT.GetString("build.directory");
 
             string ext = extensions.SelectedNode.Text;
-            if (ext.Length == 3)
+            if (ext.Length >= 2)
             {
                 List<IndexEntry> entries = core.GetEntriesByExtension(ext);
 
@@ -323,9 +325,7 @@ namespace Grimoire.Tabs.Styles
                     await Task.Run(() =>
                     {
                         if (ext == "all")
-                        {
                             core.ExportAllEntries(buildDirectory);
-                        }
                         else
                         {
                             buildDirectory += string.Format(@"\{0}\", ext);
@@ -612,5 +612,26 @@ namespace Grimoire.Tabs.Styles
         }
         #endregion
 
+        private async void grid_cs_delete_Click(object sender, EventArgs e)
+        {
+            string filename = grid.SelectedRows[0].Cells[0].Value.ToString();
+
+            if (!string.IsNullOrEmpty(filename))
+            {
+                IndexEntry entry = core.GetEntry(filename);
+
+                if (entry != null)
+                {
+                    if (MessageBox.Show(string.Format("You are about to delete\n\n{0}!!!\n\nYou should be absolutely sure you want to do this!\n\nDo you want to continue?", filename),
+                                                      "Input Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        await Task.Run(() => {
+                            core.DeleteFileEntry(entry.DataID, (int)entry.Offset, entry.Length);
+                        });
+                    }
+                }
+                    
+            }
+        }
     }
 }

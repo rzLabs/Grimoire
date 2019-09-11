@@ -50,9 +50,7 @@ namespace Grimoire.Utilities
                 })
                 {
                     if ((FileResult = ofDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
-                    {
                         return File.Exists(ofDlg.FileName) ? ofDlg.FileNames : null;
-                    }
                 }
 
                 return null;
@@ -81,9 +79,7 @@ namespace Grimoire.Utilities
                 })
                 {
                     if ((SaveResult = svDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
-                    {
                         return svDlg.FileName;
-                    }
                 }
 
                 return null;
@@ -100,9 +96,7 @@ namespace Grimoire.Utilities
                 })
                 {
                     if ((FolderResult = fbDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)
-                    {
                         return Directory.Exists(fbDlg.SelectedPath) ? fbDlg.SelectedPath : null;
-                    }
                 }
 
                 return null;

@@ -236,6 +236,8 @@ namespace Grimoire.Tabs.Styles
                 {
                     dManager.ExportToTable(tablename, tManager.RDBCore.Rows);
                 });
+
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} rows were saved to table: {1} from tab: {2}", tManager.RDBCore.RowCount, tablename, tManager.Text);
             }
             catch (System.Data.SqlClient.SqlException ex)
             {
@@ -247,10 +249,6 @@ namespace Grimoire.Tabs.Styles
             {
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
                 return;
-            }
-            finally
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} rows were saved to table: {1} from tab: {2}", tManager.RDBCore.RowCount, tablename, tManager.Text);
             }
         }
 

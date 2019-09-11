@@ -207,7 +207,7 @@ namespace Grimoire.GUI
             string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
             string aboutStr = string.Format("Grimoire v{0}\nDataCore v{1}\nDaedalus v{2}\n\nWritten by: iSmokeDrow" + 
                                             "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- InkDevil\n\t- XavierDeFawks\n\t- ThunderNikk\n\t- Exterminator\n\t"+
-                                            "- Medaion\n\t- AziaMafia \n\n" +
+                                            "- Medaion\n\t- AziaMafia\n\t- ADRENALINE\n\n" +
                                             "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
                                             gVersion, dCore_Version, rCore_Version);
             MessageBox.Show(aboutStr, "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);

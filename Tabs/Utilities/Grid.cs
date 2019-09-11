@@ -49,7 +49,6 @@ namespace Grimoire.Tabs.Utilities
                     tManager.RDBTab.SetColumns(columns);
                     break;
             }
-
         }
 
         public void Grid_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
@@ -70,7 +69,10 @@ namespace Grimoire.Tabs.Utilities
                         if (tManager.DataTab.Filtered && tManager.DataTab.Searching || !tManager.DataTab.Filtered && tManager.DataTab.Searching)
                             e.Value = tManager.DataTab.SearchIndex[e.RowIndex].Name;
                         else if (tManager.DataTab.Filtered && !tManager.DataTab.Searching)
-                            e.Value = tManager.DataTab.FilteredIndex[e.RowIndex].Name;
+                        {
+                            if (e.RowIndex < tManager.DataTab.FilterCount)
+                                e.Value = tManager.DataTab.FilteredIndex[e.RowIndex].Name;
+                        }
                         else
                             e.Value = tManager.DataCore.Index[e.RowIndex].Name;
                     }
