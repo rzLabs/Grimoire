@@ -1,13 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Grimoire.Tabs.Styles
+namespace Grimoire.GUI
 {
-    public partial class Flag : UserControl
+    public partial class BitFlag : Form
     {
+
+        #region Constructors
+
+        public BitFlag()
+        {
+            InitializeComponent();
+            lManager = Logs.Manager.Instance;
+
+        }
+
+        public BitFlag(int vector)
+        {
+            InitializeComponent();
+            lManager = Logs.Manager.Instance;
+
+            defaultFlag = vector;
+        }
+
+        #endregion
+
         #region Properties
 
         readonly Logs.Manager lManager;
@@ -15,30 +40,25 @@ namespace Grimoire.Tabs.Styles
         public List<string> lists = new List<string>();
         public string listPath = null;
 
-        private int flag
+        int defaultFlag = 0;
+
+        public string DefaultFlagFile;
+
+        private int flag;
+        public int Flag
         {
             get
             {
-                return (flagIO.Text.Length == 0) ? 0 : Convert.ToInt32(flagIO.Text);
+                if (flagList.SelectedItems.Count == 0 && flagIO.Text == "0")
+                    flag = defaultFlag;
+                else
+                    flag = calculate();
+
+                return flag;
             }
-            set { flagIO.Text = value.ToString(); }
+            set { flag = value; }
         }
-
-        #endregion
-
-        #region Constructors
-
-        public Flag()
-        {
-            InitializeComponent();
-            lManager = Logs.Manager.Instance;
-        }
-
-        public Flag(int flag)
-        {
-            InitializeComponent();
-            lManager = Logs.Manager.Instance;
-        }
+        
 
         #endregion
 
@@ -46,11 +66,11 @@ namespace Grimoire.Tabs.Styles
 
         void generate_file_list()
         {
-            string dir = Grimoire.Utilities.OPT.GetString("useflag.directory") ?? string.Format(@"{0}\Flags", Directory.GetCurrentDirectory());
+            string dir = Grimoire.Utilities.OPT.GetString("flag.directory") ?? string.Format(@"{0}\Flags", Directory.GetCurrentDirectory());
 
             if (!Directory.Exists(dir))
             {
-                string msg = string.Format("useflag.directory does not exist!\n\tDirectory: {0}", dir);
+                string msg = string.Format("flag.directory does not exist!\n\tDirectory: {0}", dir);
 
                 MessageBox.Show(msg, "Flag Utility Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 lManager.Enter(Logs.Sender.FLAG, Logs.Level.ERROR, msg);
@@ -68,25 +88,35 @@ namespace Grimoire.Tabs.Styles
 
         void generate_flag_list()
         {
-            int flags = 0;
+            int prevCnt = flagList.SelectedItems.Count;
+
             flagList.Items.Clear();
-            flag = 0;
+
+            if (Utilities.OPT.GetBool("flag.clear_on_list_change"))
+                flagIO.Text = "0";
+
+            List<string> flags = new List<string>();
 
             if (File.Exists(listPath))
             {
                 using (StreamReader sR = new StreamReader(listPath))
                 {
                     string lineVal = null;
+
                     while ((lineVal = sR.ReadLine()) != null)
-                    {
-                        flagList.Items.Add(lineVal);
-                        flags++;
-                    }
+                        flags.Add(lineVal);
                 }
 
                 flagFiles.Text = Path.GetFileNameWithoutExtension(listPath);
 
-                lManager.Enter(Logs.Sender.FLAG, Logs.Level.NOTICE, "{0} Flags loaded to tab: {1} from: {2}", flags, Tabs.Manager.Instance.Text, listPath);
+                lManager.Enter(Logs.Sender.FLAG, Logs.Level.NOTICE, "{0} Flags loaded to the Flag Editor", flags.Count);
+
+                flagList.Items.AddRange(flags.ToArray());
+
+               if (prevCnt > 0 && prevCnt < flags.Count)
+                    reverse();
+
+                flags = null;
             }
             else
             {
@@ -100,8 +130,8 @@ namespace Grimoire.Tabs.Styles
 
         #region Events
 
-        private void UseFlag_Load(object sender, EventArgs e)
-        { 
+        private void BitFlag_Load(object sender, EventArgs e)
+        {
             generate_file_list();
 
             if (lists.Count == 0)
@@ -117,8 +147,8 @@ namespace Grimoire.Tabs.Styles
             foreach (string list in lists)
                 flagFiles.Items.Add(list);
 
-            string flagsDir = Grimoire.Utilities.OPT.GetString("useflag.directory");
-            string listName = Grimoire.Utilities.OPT.GetString("useflag.default.list");
+            string flagsDir = Grimoire.Utilities.OPT.GetString("flag.directory");
+            string listName = DefaultFlagFile ?? Grimoire.Utilities.OPT.GetString("flag.default._list");
             if (listName == null)
             {
                 string msg = "No default path for flag file defined!";
@@ -134,48 +164,43 @@ namespace Grimoire.Tabs.Styles
 
                 lManager.Enter(Logs.Sender.FLAG, Logs.Level.DEBUG, "Default Flag Path: {0} selected.", listName);
             }
+
+
+            if (Flag > 0)
+                flagIO.Text = Flag.ToString();
         }
 
-        private void calculate_Click(object sender, EventArgs e)
+        private int calculate()
         {
             calculating = true;
 
-            flag = 0;
+            int v = 0;
+
             for (int index = 0; index < flagList.Items.Count; index++)
-            {
                 if (flagList.GetSelected(index))
-                {
-                    flag |= (int)Math.Pow(2.0, index);
-                }
-            }
+                    v |= (int)Math.Pow(2.0, index);
+
+            calculating = false;
+
+            return v;
+        }
+
+        private void reverse()
+        {
+            calculating = true;
+
+            flagList.ClearSelected();
+
+            for (int index = 0; index < flagList.Items.Count; index++)
+                flagList.SetSelected(index, ((flag >> index) & 1) == 1);
 
             calculating = false;
         }
 
-        private void reverse_Click(object sender, EventArgs e)
-        {
-            for (int index = 0; index < flagList.Items.Count; index++)
-            {
-                flagList.SetSelected(index, ((flag >> index) & 1) == 1);
-            }
-        }
-
         private void flagIO_TextChanged(object sender, EventArgs e)
         {
-            if (flag == 0) { reverse.Enabled = false; }
-            else
-            {
-                reverse.Enabled = true;
-
-                if (!calculating)
-                {
-                    if (Grimoire.Utilities.OPT.GetBool("useflag.auto_reverse"))
-                    {
-                        reverse_Click(null, EventArgs.Empty);
-                    }
-                }
-            }
-            if (flagIO.Text.Length == 0) { flag = 0; }
+            if (!calculating)
+                reverse();
         }
 
         private void flagFiles_SelectedIndexChanged(object sender, EventArgs e)
@@ -183,11 +208,27 @@ namespace Grimoire.Tabs.Styles
             if (flagFiles.SelectedIndex == -1)
                 return;
 
-            listPath = string.Format(@"{0}\{1}.txt", Grimoire.Utilities.OPT.GetString("useflag.directory"), flagFiles.Text);
+            listPath = string.Format(@"{0}\{1}.txt", Grimoire.Utilities.OPT.GetString("flag.directory"), flagFiles.Text);
 
             generate_flag_list();
         }
 
+        private void flagList_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (!calculating)
+                flagIO.Text = Flag.ToString();
+        }
+
         #endregion
+
+        private void clear_on_list_change_CheckedChanged(object sender, EventArgs e)
+        {
+            Utilities.OPT.Update("flag.clear_on_list_change", Convert.ToInt32(clear_on_change_chkBx.Checked).ToString());
+        }
+
+        void load_strings()
+        {
+            clear_on_change_chkBx.Text = strings.clear_on_change;
+        }
     }
 }

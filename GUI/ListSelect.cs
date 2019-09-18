@@ -12,6 +12,7 @@ namespace Grimoire.GUI
             this.Text = title;
             InitializeComponent();
             populateList(selections);
+            load_strings();
         }
 
         public string SelectedText
@@ -37,6 +38,11 @@ namespace Grimoire.GUI
         {
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void load_strings()
+        {
+            okBtn.Text = strings.okBtn;
         }
     }
 }

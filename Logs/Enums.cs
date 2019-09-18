@@ -24,7 +24,7 @@ namespace Grimoire.Logs
         ALL = 3
     }
 
-    public enum Sender
+    public enum Sender // TODO: Update me a-doi
     {
         RDB = 0,
         HASHER = 1,

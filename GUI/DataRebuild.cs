@@ -27,6 +27,7 @@ namespace Grimoire.GUI
             hook_core_events();
             dataChart.Series.Add(new Series() { Name = "All Data", ChartType = SeriesChartType.Pie });
             dataList.Items[0].Selected = true;
+            load_strings();
         }
 
         private void hook_core_events()
@@ -180,6 +181,11 @@ namespace Grimoire.GUI
                 lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Backup cleaning completed!\n\tFile Deleted: {0}\n\tFile Moved\n\t\tFrom:{1}\n\t\tTo:{2}", path, newPath, path);
             }
 
+        }
+
+        public void load_strings()
+        {
+            rebuildBtn.Text = strings.rebuildBtn;
         }
     }
 }

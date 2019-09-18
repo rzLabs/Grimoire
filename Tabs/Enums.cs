@@ -5,11 +5,8 @@
         RDB = 0,
         HASHER = 1,
         DATA = 2,
-        FLAG = 4,
-        //DROPS = 5,
-        ADMIN = 6,
-        ITEM = 7,
-        //LOG = 98,
+        //DROPS = 3,
+        ITEM = 4,
         NONE = 99
     }
 

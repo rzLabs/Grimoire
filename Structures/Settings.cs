@@ -31,28 +31,28 @@ namespace Grimoire.Structures
         [Description("The Port (if any) your database is behind"), Category("Database"), DefaultValue(1433)]
         public int Port { get { return OPT.GetInt("db.port"); } set { OPT.Update("db.port", value.ToString()); } }
 
-        [Description("Determines if Grimoire will use Windows Authentication to connect to the database, this does not require Username/Password."), Category("Database"), DefaultValue(false)]
+        [Description("Determines if Grimoire will use Windows Authentication to connect to the database, this does not require Username/Password."), Category("Database"), DisplayName("Trusted Connection")]
         public bool Trusted { get { return OPT.GetBool("db.trusted.connection"); } set { OPT.Update("db.trusted.connection", Convert.ToInt32(value).ToString()); } }
 
-        [Description("The database name of your Arcadia, e.g. ....Arcadia or 62World"), Category("Database"), DefaultValue("Arcadia"), DisplayName("Arcadia Name")]
+        [Description("The database name of your Arcadia (world database) e.g. ....Arcadia or 62World"), Category("Database"), DefaultValue("Arcadia"), DisplayName("Arcadia Name")]
         public string WorldName { get { return OPT.GetString("db.world.name"); } set { OPT.Update("db.world.name", value.ToString()); } }
 
-        [Description("The username used to connect to the world database"), Category("Database"), DefaultValue("sa"), DisplayName("Arcadia Username")]
+        [Description("The username used to connect to the world database. Leave blank if Trusted Connection is true"), Category("Database"), DefaultValue("sa"), DisplayName("Arcadia Username")]
         public string WorldUser { get { return OPT.GetString("db.world.username"); } set { OPT.Update("db.world.username", value.ToString()); } }
 
-        [Description("The password used to connect to the world database"), Category("Database"), DisplayName("Arcadia Password")]
+        [Description("The password used to connect to the world database. Leave blank if Trusted Connection is true"), Category("Database"), DisplayName("Arcadia Password")]
         public string WorldPass { get { return OPT.GetString("db.world.password"); } set { OPT.Update("db.world.password", value.ToString()); } }
 
-        [Description("Determines if the target table of the save operation will be dropped and recreate or truncated before inserting the .rdb data"), Category("Database"), DisplayName("Drop Table")]
+        [Description("Determines if the target table of any SQL save operation will be dropped and recreated or truncated before inserting the .rdb data"), Category("Database"), DisplayName("Drop Table")]
         public bool DropTable { get { return OPT.GetBool("db.save.drop"); } set { OPT.Update("db.save.drop", Convert.ToInt32(value).ToString()); } }
 
-        [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data"), Category("Database"), DisplayName("Backup Table")]
+        [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data by creating a script (.sql) of the tables data in the /scripts/ folder"), Category("Database"), DisplayName("Backup Table")]
         public bool BackupTable { get { return OPT.GetBool("db.save.backup"); } set { OPT.Update("db.save.backup", Convert.ToInt32(value).ToString()); } }
 
-        [Description("Determines the period of time (in seconds) a SQL Connection attempt will last before timing out (expiring)."), Category("Database"), DisplayName("Timeout")]
+        [Description("Determines the period of time (in seconds) a SQL Connection attempt will last before timing out (expiring)."), Category("Database"), DisplayName("Connection Timeout")]
         public int ConnTimeout { get { return OPT.GetInt("db.connection.timeout"); } set { OPT.Update("db.connection.timeout", value.ToString()); } }
 
-        [Description("If defined, this is where any exported/built files will be placed"), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        [Description("If defined, this is where any exported/built files will be placed. If not defined Grimoire will use/create the 'Output' folder."), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string BuildDirectory { get { return OPT.GetString("build.directory"); } set { OPT.Update("build.directory", value); } }
 
         // data
@@ -70,7 +70,7 @@ namespace Grimoire.Structures
         [Description("Determines if the structure you select will be loaded the moment you select it or manually with \"Load\" button"), Category("RDB Utility"), DisplayName("Load on Select")]
         public bool AutoLoad { get { return OPT.GetBool("rdb.structure.autoload"); } set { OPT.Update("rdb.structure.autoload", Convert.ToInt32(value).ToString()); } }
         
-        [Description("The path where RDB Structure LUA Files are stored"), Category("RDB Utility"), DisplayName("Structures Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        [Description("The path where RDB Structure .lua Files are stored. Likely /structures/"), Category("RDB Utility"), DisplayName("Structures Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string RDBStructureDirectory {  get { return OPT.GetString("rdb.structure.directory"); } set { OPT.Update("rdb.structure.directory", value.ToString()); } }
 
         [Description("The default directory displayed when opening local files in the RDB Utility"), Category("RDB Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
@@ -105,13 +105,16 @@ namespace Grimoire.Structures
         //public int LogLevel { get { return OPT.GetInt("log.level"); } set { OPT.UpdateSetting("log.evel", value.ToString()); } }
 
         // use flag
-        [Description("Directory where flag files are stored"), DisplayName("Flag Files Directory"), Category("Flag Utility"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string FlagDirectory { get { return OPT.GetString("useflag.directory"); } set { OPT.Update("useflag.directory", value.ToString()); } }
+        [Description("Directory where flag files are stored"), DisplayName("Flag Files Directory"), Category("Flag Editor"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string FlagDirectory { get { return OPT.GetString("flag.directory"); } set { OPT.Update("flag.directory", value.ToString()); } }
 
-        [Description("Path of the flag file to be loaded by default"), Category("Flag Utility"), DisplayName("Flag List Path"), EditorAttribute(typeof(FileNameEditor), typeof(UITypeEditor))]
-        public string DefaultPath { get { return OPT.GetString("useflag.default.list"); } set { OPT.Update("useflag.default.list", value.ToString()); } }
+        [Description("Path of the flag file to be loaded by default"), Category("Flag Editor"), DisplayName("Flag List Path"), EditorAttribute(typeof(FileNameEditor), typeof(UITypeEditor))]
+        public string DefaultPath { get { return OPT.GetString("flag.default._list"); } set { OPT.Update("flag.default._list", value.ToString()); } }
 
-        [Description("Determines if input flag will be decoded each time you change the current input or paste a new input"), Category("Flag Utility"), DisplayName("Auto Reverse Flags")]
-        public bool AutoReverse { get { return OPT.GetBool("useflag.auto_reverse"); } set { OPT.Update("useflag.auto_reverse", Convert.ToInt32(value).ToString()); } }
+        [Description("Determines if the flag selections are reset when changing flag lists!"), DisplayName("Clear on List Changed"), Category("Flag Editor")]
+        public bool ClearOnChange { get { return OPT.GetBool("flag.clear_on_list_change"); } set { OPT.Update("flag.clear_on_list_change",  Convert.ToInt32(value).ToString()); } }
+
+        [Description("Determines the displayed language of Grimoire"), DisplayName("Language"), Category("Language")]
+        public string Language { get { return OPT.GetString("lang"); } set { OPT.Update("lang", value); } }
     }
 }

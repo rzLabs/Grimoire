@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
@@ -70,7 +71,8 @@ namespace Grimoire.Tabs.Styles
             gridUtil = new Utilities.Grid();
             ts_save_enc.Checked = OPT.GetBool("rdb.save.hashed");
             ts_save_w_ascii.Checked = OPT.GetBool("rdb.use.ascii");
-            structsDir = OPT.GetString("rdb.structures.directory") ?? string.Format(@"{0}\Structures\", Directory.GetCurrentDirectory());
+            structsDir = OPT.GetString("rdb.structure.directory") ?? string.Format(@"{0}\Structures\", Directory.GetCurrentDirectory());
+            load_strings();
         }
 
         #endregion
@@ -329,6 +331,73 @@ namespace Grimoire.Tabs.Styles
             ts_prog.Maximum = 100;
 
             MessageBox.Show(msg, "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        }
+
+        private void grid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected = true;
+
+                Cell c = core.CellTemplate[e.ColumnIndex];
+
+                if (c.Flag == FlagType.BIT_FLAG)
+                {
+                    bool overColumn = Convert.ToBoolean(grid.HitTest(e.X, e.Y).RowIndex);
+
+                    if (overColumn)
+                    {
+                        var relativeMousePosition = grid.PointToClient(Cursor.Position);
+                        grid_cs.Show(grid, relativeMousePosition);
+                    }
+                }
+            }
+        }
+
+        private void grid_cs_open_flag_editor_Click(object sender, EventArgs e)
+        {
+            int bitflag = grid.SelectedCells[0].Value as int? ?? default(int);
+            bool changed = false;
+
+            if (bitflag > 0)
+                using (GUI.BitFlag editor = new GUI.BitFlag(bitflag))
+                {
+                    editor.FormClosing += (o, x) =>
+                    {
+                        if (bitflag != editor.Flag)
+                        {
+                            changed = true;
+                            bitflag = editor.Flag;
+                        }
+                    };
+
+                    Cell cell = core.CellTemplate[grid.SelectedCells[0].ColumnIndex];
+
+                    if (cell.ConfigOptions[0] != null)
+                        editor.DefaultFlagFile = cell.ConfigOptions[0].ToString();
+
+                    editor.ShowDialog(this);
+                }
+
+            if (changed)
+                grid.SelectedCells[0].Value = bitflag;
+        }
+
+        private void load_strings()
+        {
+            ts_load.Text = strings.ts_load;
+            ts_load_file.Text = strings.ts_load_file;
+            ts_load_sql.Text = strings.ts_load_sql;
+            ts_save.Text = strings.ts_save;
+            ts_save_file.Text = strings.ts_save_file;
+            ts_file_save_rdb.Text = strings.ts_file_save_rdb;
+            ts_save_file_csv.Text = strings.ts_save_file_csv;
+            ts_save_file_sql.Text = strings.ts_save_file_sql;
+            ts_save_sql.Text = strings.ts_save_sql;
+            ts_encLbl.Text = strings.ts_encLbl;
+            ts_structLb.Text = strings.ts_structLb;
+            ts_save_enc.Text = strings.ts_save_enc;
+            ts_save_w_ascii.Text = strings.ts_save_w_ascii;
         }
 
         #endregion
@@ -709,6 +778,8 @@ namespace Grimoire.Tabs.Styles
 
                 lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, msg);
                 MessageBox.Show(msg, "CSV Generate Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return null;
             }
 
             return sb.ToString();

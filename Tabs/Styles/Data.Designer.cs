@@ -37,11 +37,11 @@
             this.ts_file_new = new System.Windows.Forms.ToolStripButton();
             this.ts_status = new System.Windows.Forms.ToolStripLabel();
             this.ts_file_rebuild = new System.Windows.Forms.ToolStripButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ext_grpBx = new System.Windows.Forms.GroupBox();
             this.extensions = new System.Windows.Forms.TreeView();
             this.extensions_cs = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extensions_cs_export = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.grid_grpBx = new System.Windows.Forms.GroupBox();
             this.grid = new System.Windows.Forms.DataGridView();
             this.ig_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.grid_cs = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -49,31 +49,31 @@
             this.grid_cs_delete = new System.Windows.Forms.ToolStripMenuItem();
             this.grid_cs_export = new System.Windows.Forms.ToolStripMenuItem();
             this.grid_cs_insert = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.stats_grpBx = new System.Windows.Forms.GroupBox();
             this.uploadPath = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
+            this.upPathLbl = new System.Windows.Forms.Label();
             this.encrypted = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.encLbl = new System.Windows.Forms.Label();
             this.extension = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.extLbl = new System.Windows.Forms.Label();
             this.size = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.sizeLbl = new System.Windows.Forms.Label();
             this.offset = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.offsetLbl = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dataId = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.dataId_lbl = new System.Windows.Forms.Label();
             this.extStatus = new System.Windows.Forms.Label();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.search_grpBx = new System.Windows.Forms.GroupBox();
             this.searchInput = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.ext_grpBx.SuspendLayout();
             this.extensions_cs.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.grid_grpBx.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.grid_cs.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.stats_grpBx.SuspendLayout();
+            this.search_grpBx.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -140,19 +140,19 @@
             this.ts_file_rebuild.Visible = false;
             this.ts_file_rebuild.Click += new System.EventHandler(this.TS_File_Rebuild_Click);
             // 
-            // groupBox1
+            // ext_grpBx
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.ext_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.extensions);
-            this.groupBox1.Location = new System.Drawing.Point(552, 24);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(201, 208);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Extensions";
+            this.ext_grpBx.Controls.Add(this.extensions);
+            this.ext_grpBx.Location = new System.Drawing.Point(552, 24);
+            this.ext_grpBx.Margin = new System.Windows.Forms.Padding(2);
+            this.ext_grpBx.Name = "ext_grpBx";
+            this.ext_grpBx.Padding = new System.Windows.Forms.Padding(2);
+            this.ext_grpBx.Size = new System.Drawing.Size(201, 208);
+            this.ext_grpBx.TabIndex = 1;
+            this.ext_grpBx.TabStop = false;
+            this.ext_grpBx.Text = "Extensions";
             // 
             // extensions
             // 
@@ -182,20 +182,20 @@
             this.extensions_cs_export.Text = "Export";
             this.extensions_cs_export.Click += new System.EventHandler(this.extensions_cs_export_Click);
             // 
-            // groupBox2
+            // grid_grpBx
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.grid_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.grid);
-            this.groupBox2.Location = new System.Drawing.Point(14, 24);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(534, 354);
-            this.groupBox2.TabIndex = 2;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Index";
+            this.grid_grpBx.Controls.Add(this.grid);
+            this.grid_grpBx.Location = new System.Drawing.Point(14, 24);
+            this.grid_grpBx.Margin = new System.Windows.Forms.Padding(2);
+            this.grid_grpBx.Name = "grid_grpBx";
+            this.grid_grpBx.Padding = new System.Windows.Forms.Padding(2);
+            this.grid_grpBx.Size = new System.Drawing.Size(534, 354);
+            this.grid_grpBx.TabIndex = 2;
+            this.grid_grpBx.TabStop = false;
+            this.grid_grpBx.Text = "Index";
             // 
             // grid
             // 
@@ -264,30 +264,30 @@
             this.grid_cs_insert.Text = "Insert";
             this.grid_cs_insert.Click += new System.EventHandler(this.grid_cs_insert_Click);
             // 
-            // groupBox3
+            // stats_grpBx
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.uploadPath);
-            this.groupBox3.Controls.Add(this.label7);
-            this.groupBox3.Controls.Add(this.encrypted);
-            this.groupBox3.Controls.Add(this.label6);
-            this.groupBox3.Controls.Add(this.extension);
-            this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Controls.Add(this.size);
-            this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Controls.Add(this.offset);
-            this.groupBox3.Controls.Add(this.label3);
-            this.groupBox3.Controls.Add(this.label2);
-            this.groupBox3.Controls.Add(this.dataId);
-            this.groupBox3.Controls.Add(this.label1);
-            this.groupBox3.Location = new System.Drawing.Point(552, 256);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox3.Size = new System.Drawing.Size(199, 180);
-            this.groupBox3.TabIndex = 3;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Statistics";
+            this.stats_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.stats_grpBx.Controls.Add(this.uploadPath);
+            this.stats_grpBx.Controls.Add(this.upPathLbl);
+            this.stats_grpBx.Controls.Add(this.encrypted);
+            this.stats_grpBx.Controls.Add(this.encLbl);
+            this.stats_grpBx.Controls.Add(this.extension);
+            this.stats_grpBx.Controls.Add(this.extLbl);
+            this.stats_grpBx.Controls.Add(this.size);
+            this.stats_grpBx.Controls.Add(this.sizeLbl);
+            this.stats_grpBx.Controls.Add(this.offset);
+            this.stats_grpBx.Controls.Add(this.offsetLbl);
+            this.stats_grpBx.Controls.Add(this.label2);
+            this.stats_grpBx.Controls.Add(this.dataId);
+            this.stats_grpBx.Controls.Add(this.dataId_lbl);
+            this.stats_grpBx.Location = new System.Drawing.Point(552, 256);
+            this.stats_grpBx.Margin = new System.Windows.Forms.Padding(2);
+            this.stats_grpBx.Name = "stats_grpBx";
+            this.stats_grpBx.Padding = new System.Windows.Forms.Padding(2);
+            this.stats_grpBx.Size = new System.Drawing.Size(199, 180);
+            this.stats_grpBx.TabIndex = 3;
+            this.stats_grpBx.TabStop = false;
+            this.stats_grpBx.Text = "Statistics";
             // 
             // uploadPath
             // 
@@ -299,15 +299,15 @@
             this.uploadPath.TabIndex = 12;
             this.uploadPath.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label7
+            // upPathLbl
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(11, 145);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(69, 13);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "Upload Path:";
+            this.upPathLbl.AutoSize = true;
+            this.upPathLbl.Location = new System.Drawing.Point(11, 145);
+            this.upPathLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.upPathLbl.Name = "upPathLbl";
+            this.upPathLbl.Size = new System.Drawing.Size(69, 13);
+            this.upPathLbl.TabIndex = 11;
+            this.upPathLbl.Text = "Upload Path:";
             // 
             // encrypted
             // 
@@ -319,15 +319,15 @@
             this.encrypted.TabIndex = 10;
             this.encrypted.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label6
+            // encLbl
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(11, 97);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(58, 13);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "Encrypted:";
+            this.encLbl.AutoSize = true;
+            this.encLbl.Location = new System.Drawing.Point(11, 97);
+            this.encLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.encLbl.Name = "encLbl";
+            this.encLbl.Size = new System.Drawing.Size(58, 13);
+            this.encLbl.TabIndex = 9;
+            this.encLbl.Text = "Encrypted:";
             // 
             // extension
             // 
@@ -339,15 +339,15 @@
             this.extension.TabIndex = 8;
             this.extension.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label5
+            // extLbl
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(11, 121);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "Extension:";
+            this.extLbl.AutoSize = true;
+            this.extLbl.Location = new System.Drawing.Point(11, 121);
+            this.extLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.extLbl.Name = "extLbl";
+            this.extLbl.Size = new System.Drawing.Size(56, 13);
+            this.extLbl.TabIndex = 7;
+            this.extLbl.Text = "Extension:";
             // 
             // size
             // 
@@ -359,15 +359,15 @@
             this.size.TabIndex = 6;
             this.size.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label4
+            // sizeLbl
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(11, 73);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(30, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Size:";
+            this.sizeLbl.AutoSize = true;
+            this.sizeLbl.Location = new System.Drawing.Point(11, 73);
+            this.sizeLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.sizeLbl.Name = "sizeLbl";
+            this.sizeLbl.Size = new System.Drawing.Size(30, 13);
+            this.sizeLbl.TabIndex = 5;
+            this.sizeLbl.Text = "Size:";
             // 
             // offset
             // 
@@ -379,15 +379,15 @@
             this.offset.TabIndex = 4;
             this.offset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label3
+            // offsetLbl
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 49);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 13);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Offset:";
+            this.offsetLbl.AutoSize = true;
+            this.offsetLbl.Location = new System.Drawing.Point(11, 49);
+            this.offsetLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.offsetLbl.Name = "offsetLbl";
+            this.offsetLbl.Size = new System.Drawing.Size(38, 13);
+            this.offsetLbl.TabIndex = 3;
+            this.offsetLbl.Text = "Offset:";
             // 
             // label2
             // 
@@ -408,15 +408,15 @@
             this.dataId.TabIndex = 1;
             this.dataId.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label1
+            // dataId_lbl
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 25);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(47, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Data ID:";
+            this.dataId_lbl.AutoSize = true;
+            this.dataId_lbl.Location = new System.Drawing.Point(11, 25);
+            this.dataId_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.dataId_lbl.Name = "dataId_lbl";
+            this.dataId_lbl.Size = new System.Drawing.Size(47, 13);
+            this.dataId_lbl.TabIndex = 0;
+            this.dataId_lbl.Text = "Data ID:";
             // 
             // extStatus
             // 
@@ -427,17 +427,17 @@
             this.extStatus.Size = new System.Drawing.Size(0, 13);
             this.extStatus.TabIndex = 4;
             // 
-            // groupBox4
+            // search_grpBx
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.search_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.searchInput);
-            this.groupBox4.Location = new System.Drawing.Point(16, 381);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(530, 55);
-            this.groupBox4.TabIndex = 5;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Search";
+            this.search_grpBx.Controls.Add(this.searchInput);
+            this.search_grpBx.Location = new System.Drawing.Point(16, 381);
+            this.search_grpBx.Name = "search_grpBx";
+            this.search_grpBx.Size = new System.Drawing.Size(530, 55);
+            this.search_grpBx.TabIndex = 5;
+            this.search_grpBx.TabStop = false;
+            this.search_grpBx.Text = "Search";
             // 
             // searchInput
             // 
@@ -455,26 +455,26 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.search_grpBx);
             this.Controls.Add(this.extStatus);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.stats_grpBx);
+            this.Controls.Add(this.grid_grpBx);
+            this.Controls.Add(this.ext_grpBx);
             this.Controls.Add(this.toolStrip1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Data";
             this.Size = new System.Drawing.Size(753, 448);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
+            this.ext_grpBx.ResumeLayout(false);
             this.extensions_cs.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
+            this.grid_grpBx.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.grid_cs.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.stats_grpBx.ResumeLayout(false);
+            this.stats_grpBx.PerformLayout();
+            this.search_grpBx.ResumeLayout(false);
+            this.search_grpBx.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -485,22 +485,22 @@
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton ts_file_load;
         private System.Windows.Forms.ToolStripProgressBar ts_progress;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox ext_grpBx;
         private System.Windows.Forms.TreeView extensions;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox grid_grpBx;
         private System.Windows.Forms.DataGridView grid;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox stats_grpBx;
         private System.Windows.Forms.TextBox encrypted;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label encLbl;
         private System.Windows.Forms.TextBox extension;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label extLbl;
         private System.Windows.Forms.TextBox size;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label sizeLbl;
         private System.Windows.Forms.TextBox offset;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label offsetLbl;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox dataId;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label dataId_lbl;
         private System.Windows.Forms.ContextMenuStrip grid_cs;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.Label extStatus;
@@ -512,10 +512,10 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel ts_status;
         private System.Windows.Forms.ToolStripMenuItem grid_cs_insert;
-        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox search_grpBx;
         private System.Windows.Forms.TextBox searchInput;
         private System.Windows.Forms.TextBox uploadPath;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label upPathLbl;
         private System.Windows.Forms.ToolStripButton ts_file_rebuild;
         private System.Windows.Forms.DataGridViewTextBoxColumn ig_name;
         private System.Windows.Forms.ToolStripMenuItem grid_cs_delete;

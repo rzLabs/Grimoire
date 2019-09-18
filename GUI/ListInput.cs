@@ -18,6 +18,7 @@ namespace Grimoire.GUI
         public ListInput()
         {
             InitializeComponent();
+            load_strings();
         }
 
         public ListInput(string description, Cell[] cells)
@@ -28,6 +29,8 @@ namespace Grimoire.GUI
             this.cells = cells;
 
             populateList();
+
+            load_strings();
         }
 
         public ListInput(string description, string[] selections)
@@ -66,6 +69,12 @@ namespace Grimoire.GUI
 
             DialogResult = DialogResult.OK;
             Hide();
+        }
+
+        private void load_strings()
+        {
+            descLbl.Text = strings.descLbl;
+            inputLbl.Text = strings.inputLbl;
         }
 
         private void ListInput_Shown(object sender, EventArgs e)

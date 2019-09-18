@@ -19,6 +19,7 @@ namespace Grimoire.GUI
             Text = title;
             this.msg.Text = msg;
             populateList(filePaths);
+            load_strings();
         }
 
         private void populateList(string[] filePaths)
@@ -39,6 +40,13 @@ namespace Grimoire.GUI
         {
             DialogResult = DialogResult.Cancel;
             this.Hide();
+        }
+
+        private void load_strings()
+        {
+            msg_grpBx.Text = strings.msg_grpBx;
+            yesBtn.Text = strings.yesBtn;
+            noBtn.Text = strings.noBtn;
         }
     }
 }

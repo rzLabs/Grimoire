@@ -30,17 +30,17 @@
         {
             this.components = new System.ComponentModel.Container();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.instBox = new System.Windows.Forms.GroupBox();
-            this.flipBtn = new System.Windows.Forms.Button();
+            this.inst_grpBx = new System.Windows.Forms.GroupBox();
+            this.inst_flipBtn = new System.Windows.Forms.Button();
             this.output = new System.Windows.Forms.TextBox();
             this.input = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.opt_name_box = new System.Windows.Forms.GroupBox();
-            this.opt_remove_ascii = new System.Windows.Forms.RadioButton();
-            this.opt_append_ascii = new System.Windows.Forms.RadioButton();
-            this.opt_none = new System.Windows.Forms.RadioButton();
-            this.multiBox = new System.Windows.Forms.GroupBox();
+            this.inst_outLbl = new System.Windows.Forms.Label();
+            this.inst_inputLbl = new System.Windows.Forms.Label();
+            this.optName_grpBx = new System.Windows.Forms.GroupBox();
+            this.optRemove_ascii_rBtn = new System.Windows.Forms.RadioButton();
+            this.optAppend_ascii_rBtn = new System.Windows.Forms.RadioButton();
+            this.optNone_rBtn = new System.Windows.Forms.RadioButton();
+            this.multi_grpBx = new System.Windows.Forms.GroupBox();
             this.fileGrid = new System.Windows.Forms.DataGridView();
             this.originalName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.convertedName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,17 +51,17 @@
             this.cMenu_add_file = new System.Windows.Forms.ToolStripMenuItem();
             this.cMenu_add_folder = new System.Windows.Forms.ToolStripMenuItem();
             this.cMenu_convert = new System.Windows.Forms.ToolStripMenuItem();
+            this.cMenu_convert_all = new System.Windows.Forms.ToolStripMenuItem();
             this.cMenu_clear = new System.Windows.Forms.ToolStripMenuItem();
             this.autoClear_chk = new System.Windows.Forms.CheckBox();
-            this.opt_grid_box = new System.Windows.Forms.GroupBox();
-            this.opt_auto_convert = new System.Windows.Forms.CheckBox();
-            this.cMenu_convert_all = new System.Windows.Forms.ToolStripMenuItem();
-            this.instBox.SuspendLayout();
-            this.opt_name_box.SuspendLayout();
-            this.multiBox.SuspendLayout();
+            this.optGrid_grpBx = new System.Windows.Forms.GroupBox();
+            this.autoConvert_chk = new System.Windows.Forms.CheckBox();
+            this.inst_grpBx.SuspendLayout();
+            this.optName_grpBx.SuspendLayout();
+            this.multi_grpBx.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileGrid)).BeginInit();
             this.cMenu_multi.SuspendLayout();
-            this.opt_grid_box.SuspendLayout();
+            this.optGrid_grpBx.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar1
@@ -73,35 +73,35 @@
             this.progressBar1.Size = new System.Drawing.Size(75, 19);
             this.progressBar1.TabIndex = 5;
             // 
-            // instBox
+            // inst_grpBx
             // 
-            this.instBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.inst_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.instBox.Controls.Add(this.flipBtn);
-            this.instBox.Controls.Add(this.output);
-            this.instBox.Controls.Add(this.input);
-            this.instBox.Controls.Add(this.label2);
-            this.instBox.Controls.Add(this.label1);
-            this.instBox.Location = new System.Drawing.Point(15, 2);
-            this.instBox.Margin = new System.Windows.Forms.Padding(2);
-            this.instBox.Name = "instBox";
-            this.instBox.Padding = new System.Windows.Forms.Padding(2);
-            this.instBox.Size = new System.Drawing.Size(518, 86);
-            this.instBox.TabIndex = 6;
-            this.instBox.TabStop = false;
-            this.instBox.Text = "Instant";
+            this.inst_grpBx.Controls.Add(this.inst_flipBtn);
+            this.inst_grpBx.Controls.Add(this.output);
+            this.inst_grpBx.Controls.Add(this.input);
+            this.inst_grpBx.Controls.Add(this.inst_outLbl);
+            this.inst_grpBx.Controls.Add(this.inst_inputLbl);
+            this.inst_grpBx.Location = new System.Drawing.Point(15, 2);
+            this.inst_grpBx.Margin = new System.Windows.Forms.Padding(2);
+            this.inst_grpBx.Name = "inst_grpBx";
+            this.inst_grpBx.Padding = new System.Windows.Forms.Padding(2);
+            this.inst_grpBx.Size = new System.Drawing.Size(518, 86);
+            this.inst_grpBx.TabIndex = 6;
+            this.inst_grpBx.TabStop = false;
+            this.inst_grpBx.Text = "Instant";
             // 
-            // flipBtn
+            // inst_flipBtn
             // 
-            this.flipBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.flipBtn.Location = new System.Drawing.Point(452, 63);
-            this.flipBtn.Margin = new System.Windows.Forms.Padding(2);
-            this.flipBtn.Name = "flipBtn";
-            this.flipBtn.Size = new System.Drawing.Size(56, 19);
-            this.flipBtn.TabIndex = 9;
-            this.flipBtn.Text = "Flip";
-            this.flipBtn.UseVisualStyleBackColor = true;
-            this.flipBtn.Click += new System.EventHandler(this.flipBtn_Click);
+            this.inst_flipBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.inst_flipBtn.Location = new System.Drawing.Point(452, 63);
+            this.inst_flipBtn.Margin = new System.Windows.Forms.Padding(2);
+            this.inst_flipBtn.Name = "inst_flipBtn";
+            this.inst_flipBtn.Size = new System.Drawing.Size(56, 19);
+            this.inst_flipBtn.TabIndex = 9;
+            this.inst_flipBtn.Text = "Flip";
+            this.inst_flipBtn.UseVisualStyleBackColor = true;
+            this.inst_flipBtn.Click += new System.EventHandler(this.flipBtn_Click);
             // 
             // output
             // 
@@ -127,88 +127,88 @@
             this.input.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.input.TextChanged += new System.EventHandler(this.input_TextChanged);
             // 
-            // label2
+            // inst_outLbl
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 42);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Ouput:";
+            this.inst_outLbl.AutoSize = true;
+            this.inst_outLbl.Location = new System.Drawing.Point(10, 42);
+            this.inst_outLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.inst_outLbl.Name = "inst_outLbl";
+            this.inst_outLbl.Size = new System.Drawing.Size(39, 13);
+            this.inst_outLbl.TabIndex = 6;
+            this.inst_outLbl.Text = "Ouput:";
             // 
-            // label1
+            // inst_inputLbl
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 20);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(34, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Input:";
+            this.inst_inputLbl.AutoSize = true;
+            this.inst_inputLbl.Location = new System.Drawing.Point(10, 20);
+            this.inst_inputLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.inst_inputLbl.Name = "inst_inputLbl";
+            this.inst_inputLbl.Size = new System.Drawing.Size(34, 13);
+            this.inst_inputLbl.TabIndex = 5;
+            this.inst_inputLbl.Text = "Input:";
             // 
-            // opt_name_box
+            // optName_grpBx
             // 
-            this.opt_name_box.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.opt_name_box.Controls.Add(this.opt_remove_ascii);
-            this.opt_name_box.Controls.Add(this.opt_append_ascii);
-            this.opt_name_box.Controls.Add(this.opt_none);
-            this.opt_name_box.Location = new System.Drawing.Point(537, 2);
-            this.opt_name_box.Margin = new System.Windows.Forms.Padding(2);
-            this.opt_name_box.Name = "opt_name_box";
-            this.opt_name_box.Padding = new System.Windows.Forms.Padding(2);
-            this.opt_name_box.Size = new System.Drawing.Size(117, 86);
-            this.opt_name_box.TabIndex = 7;
-            this.opt_name_box.TabStop = false;
-            this.opt_name_box.Text = "Name Options";
+            this.optName_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.optName_grpBx.Controls.Add(this.optRemove_ascii_rBtn);
+            this.optName_grpBx.Controls.Add(this.optAppend_ascii_rBtn);
+            this.optName_grpBx.Controls.Add(this.optNone_rBtn);
+            this.optName_grpBx.Location = new System.Drawing.Point(537, 2);
+            this.optName_grpBx.Margin = new System.Windows.Forms.Padding(2);
+            this.optName_grpBx.Name = "optName_grpBx";
+            this.optName_grpBx.Padding = new System.Windows.Forms.Padding(2);
+            this.optName_grpBx.Size = new System.Drawing.Size(117, 86);
+            this.optName_grpBx.TabIndex = 7;
+            this.optName_grpBx.TabStop = false;
+            this.optName_grpBx.Text = "Name Options";
             // 
-            // opt_remove_ascii
+            // optRemove_ascii_rBtn
             // 
-            this.opt_remove_ascii.AutoSize = true;
-            this.opt_remove_ascii.Location = new System.Drawing.Point(14, 61);
-            this.opt_remove_ascii.Name = "opt_remove_ascii";
-            this.opt_remove_ascii.Size = new System.Drawing.Size(95, 17);
-            this.opt_remove_ascii.TabIndex = 2;
-            this.opt_remove_ascii.TabStop = true;
-            this.opt_remove_ascii.Text = "Remove (ascii)";
-            this.opt_remove_ascii.UseVisualStyleBackColor = true;
+            this.optRemove_ascii_rBtn.AutoSize = true;
+            this.optRemove_ascii_rBtn.Location = new System.Drawing.Point(14, 61);
+            this.optRemove_ascii_rBtn.Name = "optRemove_ascii_rBtn";
+            this.optRemove_ascii_rBtn.Size = new System.Drawing.Size(95, 17);
+            this.optRemove_ascii_rBtn.TabIndex = 2;
+            this.optRemove_ascii_rBtn.TabStop = true;
+            this.optRemove_ascii_rBtn.Text = "Remove (ascii)";
+            this.optRemove_ascii_rBtn.UseVisualStyleBackColor = true;
             // 
-            // opt_append_ascii
+            // optAppend_ascii_rBtn
             // 
-            this.opt_append_ascii.AutoSize = true;
-            this.opt_append_ascii.Location = new System.Drawing.Point(13, 38);
-            this.opt_append_ascii.Name = "opt_append_ascii";
-            this.opt_append_ascii.Size = new System.Drawing.Size(92, 17);
-            this.opt_append_ascii.TabIndex = 1;
-            this.opt_append_ascii.TabStop = true;
-            this.opt_append_ascii.Text = "Append (ascii)";
-            this.opt_append_ascii.UseVisualStyleBackColor = true;
+            this.optAppend_ascii_rBtn.AutoSize = true;
+            this.optAppend_ascii_rBtn.Location = new System.Drawing.Point(13, 38);
+            this.optAppend_ascii_rBtn.Name = "optAppend_ascii_rBtn";
+            this.optAppend_ascii_rBtn.Size = new System.Drawing.Size(92, 17);
+            this.optAppend_ascii_rBtn.TabIndex = 1;
+            this.optAppend_ascii_rBtn.TabStop = true;
+            this.optAppend_ascii_rBtn.Text = "Append (ascii)";
+            this.optAppend_ascii_rBtn.UseVisualStyleBackColor = true;
             // 
-            // opt_none
+            // optNone_rBtn
             // 
-            this.opt_none.AutoSize = true;
-            this.opt_none.Location = new System.Drawing.Point(14, 18);
-            this.opt_none.Name = "opt_none";
-            this.opt_none.Size = new System.Drawing.Size(51, 17);
-            this.opt_none.TabIndex = 0;
-            this.opt_none.TabStop = true;
-            this.opt_none.Text = "None";
-            this.opt_none.UseVisualStyleBackColor = true;
+            this.optNone_rBtn.AutoSize = true;
+            this.optNone_rBtn.Location = new System.Drawing.Point(14, 18);
+            this.optNone_rBtn.Name = "optNone_rBtn";
+            this.optNone_rBtn.Size = new System.Drawing.Size(51, 17);
+            this.optNone_rBtn.TabIndex = 0;
+            this.optNone_rBtn.TabStop = true;
+            this.optNone_rBtn.Text = "None";
+            this.optNone_rBtn.UseVisualStyleBackColor = true;
             // 
-            // multiBox
+            // multi_grpBx
             // 
-            this.multiBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.multi_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.multiBox.Controls.Add(this.fileGrid);
-            this.multiBox.Location = new System.Drawing.Point(15, 87);
-            this.multiBox.Margin = new System.Windows.Forms.Padding(2);
-            this.multiBox.Name = "multiBox";
-            this.multiBox.Padding = new System.Windows.Forms.Padding(2);
-            this.multiBox.Size = new System.Drawing.Size(752, 333);
-            this.multiBox.TabIndex = 8;
-            this.multiBox.TabStop = false;
-            this.multiBox.Text = "Multi-File";
+            this.multi_grpBx.Controls.Add(this.fileGrid);
+            this.multi_grpBx.Location = new System.Drawing.Point(15, 87);
+            this.multi_grpBx.Margin = new System.Windows.Forms.Padding(2);
+            this.multi_grpBx.Name = "multi_grpBx";
+            this.multi_grpBx.Padding = new System.Windows.Forms.Padding(2);
+            this.multi_grpBx.Size = new System.Drawing.Size(752, 333);
+            this.multi_grpBx.TabIndex = 8;
+            this.multi_grpBx.TabStop = false;
+            this.multi_grpBx.Text = "Multi-File";
             // 
             // fileGrid
             // 
@@ -274,7 +274,7 @@
             this.cMenu_add_file,
             this.cMenu_add_folder});
             this.cMenu_add.Name = "cMenu_add";
-            this.cMenu_add.Size = new System.Drawing.Size(180, 22);
+            this.cMenu_add.Size = new System.Drawing.Size(116, 22);
             this.cMenu_add.Text = "Add";
             // 
             // cMenu_add_file
@@ -287,7 +287,7 @@
             // cMenu_add_folder
             // 
             this.cMenu_add_folder.Name = "cMenu_add_folder";
-            this.cMenu_add_folder.Size = new System.Drawing.Size(180, 22);
+            this.cMenu_add_folder.Size = new System.Drawing.Size(107, 22);
             this.cMenu_add_folder.Text = "Folder";
             this.cMenu_add_folder.Click += new System.EventHandler(this.cMenu_add_folder_Click);
             // 
@@ -299,6 +299,13 @@
             this.cMenu_convert.Size = new System.Drawing.Size(116, 22);
             this.cMenu_convert.Text = "Convert";
             this.cMenu_convert.Click += new System.EventHandler(this.cMenu_convert_Click);
+            // 
+            // cMenu_convert_all
+            // 
+            this.cMenu_convert_all.Name = "cMenu_convert_all";
+            this.cMenu_convert_all.Size = new System.Drawing.Size(88, 22);
+            this.cMenu_convert_all.Text = "All";
+            this.cMenu_convert_all.Click += new System.EventHandler(this.cMenu_convert_all_Click);
             // 
             // cMenu_clear
             // 
@@ -319,58 +326,50 @@
             this.autoClear_chk.UseVisualStyleBackColor = true;
             this.autoClear_chk.CheckStateChanged += new System.EventHandler(this.autoClear_chk_CheckStateChanged);
             // 
-            // opt_grid_box
+            // optGrid_grpBx
             // 
-            this.opt_grid_box.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.opt_grid_box.Controls.Add(this.opt_auto_convert);
-            this.opt_grid_box.Controls.Add(this.autoClear_chk);
-            this.opt_grid_box.Location = new System.Drawing.Point(659, 3);
-            this.opt_grid_box.Name = "opt_grid_box";
-            this.opt_grid_box.Size = new System.Drawing.Size(108, 85);
-            this.opt_grid_box.TabIndex = 9;
-            this.opt_grid_box.TabStop = false;
-            this.opt_grid_box.Text = "Grid Options";
+            this.optGrid_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.optGrid_grpBx.Controls.Add(this.autoConvert_chk);
+            this.optGrid_grpBx.Controls.Add(this.autoClear_chk);
+            this.optGrid_grpBx.Location = new System.Drawing.Point(659, 3);
+            this.optGrid_grpBx.Name = "optGrid_grpBx";
+            this.optGrid_grpBx.Size = new System.Drawing.Size(108, 85);
+            this.optGrid_grpBx.TabIndex = 9;
+            this.optGrid_grpBx.TabStop = false;
+            this.optGrid_grpBx.Text = "Grid Options";
             // 
-            // opt_auto_convert
+            // autoConvert_chk
             // 
-            this.opt_auto_convert.AutoSize = true;
-            this.opt_auto_convert.Location = new System.Drawing.Point(16, 37);
-            this.opt_auto_convert.Name = "opt_auto_convert";
-            this.opt_auto_convert.Size = new System.Drawing.Size(88, 17);
-            this.opt_auto_convert.TabIndex = 5;
-            this.opt_auto_convert.Text = "Auto Convert";
-            this.opt_auto_convert.UseVisualStyleBackColor = true;
-            this.opt_auto_convert.CheckStateChanged += new System.EventHandler(this.opt_auto_convert_CheckStateChanged);
-            // 
-            // cMenu_convert_all
-            // 
-            this.cMenu_convert_all.Name = "cMenu_convert_all";
-            this.cMenu_convert_all.Size = new System.Drawing.Size(180, 22);
-            this.cMenu_convert_all.Text = "All";
-            this.cMenu_convert_all.Click += new System.EventHandler(this.cMenu_convert_all_Click);
+            this.autoConvert_chk.AutoSize = true;
+            this.autoConvert_chk.Location = new System.Drawing.Point(16, 37);
+            this.autoConvert_chk.Name = "autoConvert_chk";
+            this.autoConvert_chk.Size = new System.Drawing.Size(88, 17);
+            this.autoConvert_chk.TabIndex = 5;
+            this.autoConvert_chk.Text = "Auto Convert";
+            this.autoConvert_chk.UseVisualStyleBackColor = true;
+            this.autoConvert_chk.CheckStateChanged += new System.EventHandler(this.opt_auto_convert_CheckStateChanged);
             // 
             // Hasher
             // 
-            this.AllowDrop = false;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.opt_grid_box);
-            this.Controls.Add(this.multiBox);
-            this.Controls.Add(this.opt_name_box);
-            this.Controls.Add(this.instBox);
+            this.Controls.Add(this.optGrid_grpBx);
+            this.Controls.Add(this.multi_grpBx);
+            this.Controls.Add(this.optName_grpBx);
+            this.Controls.Add(this.inst_grpBx);
             this.Controls.Add(this.progressBar1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Hasher";
             this.Size = new System.Drawing.Size(781, 454);
-            this.instBox.ResumeLayout(false);
-            this.instBox.PerformLayout();
-            this.opt_name_box.ResumeLayout(false);
-            this.opt_name_box.PerformLayout();
-            this.multiBox.ResumeLayout(false);
+            this.inst_grpBx.ResumeLayout(false);
+            this.inst_grpBx.PerformLayout();
+            this.optName_grpBx.ResumeLayout(false);
+            this.optName_grpBx.PerformLayout();
+            this.multi_grpBx.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fileGrid)).EndInit();
             this.cMenu_multi.ResumeLayout(false);
-            this.opt_grid_box.ResumeLayout(false);
-            this.opt_grid_box.PerformLayout();
+            this.optGrid_grpBx.ResumeLayout(false);
+            this.optGrid_grpBx.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -378,17 +377,17 @@
         #endregion
 
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.GroupBox instBox;
+        private System.Windows.Forms.GroupBox inst_grpBx;
         private System.Windows.Forms.TextBox output;
         private System.Windows.Forms.TextBox input;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox opt_name_box;
-        private System.Windows.Forms.GroupBox multiBox;
+        private System.Windows.Forms.Label inst_outLbl;
+        private System.Windows.Forms.Label inst_inputLbl;
+        private System.Windows.Forms.GroupBox optName_grpBx;
+        private System.Windows.Forms.GroupBox multi_grpBx;
         private System.Windows.Forms.DataGridView fileGrid;
         private System.Windows.Forms.ContextMenuStrip cMenu_multi;
         private System.Windows.Forms.ToolStripMenuItem cMenu_clear;
-        private System.Windows.Forms.Button flipBtn;
+        private System.Windows.Forms.Button inst_flipBtn;
         private System.Windows.Forms.DataGridViewTextBoxColumn originalName;
         private System.Windows.Forms.DataGridViewTextBoxColumn convertedName;
         private System.Windows.Forms.DataGridViewTextBoxColumn filePath;
@@ -396,13 +395,13 @@
         private System.Windows.Forms.ToolStripMenuItem cMenu_add;
         private System.Windows.Forms.ToolStripMenuItem cMenu_add_file;
         private System.Windows.Forms.ToolStripMenuItem cMenu_add_folder;
-        private System.Windows.Forms.RadioButton opt_remove_ascii;
-        private System.Windows.Forms.RadioButton opt_append_ascii;
-        private System.Windows.Forms.RadioButton opt_none;
+        private System.Windows.Forms.RadioButton optRemove_ascii_rBtn;
+        private System.Windows.Forms.RadioButton optAppend_ascii_rBtn;
+        private System.Windows.Forms.RadioButton optNone_rBtn;
         private System.Windows.Forms.ToolStripMenuItem cMenu_convert;
         private System.Windows.Forms.CheckBox autoClear_chk;
-        private System.Windows.Forms.GroupBox opt_grid_box;
-        private System.Windows.Forms.CheckBox opt_auto_convert;
+        private System.Windows.Forms.GroupBox optGrid_grpBx;
+        private System.Windows.Forms.CheckBox autoConvert_chk;
         private System.Windows.Forms.ToolStripMenuItem cMenu_convert_all;
     }
 }

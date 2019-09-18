@@ -18,6 +18,7 @@ namespace Grimoire.Tabs.Styles
             lManager = Logs.Manager.Instance;
             lManager.Enter(Logs.Sender.HASHER, Logs.Level.NOTICE, "Hasher Utility Started.");
             set_checks();
+            load_strings();
         }
         #endregion
 
@@ -77,7 +78,7 @@ namespace Grimoire.Tabs.Styles
 
         private void opt_auto_convert_CheckStateChanged(object sender, EventArgs e)
         {
-            Grimoire.Utilities.OPT.Update("hash.auto_convert", Convert.ToInt32(opt_auto_convert.Checked).ToString());
+            Grimoire.Utilities.OPT.Update("hash.auto_convert", Convert.ToInt32(autoConvert_chk.Checked).ToString());
             Grimoire.Utilities.OPT.Save();
         }
 
@@ -109,32 +110,31 @@ namespace Grimoire.Tabs.Styles
                 add_file_to_grid(path);
             }
 
-            if (opt_auto_convert.Checked)
+            if (autoConvert_chk.Checked)
                 convertAllEntries();
         }
 
         #endregion
-
 
         #region Methods (private)
 
         private void set_checks()
         {
             autoClear_chk.Checked = Grimoire.Utilities.OPT.GetBool("hash.auto_clear");
-            opt_auto_convert.Checked = Grimoire.Utilities.OPT.GetBool("hash.auto_convert");
+            autoConvert_chk.Checked = Grimoire.Utilities.OPT.GetBool("hash.auto_convert");
 
             switch (Grimoire.Utilities.OPT.GetInt("hash.type"))
             {
                 case 1:
-                    opt_append_ascii.Checked = true;
+                    optAppend_ascii_rBtn.Checked = true;
                     break;
 
                 case 2:
-                    opt_remove_ascii.Checked = true;
+                    optRemove_ascii_rBtn.Checked = true;
                     break;
 
                 default:
-                    opt_none.Checked = true;
+                    optNone_rBtn.Checked = true;
                     break;
             }
         }
@@ -183,18 +183,34 @@ namespace Grimoire.Tabs.Styles
         {
             string originalName = Path.GetFileName(path);
 
-            if (opt_append_ascii.Checked)
+            if (optAppend_ascii_rBtn.Checked)
             {
                 if (!originalName.Contains("(ascii)"))
                     originalName = originalName.Insert(originalName.Length - 4, "(ascii)");
             }
 
-            if (opt_remove_ascii.Checked)
+            if (optRemove_ascii_rBtn.Checked)
                 originalName = originalName.Replace("(ascii)", string.Empty);
 
             string convertedName = StringCipher.IsEncoded(originalName) ? StringCipher.Decode(originalName) : StringCipher.Encode(originalName);
 
             fileGrid.Rows.Add(originalName, convertedName, Path.GetDirectoryName(path), "Pending");
+        }
+
+        private void load_strings()
+        {
+            inst_grpBx.Text = strings.inst_grpBx;
+            inst_inputLbl.Text = strings.inst_inputLbl;
+            inst_outLbl.Text = strings.inst_outLbl;
+            inst_flipBtn.Text = strings.inst_flipBtn;
+            optName_grpBx.Text = strings.optName_grpBx;
+            optNone_rBtn.Text = strings.optNone_rBtn;
+            optAppend_ascii_rBtn.Text = strings.optAppend_ascii_rBtn;
+            optRemove_ascii_rBtn.Text = strings.optRemove_ascii_rBtn;
+            optGrid_grpBx.Text = strings.optGrid_grpBx;
+            autoClear_chk.Text = strings.autoClear_chk;
+            autoConvert_chk.Text = strings.autoConvert_chk;
+            multi_grpBx.Text = strings.multi_grpBx;
         }
 
         #endregion

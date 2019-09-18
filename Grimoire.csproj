@@ -85,6 +85,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GUI\BitFlag.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\BitFlag.Designer.cs">
+      <DependentUpon>BitFlag.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\DataRebuild.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +115,12 @@
     <Compile Include="GUI\ListSelect.Designer.cs">
       <DependentUpon>ListSelect.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\LogViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\LogViewer.Designer.cs">
+      <DependentUpon>LogViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\MessageListBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,6 +144,11 @@
     </Compile>
     <Compile Include="GUI\StructureEditor.Designer.cs">
       <DependentUpon>StructureEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>strings.resx</DependentUpon>
     </Compile>
     <Compile Include="Structures\Log.cs" />
     <Compile Include="Structures\RdbStructure.cs" />
@@ -163,18 +180,6 @@
     </Compile>
     <Compile Include="Tabs\Styles\Item.Designer.cs">
       <DependentUpon>Item.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Tabs\Styles\Log.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Tabs\Styles\Log.Designer.cs">
-      <DependentUpon>Log.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Tabs\Styles\Flag.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Tabs\Styles\Flag.Designer.cs">
-      <DependentUpon>Flag.cs</DependentUpon>
     </Compile>
     <Compile Include="Tabs\Utilities\Enums.cs" />
     <Compile Include="Tabs\Utilities\Grid.cs" />
@@ -209,6 +214,9 @@
     <Compile Include="Utilities\SPR.cs" />
     <Compile Include="Utilities\StringExt.cs" />
     <Compile Include="Utilities\StructureManager.cs" />
+    <EmbeddedResource Include="GUI\BitFlag.resx">
+      <DependentUpon>BitFlag.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\DataRebuild.resx">
       <DependentUpon>DataRebuild.cs</DependentUpon>
     </EmbeddedResource>
@@ -221,7 +229,16 @@
     <EmbeddedResource Include="GUI\ListSelect.resx">
       <DependentUpon>ListSelect.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\LogViewer.resx">
+      <DependentUpon>LogViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Main.en.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Main.ssy.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MessageListBox.resx">
@@ -246,6 +263,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\Data.resx">
       <DependentUpon>Data.cs</DependentUpon>
     </EmbeddedResource>
@@ -258,14 +279,8 @@
     <EmbeddedResource Include="Tabs\Styles\Item.resx">
       <DependentUpon>Item.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tabs\Styles\Log.resx">
-      <DependentUpon>Log.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\RDB.resx">
       <DependentUpon>RDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tabs\Styles\Flag.resx">
-      <DependentUpon>Flag.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

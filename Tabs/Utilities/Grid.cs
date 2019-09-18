@@ -58,8 +58,7 @@ namespace Grimoire.Tabs.Utilities
                 case Style.RDB:
                     {
                         int rowCount = tManager.RDBCore.RowCount;
-                        if (e.RowIndex == rowCount || e.RowIndex > rowCount) { return; }
-                        if (e.RowIndex == 0 & rowCount == 0) { return; }
+                        if (e.RowIndex >= rowCount) { return; }
                         e.Value = tManager.RDBCore.Rows[e.RowIndex][e.ColumnIndex];
                     }
                     break;
@@ -82,6 +81,18 @@ namespace Grimoire.Tabs.Utilities
 
         public void Grid_CellPushed(object sender, DataGridViewCellValueEventArgs e)
         {
+            switch (tManager.Style)
+            {
+                case Style.RDB:
+                    {
+                        int rowCount = tManager.RDBCore.RowCount;
+                        if (e.RowIndex >= rowCount)
+                            return;
+
+                        tManager.RDBCore.Rows[e.RowIndex][e.ColumnIndex] = e.Value;
+                    }
+                    break;
+            }
         }
     }
 }

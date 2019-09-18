@@ -11,6 +11,7 @@ namespace Grimoire.GUI
             Text = description;
             input.Text = defaultText;
             DialogResult = DialogResult.Cancel;
+            load_strings();
         }
 
         public InputBox(string description, bool resizable)
@@ -20,6 +21,7 @@ namespace Grimoire.GUI
             this.FormBorderStyle = (resizable) ? FormBorderStyle.SizableToolWindow : FormBorderStyle.FixedToolWindow;
             input.Multiline = resizable;
             DialogResult = DialogResult.Cancel;
+            load_strings();
         }
 
         public string Value { get { return (input.Text.Length > 0) ? input.Text : null; } set { input.Text = value; } }
@@ -33,6 +35,11 @@ namespace Grimoire.GUI
         private void InputBox_Shown(object sender, EventArgs e)
         {
             input.Focus();
+        }
+
+        private void load_strings()
+        {
+            okBtn.Text = strings.okBtn;
         }
     }
 }

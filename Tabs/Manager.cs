@@ -193,11 +193,6 @@ namespace Grimoire.Tabs
                     text = "Hash Utility";
                     break;
 
-                case Style.FLAG:
-                    tab.Controls.Add(new Styles.Flag() { Dock = DockStyle.Fill });
-                    text = "Flag Utility";
-                    break;
-
                 case Style.ITEM:
                     tab.Controls.Add(new Styles.Item() { Dock = DockStyle.Fill });
                     text = "Item Utility";
@@ -206,11 +201,6 @@ namespace Grimoire.Tabs
                 //case Style.DROPS:
                 //    tab.Controls.Add(new Styles.DropEditor() { Dock = DockStyle.Fill });
                 //    text = "Drop Utility";
-                //    break;
-
-                //case Style.LOG:
-                //    tab.Controls.Add(new Styles.Log() { Dock = DockStyle.Fill });
-                //    text = "Log Utility";
                 //    break;
             }
 

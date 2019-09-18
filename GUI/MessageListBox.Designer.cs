@@ -30,11 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessageListBox));
             this.list = new System.Windows.Forms.ListBox();
-            this.yes_btn = new System.Windows.Forms.Button();
-            this.no_btn = new System.Windows.Forms.Button();
-            this.msgGrp = new System.Windows.Forms.GroupBox();
+            this.yesBtn = new System.Windows.Forms.Button();
+            this.noBtn = new System.Windows.Forms.Button();
+            this.msg_grpBx = new System.Windows.Forms.GroupBox();
             this.msg = new System.Windows.Forms.TextBox();
-            this.msgGrp.SuspendLayout();
+            this.msg_grpBx.SuspendLayout();
             this.SuspendLayout();
             // 
             // list
@@ -43,73 +43,79 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.list.FormattingEnabled = true;
-            this.list.ItemHeight = 16;
-            this.list.Location = new System.Drawing.Point(12, 108);
+            this.list.Location = new System.Drawing.Point(9, 88);
+            this.list.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.list.Name = "list";
             this.list.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.list.Size = new System.Drawing.Size(489, 244);
+            this.list.Size = new System.Drawing.Size(368, 199);
             this.list.TabIndex = 0;
             // 
-            // yes_btn
+            // yesBtn
             // 
-            this.yes_btn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.yes_btn.Location = new System.Drawing.Point(381, 368);
-            this.yes_btn.Name = "yes_btn";
-            this.yes_btn.Size = new System.Drawing.Size(57, 31);
-            this.yes_btn.TabIndex = 1;
-            this.yes_btn.Text = "Yes";
-            this.yes_btn.UseVisualStyleBackColor = true;
-            this.yes_btn.Click += new System.EventHandler(this.yes_btn_Click);
+            this.yesBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.yesBtn.Location = new System.Drawing.Point(286, 299);
+            this.yesBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.yesBtn.Name = "yesBtn";
+            this.yesBtn.Size = new System.Drawing.Size(43, 25);
+            this.yesBtn.TabIndex = 1;
+            this.yesBtn.Text = "Yes";
+            this.yesBtn.UseVisualStyleBackColor = true;
+            this.yesBtn.Click += new System.EventHandler(this.yes_btn_Click);
             // 
-            // no_btn
+            // noBtn
             // 
-            this.no_btn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.no_btn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.no_btn.Location = new System.Drawing.Point(444, 368);
-            this.no_btn.Name = "no_btn";
-            this.no_btn.Size = new System.Drawing.Size(57, 31);
-            this.no_btn.TabIndex = 2;
-            this.no_btn.Text = "No";
-            this.no_btn.UseVisualStyleBackColor = true;
-            this.no_btn.Click += new System.EventHandler(this.no_btn_Click);
+            this.noBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.noBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.noBtn.Location = new System.Drawing.Point(333, 299);
+            this.noBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.noBtn.Name = "noBtn";
+            this.noBtn.Size = new System.Drawing.Size(43, 25);
+            this.noBtn.TabIndex = 2;
+            this.noBtn.Text = "No";
+            this.noBtn.UseVisualStyleBackColor = true;
+            this.noBtn.Click += new System.EventHandler(this.no_btn_Click);
             // 
-            // msgGrp
+            // msg_grpBx
             // 
-            this.msgGrp.Controls.Add(this.msg);
-            this.msgGrp.Location = new System.Drawing.Point(12, 2);
-            this.msgGrp.Name = "msgGrp";
-            this.msgGrp.Size = new System.Drawing.Size(489, 100);
-            this.msgGrp.TabIndex = 3;
-            this.msgGrp.TabStop = false;
-            this.msgGrp.Text = "Message";
+            this.msg_grpBx.Controls.Add(this.msg);
+            this.msg_grpBx.Location = new System.Drawing.Point(9, 2);
+            this.msg_grpBx.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.msg_grpBx.Name = "msg_grpBx";
+            this.msg_grpBx.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.msg_grpBx.Size = new System.Drawing.Size(367, 81);
+            this.msg_grpBx.TabIndex = 3;
+            this.msg_grpBx.TabStop = false;
+            this.msg_grpBx.Text = "Message";
             // 
             // msg
             // 
             this.msg.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.msg.Location = new System.Drawing.Point(6, 21);
+            this.msg.Location = new System.Drawing.Point(4, 17);
+            this.msg.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.msg.Multiline = true;
             this.msg.Name = "msg";
             this.msg.ReadOnly = true;
-            this.msg.Size = new System.Drawing.Size(477, 63);
+            this.msg.Size = new System.Drawing.Size(358, 51);
             this.msg.TabIndex = 0;
             this.msg.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // MessageListBox
             // 
-            this.AcceptButton = this.yes_btn;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AcceptButton = this.yesBtn;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.no_btn;
-            this.ClientSize = new System.Drawing.Size(514, 412);
-            this.Controls.Add(this.msgGrp);
-            this.Controls.Add(this.no_btn);
-            this.Controls.Add(this.yes_btn);
+            this.CancelButton = this.noBtn;
+            this.ClientSize = new System.Drawing.Size(386, 335);
+            this.Controls.Add(this.msg_grpBx);
+            this.Controls.Add(this.noBtn);
+            this.Controls.Add(this.yesBtn);
             this.Controls.Add(this.list);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "MessageListBox";
-            this.msgGrp.ResumeLayout(false);
-            this.msgGrp.PerformLayout();
+            this.msg_grpBx.ResumeLayout(false);
+            this.msg_grpBx.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -117,9 +123,9 @@
         #endregion
 
         private System.Windows.Forms.ListBox list;
-        private System.Windows.Forms.Button yes_btn;
-        private System.Windows.Forms.Button no_btn;
-        private System.Windows.Forms.GroupBox msgGrp;
+        private System.Windows.Forms.Button yesBtn;
+        private System.Windows.Forms.Button noBtn;
+        private System.Windows.Forms.GroupBox msg_grpBx;
         private System.Windows.Forms.TextBox msg;
     }
 }

@@ -3,6 +3,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Grimoire.Tabs;
+using System.Resources;
+using System.Globalization;
+using System.Threading;
 
 namespace Grimoire.GUI
 {
@@ -21,7 +24,21 @@ namespace Grimoire.GUI
             Utilities.OPT.Load();
             check_first_start();
             generate_new_list();
-            
+            load_strings();
+        }
+
+        private void load_strings()
+        {
+            // TODO: Move me I don't belong here
+            string lang = Utilities.OPT.GetString("lang");
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", lang, lang.ToUpperInvariant()));
+
+            newLbl.Text = strings.newLbl;
+            ts_utilities.Text = strings.ts_utilities;
+            ts_bitflag_editor.Text = strings.ts_bitflag_editor;
+            ts_log_viewer.Text = strings.ts_log_viewer;
+            settingsBtn.Text = strings.settingsBtn;
+            aboutLbl.Text = strings.aboutLbl;
         }
 
         private void check_first_start()
@@ -211,6 +228,18 @@ namespace Grimoire.GUI
                                             "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
                                             gVersion, dCore_Version, rCore_Version);
             MessageBox.Show(aboutStr, "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ts_bitflag_editor_Click(object sender, EventArgs e)
+        {
+            using (BitFlag bitEditor = new BitFlag())
+                bitEditor.ShowDialog(this);
+        }
+
+        private void ts_log_viewer_Click(object sender, EventArgs e)
+        {
+            using (LogViewer viewer = new LogViewer())
+                viewer.ShowDialog(this);
         }
     }
 }

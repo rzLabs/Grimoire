@@ -74,8 +74,10 @@ namespace Grimoire.Utilities
                 title = (title == null) ? "Please select save location and file name" : title;
                 using (SaveFileDialog svDlg = new SaveFileDialog()
                 {
-                    DefaultExt = "*", Title = title,
-                    InitialDirectory = DefaultDirectory
+                    DefaultExt = "*",
+                    Title = title,
+                    InitialDirectory = DefaultDirectory,
+                    FileName = DefaultFileName
                 })
                 {
                     if ((SaveResult = svDlg.ShowDialog(Grimoire.GUI.Main.Instance)) == DialogResult.OK)

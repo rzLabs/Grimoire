@@ -1,4 +1,4 @@
-﻿tab.styles:RDB,DATA,HASHER,FLAG
+﻿tab.styles:RDB,DATA,HASHER
 tab.default_style:RDB
 db.ip:(local)
 db.port:1433
@@ -16,7 +16,7 @@ rdb.use.ascii:1
 rdb.save.hashed:1
 rdb.csv.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\CSV
 build.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Output
-data.load.directory:D:\Rappelz\Rappelz_94_US
+data.load.directory:C:\Webzen\Rappelz US
 data.encoding:1252
 data.backup:1
 data.clear_on_create:0
@@ -24,6 +24,7 @@ hash.auto_clear:0
 hash.auto_convert:0
 hash.type:0
 log.level:3
-useflag.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Flags
-useflag.default.list:buff_flags_91
-useflag.auto_reverse:1
+flag.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Flags
+flag.default._list:buff_flags_91
+flag.clear_on_list_change:0
+lang:en

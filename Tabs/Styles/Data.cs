@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,8 @@ namespace Grimoire.Tabs.Styles
         public bool Searching { get { return SearchIndex.Count > 0; } }
         public int SearchCount { get { return SearchIndex.Count; } }
         public bool IndexLoaded { get { return Core.Index.Count > 0; } }
+
+        readonly Stopwatch actionSW = new Stopwatch();
 
         public int RowCount
         {
@@ -103,6 +106,7 @@ namespace Grimoire.Tabs.Styles
             lManager = Logs.Manager.Instance;
             tManager = Tabs.Manager.Instance;
             gridUtils = new Utilities.Grid();
+            load_strings();
         }
 
         public Data(string key)
@@ -113,6 +117,7 @@ namespace Grimoire.Tabs.Styles
             lManager = Logs.Manager.Instance;
             tManager = Tabs.Manager.Instance;
             gridUtils = new Utilities.Grid();
+            load_strings();
         }
 
         #endregion
@@ -522,7 +527,11 @@ namespace Grimoire.Tabs.Styles
 
             try
             {
+                actionSW.Start();
+
                 await Task.Run(() => { core.Load(path); });
+
+                actionSW.Stop();
             }
             catch (Exception ex)
             {
@@ -534,9 +543,10 @@ namespace Grimoire.Tabs.Styles
                 ts_file_new.Enabled = false;
 
                 lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE,
-                "{0} entries loaded from data.000 to tab: {1} from path:\n\t- {2}",
+                "{0} entries loaded from data.000 to tab: {1} in {2}ms from path:\n\t- {3}",
                 core.RowCount,
                 tManager.Text,
+                actionSW.ElapsedMilliseconds.ToString("D4"),
                 path);
 
                 display_data();
@@ -609,6 +619,23 @@ namespace Grimoire.Tabs.Styles
                 tab_disabled = false;
                 ts_status.Text = string.Empty;
             }
+        }
+
+        private void load_strings()
+        {
+            ts_file_load.Text = strings.ts_file_load;
+            ts_file_new.Text = strings.ts_file_new;
+            ts_file_rebuild.Text = strings.ts_file_rebuild;
+            grid_grpBx.Text = strings.grid_grpBx;
+            ext_grpBx.Text = strings.ext_grpBx;
+            search_grpBx.Text = strings.search_grpBx;
+            stats_grpBx.Text = strings.stats_grpBx;
+            dataId_lbl.Text = strings.dataId_lbl;
+            offsetLbl.Text = strings.offsetLbl;
+            sizeLbl.Text = strings.sizeLbl;
+            encLbl.Text = strings.encLbl;
+            extLbl.Text = strings.extLbl;
+            upPathLbl.Text = strings.upPathLbl;
         }
         #endregion
 
