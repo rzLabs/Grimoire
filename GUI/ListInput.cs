@@ -8,17 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Daedalus.Structures;
+using Grimoire.Utilities;
 
 namespace Grimoire.GUI
 {
     public partial class ListInput : Form
     {
+        XmlManager xMan = XmlManager.Instance;
+
         Cell[] cells = null;
 
         public ListInput()
         {
             InitializeComponent();
-            load_strings();
+            localize();
         }
 
         public ListInput(string description, Cell[] cells)
@@ -30,7 +33,7 @@ namespace Grimoire.GUI
 
             populateList();
 
-            load_strings();
+            localize();
         }
 
         public ListInput(string description, string[] selections)
@@ -71,10 +74,9 @@ namespace Grimoire.GUI
             Hide();
         }
 
-        private void load_strings()
+        private void localize()
         {
-            descLbl.Text = strings.descLbl;
-            inputLbl.Text = strings.inputLbl;
+            xMan.Localize(this, Localization.Enums.SenderType.GUI);
         }
 
         private void ListInput_Shown(object sender, EventArgs e)

@@ -37,7 +37,7 @@
             this.ts_load_sql = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_save = new System.Windows.Forms.ToolStripDropDownButton();
             this.ts_save_file = new System.Windows.Forms.ToolStripMenuItem();
-            this.ts_file_save_rdb = new System.Windows.Forms.ToolStripMenuItem();
+            this.ts_save_file_rdb = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_save_file_csv = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_save_file_sql = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_save_sql = new System.Windows.Forms.ToolStripMenuItem();
@@ -147,19 +147,19 @@
             // 
             this.ts_save_file.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_save_file.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ts_file_save_rdb,
+            this.ts_save_file_rdb,
             this.ts_save_file_csv,
             this.ts_save_file_sql});
             this.ts_save_file.Name = "ts_save_file";
             this.ts_save_file.Size = new System.Drawing.Size(180, 22);
             this.ts_save_file.Text = "File";
             // 
-            // ts_file_save_rdb
+            // ts_save_file_rdb
             // 
-            this.ts_file_save_rdb.Name = "ts_file_save_rdb";
-            this.ts_file_save_rdb.Size = new System.Drawing.Size(180, 22);
-            this.ts_file_save_rdb.Text = "RDB";
-            this.ts_file_save_rdb.Click += new System.EventHandler(this.TS_Save_File_Click);
+            this.ts_save_file_rdb.Name = "ts_save_file_rdb";
+            this.ts_save_file_rdb.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_file_rdb.Text = "RDB";
+            this.ts_save_file_rdb.Click += new System.EventHandler(this.TS_Save_File_Click);
             // 
             // ts_save_file_csv
             // 
@@ -318,7 +318,7 @@
         private System.Windows.Forms.ToolStripButton ts_save_enc;
         private System.Windows.Forms.ToolStripButton ts_save_w_ascii;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem ts_file_save_rdb;
+        private System.Windows.Forms.ToolStripMenuItem ts_save_file_rdb;
         private System.Windows.Forms.ToolStripMenuItem ts_save_file_csv;
         private System.Windows.Forms.ToolStripMenuItem ts_save_file_sql;
         private System.Windows.Forms.ContextMenuStrip grid_cs;

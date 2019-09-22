@@ -95,6 +95,8 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
+        XmlManager xMan = XmlManager.Instance;
+
         #endregion
 
         #region Constructors
@@ -106,7 +108,7 @@ namespace Grimoire.Tabs.Styles
             lManager = Logs.Manager.Instance;
             tManager = Tabs.Manager.Instance;
             gridUtils = new Utilities.Grid();
-            load_strings();
+            localize();
         }
 
         public Data(string key)
@@ -117,7 +119,7 @@ namespace Grimoire.Tabs.Styles
             lManager = Logs.Manager.Instance;
             tManager = Tabs.Manager.Instance;
             gridUtils = new Utilities.Grid();
-            load_strings();
+            localize();
         }
 
         #endregion
@@ -469,6 +471,8 @@ namespace Grimoire.Tabs.Styles
 
         public void Insert(string[] filePaths) { insert_files(filePaths); }
 
+        public void Localize() { localize(); }
+
         #endregion
 
         #region Methods (private)
@@ -621,21 +625,9 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private void load_strings()
+        private void localize()
         {
-            ts_file_load.Text = strings.ts_file_load;
-            ts_file_new.Text = strings.ts_file_new;
-            ts_file_rebuild.Text = strings.ts_file_rebuild;
-            grid_grpBx.Text = strings.grid_grpBx;
-            ext_grpBx.Text = strings.ext_grpBx;
-            search_grpBx.Text = strings.search_grpBx;
-            stats_grpBx.Text = strings.stats_grpBx;
-            dataId_lbl.Text = strings.dataId_lbl;
-            offsetLbl.Text = strings.offsetLbl;
-            sizeLbl.Text = strings.sizeLbl;
-            encLbl.Text = strings.encLbl;
-            extLbl.Text = strings.extLbl;
-            upPathLbl.Text = strings.upPathLbl;
+            xMan.Localize(this, Localization.Enums.SenderType.Tab);
         }
         #endregion
 

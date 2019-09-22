@@ -7,35 +7,94 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Linq;
 using Grimoire.Logs;
 using Grimoire.Structures;
+using Grimoire.Utilities;
+using System.Threading;
+using System.Collections.ObjectModel;
+using BrightIdeasSoftware;
 
 namespace Grimoire.GUI
 {
     public partial class LogViewer : Form
     {
-        Manager lManager = Manager.Instance;
+        int interval = 0;
 
-        public LogViewer()
+        Logs.Manager lManager;
+
+        List<Log> filteredEntries = new List<Log>();
+
+        public bool ViewDisposed
+        {
+            get
+            {
+                return logView.IsDisposed;
+            }
+        }
+
+        public LogViewer(Logs.Manager lManager)
         {
             InitializeComponent();
 
-            parseLogs();
+            this.lManager = lManager;
+
+            interval = OPT.GetInt("log.display.refresh");
+            
+            configureViewer();
+
+            generate_type_list();
         }
 
-        private void parseLogs()
+        private void generate_type_list()
         {
+            displayType_lst.DataSource = Enum.GetValues(typeof(DisplayLevel));
+            displayType_lst.SelectedIndex = 0;
+        }
 
+        public void Refresh()
+        {
+                logView.SetObjects(lManager.Entries);
+        }
 
-            int len = lManager.Entries.Count;
-            for (int i = 0; i < len; i++)
+        private void configureViewer()
+        {
+            logView.RowHeight = 50;
+            logView.Columns.AddRange(new OLVColumn[]
             {
-                Log log = lManager.Entries[i];
+                new OLVColumn("Sender", "Sender") { Width = 100 },
+                new OLVColumn("Level", "Level") { Width = 100 },
+                new OLVColumn("DateTime", "DateTime") { Width = 100 },
+                new OLVColumn("Message", "Message") { FillsFreeSpace = true, WordWrap=true }
+            });
+        }
 
-                logList.Items.Add(new ListViewItem()
+        private void displayType_lst_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (displayType_lst.SelectedIndex != -1)
+            {
+                DisplayLevel type = (DisplayLevel)displayType_lst.SelectedIndex;
+
+                switch (type)
                 {
-                    Name = string.Format("{0}_{1}", i.ToString("D2"), log.Level)
-                });
+                    case DisplayLevel.ALL:
+                        logView.SetObjects(lManager.Entries);
+                        break;
+
+                    case DisplayLevel.DEBUG:
+                            logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.DEBUG));
+                        break;
+
+                    case DisplayLevel.NOTICE:
+                            logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.NOTICE));
+                        break;
+
+                    case DisplayLevel.ERRORS:
+                            logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.ERROR ||
+                                                                         l.Level == Level.HASHER_ERROR ||
+                                                                         l.Level == Level.SQL_ERROR));
+                        break;
+                }
             }
         }
     }

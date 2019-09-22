@@ -70,6 +70,9 @@
     <Reference Include="MoonSharp.Interpreter">
       <HintPath>..\3rd Party\MoonSharp.Interpreter.dll</HintPath>
     </Reference>
+    <Reference Include="ObjectListView, Version=2.9.1.1072, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
+      <HintPath>packages\ObjectListView.Official.2.9.1\lib\net20\ObjectListView.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
@@ -145,11 +148,11 @@
     <Compile Include="GUI\StructureEditor.Designer.cs">
       <DependentUpon>StructureEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="strings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>strings.resx</DependentUpon>
-    </Compile>
+    <Compile Include="Localization\Enums\SenderType.cs" />
+    <Compile Include="Localization\Structures\ControlConfig.cs" />
+    <Compile Include="Localization\Structures\FontConfig.cs" />
+    <Compile Include="Localization\Structures\Locale.cs" />
+    <Compile Include="Localization\Structures\Text.cs" />
     <Compile Include="Structures\Log.cs" />
     <Compile Include="Structures\RdbStructure.cs" />
     <Compile Include="Structures\Settings.cs" />
@@ -214,6 +217,7 @@
     <Compile Include="Utilities\SPR.cs" />
     <Compile Include="Utilities\StringExt.cs" />
     <Compile Include="Utilities\StructureManager.cs" />
+    <Compile Include="Utilities\XmlManager.cs" />
     <EmbeddedResource Include="GUI\BitFlag.resx">
       <DependentUpon>BitFlag.cs</DependentUpon>
     </EmbeddedResource>
@@ -263,10 +267,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="strings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\Data.resx">
       <DependentUpon>Data.cs</DependentUpon>
     </EmbeddedResource>
@@ -282,6 +282,7 @@
     <EmbeddedResource Include="Tabs\Styles\RDB.resx">
       <DependentUpon>RDB.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -310,6 +311,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
+    <Content Include="Localization\en-US.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />

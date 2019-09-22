@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using DataCore.Structures;
 using System.Windows.Forms;
+using Grimoire.Utilities;
 
 namespace Grimoire.GUI
 {
     public partial class ListSelect : Form
     {
+        XmlManager xMan = XmlManager.Instance;
+
         public ListSelect(string title, List<IndexEntry> selections)
         {
             this.Text = title;
             InitializeComponent();
             populateList(selections);
-            load_strings();
+            localize();
         }
 
         public string SelectedText
@@ -40,9 +43,9 @@ namespace Grimoire.GUI
             Close();
         }
 
-        private void load_strings()
+        private void localize()
         {
-            okBtn.Text = strings.okBtn;
+            xMan.Localize(this, Localization.Enums.SenderType.GUI);
         }
     }
 }

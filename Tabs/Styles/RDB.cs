@@ -29,6 +29,7 @@ namespace Grimoire.Tabs.Styles
         readonly string key = null;
         readonly Tabs.Utilities.Grid gridUtil;
         readonly Stopwatch actionSW = new Stopwatch();
+        XmlManager xMan = XmlManager.Instance;
 
         bool structLoaded { get { return (ts_struct_list.SelectedIndex != -1); } }
         readonly string buildDir = string.Format(@"{0}\Output\", Directory.GetCurrentDirectory());
@@ -72,7 +73,7 @@ namespace Grimoire.Tabs.Styles
             ts_save_enc.Checked = OPT.GetBool("rdb.save.hashed");
             ts_save_w_ascii.Checked = OPT.GetBool("rdb.use.ascii");
             structsDir = OPT.GetString("rdb.structure.directory") ?? string.Format(@"{0}\Structures\", Directory.GetCurrentDirectory());
-            load_strings();
+            localize();
         }
 
         #endregion
@@ -383,21 +384,9 @@ namespace Grimoire.Tabs.Styles
                 grid.SelectedCells[0].Value = bitflag;
         }
 
-        private void load_strings()
+        private void localize()
         {
-            ts_load.Text = strings.ts_load;
-            ts_load_file.Text = strings.ts_load_file;
-            ts_load_sql.Text = strings.ts_load_sql;
-            ts_save.Text = strings.ts_save;
-            ts_save_file.Text = strings.ts_save_file;
-            ts_file_save_rdb.Text = strings.ts_file_save_rdb;
-            ts_save_file_csv.Text = strings.ts_save_file_csv;
-            ts_save_file_sql.Text = strings.ts_save_file_sql;
-            ts_save_sql.Text = strings.ts_save_sql;
-            ts_encLbl.Text = strings.ts_encLbl;
-            ts_structLb.Text = strings.ts_structLb;
-            ts_save_enc.Text = strings.ts_save_enc;
-            ts_save_w_ascii.Text = strings.ts_save_w_ascii;
+            xMan.Localize(this, Localization.Enums.SenderType.Tab);
         }
 
         #endregion
@@ -616,6 +605,8 @@ namespace Grimoire.Tabs.Styles
             grid.Rows.Clear();
             initializeGrid();
         }
+
+        public void Localize() { localize(); }
 
         #endregion
 

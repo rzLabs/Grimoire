@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using DataCore.Functions;
+using Grimoire.Utilities;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -9,6 +10,7 @@ namespace Grimoire.Tabs.Styles
     {
         #region Properties
         Logs.Manager lManager;
+        XmlManager xMan = XmlManager.Instance;
         #endregion
 
         #region Constructors
@@ -18,7 +20,7 @@ namespace Grimoire.Tabs.Styles
             lManager = Logs.Manager.Instance;
             lManager.Enter(Logs.Sender.HASHER, Logs.Level.NOTICE, "Hasher Utility Started.");
             set_checks();
-            load_strings();
+            localize();
         }
         #endregion
 
@@ -114,6 +116,8 @@ namespace Grimoire.Tabs.Styles
                 convertAllEntries();
         }
 
+        public void Localize() { localize(); }
+
         #endregion
 
         #region Methods (private)
@@ -197,20 +201,9 @@ namespace Grimoire.Tabs.Styles
             fileGrid.Rows.Add(originalName, convertedName, Path.GetDirectoryName(path), "Pending");
         }
 
-        private void load_strings()
+        private void localize()
         {
-            inst_grpBx.Text = strings.inst_grpBx;
-            inst_inputLbl.Text = strings.inst_inputLbl;
-            inst_outLbl.Text = strings.inst_outLbl;
-            inst_flipBtn.Text = strings.inst_flipBtn;
-            optName_grpBx.Text = strings.optName_grpBx;
-            optNone_rBtn.Text = strings.optNone_rBtn;
-            optAppend_ascii_rBtn.Text = strings.optAppend_ascii_rBtn;
-            optRemove_ascii_rBtn.Text = strings.optRemove_ascii_rBtn;
-            optGrid_grpBx.Text = strings.optGrid_grpBx;
-            autoClear_chk.Text = strings.autoClear_chk;
-            autoConvert_chk.Text = strings.autoConvert_chk;
-            multi_grpBx.Text = strings.multi_grpBx;
+            xMan.Localize(this, Localization.Enums.SenderType.Tab);
         }
 
         #endregion

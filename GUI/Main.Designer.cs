@@ -38,12 +38,12 @@
             this.new_list = new System.Windows.Forms.ComboBox();
             this.settingsBtn = new System.Windows.Forms.Button();
             this.aboutLbl = new System.Windows.Forms.Label();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.ms = new System.Windows.Forms.MenuStrip();
             this.ts_utilities = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_bitflag_editor = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_log_viewer = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs_cMenu.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
+            this.ms.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabs
@@ -132,16 +132,16 @@
             this.aboutLbl.Text = "About";
             this.aboutLbl.Click += new System.EventHandler(this.aboutLbl_Click);
             // 
-            // menuStrip1
+            // ms
             // 
-            this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ms.Dock = System.Windows.Forms.DockStyle.None;
+            this.ms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ts_utilities});
-            this.menuStrip1.Location = new System.Drawing.Point(141, 5);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(66, 24);
-            this.menuStrip1.TabIndex = 6;
-            this.menuStrip1.Text = "menuStrip1";
+            this.ms.Location = new System.Drawing.Point(141, 5);
+            this.ms.Name = "ms";
+            this.ms.Size = new System.Drawing.Size(186, 24);
+            this.ms.TabIndex = 6;
+            this.ms.Text = "menuStrip1";
             // 
             // ts_utilities
             // 
@@ -161,7 +161,6 @@
             // 
             // ts_log_viewer
             // 
-            this.ts_log_viewer.Enabled = false;
             this.ts_log_viewer.Name = "ts_log_viewer";
             this.ts_log_viewer.Size = new System.Drawing.Size(180, 22);
             this.ts_log_viewer.Text = "Log Viewer";
@@ -173,7 +172,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(808, 521);
-            this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.ms);
             this.Controls.Add(this.aboutLbl);
             this.Controls.Add(this.settingsBtn);
             this.Controls.Add(this.new_list);
@@ -181,7 +180,7 @@
             this.Controls.Add(this.tabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MainMenuStrip = this.menuStrip1;
+            this.MainMenuStrip = this.ms;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(794, 558);
             this.Name = "Main";
@@ -192,8 +191,8 @@
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Main_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
             this.tabs_cMenu.ResumeLayout(false);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.ms.ResumeLayout(false);
+            this.ms.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,7 +207,7 @@
         private System.Windows.Forms.ToolStripMenuItem tabs_cMenu_close;
         private System.Windows.Forms.Button settingsBtn;
         private System.Windows.Forms.Label aboutLbl;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip ms;
         private System.Windows.Forms.ToolStripMenuItem ts_utilities;
         private System.Windows.Forms.ToolStripMenuItem ts_bitflag_editor;
         private System.Windows.Forms.ToolStripMenuItem ts_log_viewer;

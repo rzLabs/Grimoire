@@ -11,6 +11,7 @@ using System.IO;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Forms;
 using DataCore;
+using Grimoire.Utilities;
 
 namespace Grimoire.GUI
 {
@@ -19,6 +20,7 @@ namespace Grimoire.GUI
         Tabs.Manager tManager = Tabs.Manager.Instance;
         Logs.Manager lManager = Logs.Manager.Instance;
         DataCore.Core core = null;
+        XmlManager xMan = XmlManager.Instance;
         
         public DataRebuild()
         {
@@ -27,7 +29,7 @@ namespace Grimoire.GUI
             hook_core_events();
             dataChart.Series.Add(new Series() { Name = "All Data", ChartType = SeriesChartType.Pie });
             dataList.Items[0].Selected = true;
-            load_strings();
+            localize();
         }
 
         private void hook_core_events()
@@ -183,9 +185,9 @@ namespace Grimoire.GUI
 
         }
 
-        public void load_strings()
+        public void localize()
         {
-            rebuildBtn.Text = strings.rebuildBtn;
+            xMan.Localize(this, Localization.Enums.SenderType.GUI);
         }
     }
 }

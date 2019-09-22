@@ -44,7 +44,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.list.FormattingEnabled = true;
             this.list.Location = new System.Drawing.Point(9, 88);
-            this.list.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.list.Margin = new System.Windows.Forms.Padding(2);
             this.list.Name = "list";
             this.list.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.list.Size = new System.Drawing.Size(368, 199);
@@ -54,7 +54,7 @@
             // 
             this.yesBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.yesBtn.Location = new System.Drawing.Point(286, 299);
-            this.yesBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.yesBtn.Margin = new System.Windows.Forms.Padding(2);
             this.yesBtn.Name = "yesBtn";
             this.yesBtn.Size = new System.Drawing.Size(43, 25);
             this.yesBtn.TabIndex = 1;
@@ -67,7 +67,7 @@
             this.noBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.noBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.noBtn.Location = new System.Drawing.Point(333, 299);
-            this.noBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.noBtn.Margin = new System.Windows.Forms.Padding(2);
             this.noBtn.Name = "noBtn";
             this.noBtn.Size = new System.Drawing.Size(43, 25);
             this.noBtn.TabIndex = 2;
@@ -78,10 +78,10 @@
             // msg_grpBx
             // 
             this.msg_grpBx.Controls.Add(this.msg);
-            this.msg_grpBx.Location = new System.Drawing.Point(9, 2);
-            this.msg_grpBx.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.msg_grpBx.Location = new System.Drawing.Point(9, 3);
+            this.msg_grpBx.Margin = new System.Windows.Forms.Padding(2);
             this.msg_grpBx.Name = "msg_grpBx";
-            this.msg_grpBx.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.msg_grpBx.Padding = new System.Windows.Forms.Padding(2);
             this.msg_grpBx.Size = new System.Drawing.Size(367, 81);
             this.msg_grpBx.TabIndex = 3;
             this.msg_grpBx.TabStop = false;
@@ -91,7 +91,7 @@
             // 
             this.msg.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.msg.Location = new System.Drawing.Point(4, 17);
-            this.msg.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.msg.Margin = new System.Windows.Forms.Padding(2);
             this.msg.Multiline = true;
             this.msg.Name = "msg";
             this.msg.ReadOnly = true;
@@ -112,7 +112,7 @@
             this.Controls.Add(this.list);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MessageListBox";
             this.msg_grpBx.ResumeLayout(false);
             this.msg_grpBx.PerformLayout();

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Grimoire.Logs
+﻿namespace Grimoire.Logs
 {
     public enum Level
     {
@@ -18,10 +12,10 @@ namespace Grimoire.Logs
 
     public enum DisplayLevel
     {
-        NOTICE = 0,
-        ERRORS = 1,
+        ALL = 0,
+        NOTICE = 1,
         DEBUG = 2,
-        ALL = 3
+        ERRORS = 3        
     }
 
     public enum Sender // TODO: Update me a-doi
@@ -29,12 +23,11 @@ namespace Grimoire.Logs
         RDB = 0,
         HASHER = 1,
         DATA = 2,
-        GM = 3,
-        DROPS = 4,
-        FLAG = 5,
+        DROPS = 3,
+        FLAG = 4,
         DATABASE = 91,
         OPT = 92,
         MANAGER = 93,
-        MAIN = 94
+        MAIN = 94,
     }
 }

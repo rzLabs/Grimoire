@@ -1,5 +1,5 @@
 ﻿tab.styles:RDB,DATA,HASHER
-tab.default_style:RDB
+tab.default_style:HASHER
 db.ip:(local)
 db.port:1433
 db.world.name:Arcadia
@@ -23,8 +23,13 @@ data.clear_on_create:0
 hash.auto_clear:0
 hash.auto_convert:0
 hash.type:0
-log.level:3
+log.enabled:1
+log.write.type:ALL
+log.display.type:ALL
+log.display.refresh:1500
+log.exit.save:1
 flag.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Flags
-flag.default._list:buff_flags_91
+flag.default_list:buff_flags_91
 flag.clear_on_list_change:0
-lang:en
+locale:fr-FR
+locale.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Localization

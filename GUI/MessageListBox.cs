@@ -8,18 +8,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using Grimoire.Utilities;
 
 namespace Grimoire.GUI
 {
     public partial class MessageListBox : Form
     {
+        XmlManager xMan = XmlManager.Instance;
+
         public MessageListBox(string title, string msg, string[] filePaths)
         {
             InitializeComponent();
             Text = title;
             this.msg.Text = msg;
             populateList(filePaths);
-            load_strings();
+            localize();
         }
 
         private void populateList(string[] filePaths)
@@ -42,11 +45,9 @@ namespace Grimoire.GUI
             this.Hide();
         }
 
-        private void load_strings()
+        private void localize()
         {
-            msg_grpBx.Text = strings.msg_grpBx;
-            yesBtn.Text = strings.yesBtn;
-            noBtn.Text = strings.noBtn;
+            xMan.Localize(this, Localization.Enums.SenderType.GUI);
         }
     }
 }

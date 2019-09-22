@@ -1,17 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Grimoire.Structures;
+using Grimoire.Utilities;
 
 namespace Grimoire.Logs
 {
     public class Manager
     {
-        public List<Structures.Log> Entries = new List<Structures.Log>();
+        int idx = 0;
+
+        public ObservableCollection<Log> Entries = new ObservableCollection<Log>();
         public string LogsDirectory;
         public readonly string LogPath;
+
+        GUI.LogViewer viewer;
+
         static Manager instance;
         public static Manager Instance
         {
@@ -32,7 +40,15 @@ namespace Grimoire.Logs
             if (!Directory.Exists(LogsDirectory))
                 Directory.CreateDirectory(LogsDirectory);
 
+            Entries.CollectionChanged += Entries_CollectionChanged;
+
             Enter(Sender.MANAGER, Level.NOTICE, "Log Manager initialized.");
+        }
+
+        private void Entries_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (viewer != null && !viewer.ViewDisposed)
+                viewer.Refresh();
         }
 
         public void Enter(Sender sender, Level level, string message, params object[] args)
@@ -46,7 +62,6 @@ namespace Grimoire.Logs
                 StackTrace = null
             });
 
-            writeLast();
         }
 
         public void Enter(Sender sender, Level level, Exception ex)
@@ -60,7 +75,6 @@ namespace Grimoire.Logs
                 StackTrace = ex.StackTrace
             });
 
-            writeLast();
         }
 
         public void Enter(Sender sender, Level level, Exception ex, string message, params object[] args)
@@ -74,25 +88,20 @@ namespace Grimoire.Logs
                 StackTrace = ex.StackTrace
             });
 
-            writeLast();
         }
 
-        void read()
+
+        #region Public Methods
+
+        public void ShowViewer()
         {
-            if (System.IO.File.Exists(LogPath))
-            {
-                using (StreamReader sr = new StreamReader(LogPath, Encoding.Default))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string[] lineVals = line.Split(']');
-                    }
-                }
-            }
+            if (viewer == null)
+                viewer = new GUI.LogViewer(instance);
+
+            viewer.Show(GUI.Main.Instance);
         }
 
-        public void writeAll()
+        public void Save()
         {
             using (FileStream fs = new FileStream(LogPath, FileMode.Append, FileAccess.Write, FileShare.None))
             {
@@ -110,21 +119,12 @@ namespace Grimoire.Logs
             }
         }
 
-        public void writeLast()
-        {
-            using (FileStream fs = new FileStream(LogPath, FileMode.Append, FileAccess.Write, FileShare.None))
-            {
-                Structures.Log log = Entries[Entries.Count - 1];
+        #endregion
 
-                string text = string.Format("[{0} | {1} | {2}]: {3}\n", log.Sender.ToString(), log.Level.ToString(), log.DateTime.ToString("hh:mm:ss"), log.Message);
+        #region Private Methods
 
-                if (log.StackTrace != null)
-                    text += string.Format("\n\t- Stack trace:\n\t{0}\n", log.StackTrace);
 
-                byte[] buffer = Encoding.Default.GetBytes(text);
 
-                fs.Write(buffer, 0, buffer.Length);
-            }
-        }
+        #endregion
     }
 }

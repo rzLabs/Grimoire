@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<locale name="en-US">
+  <displayName>English (US)</displayName>
+  <encoding>1252</encoding>
+  <font name="Microsoft Sans Serif"> <!-- If defined here all controls inherit this font unless they have their own font defined -->
+    <style>Regular</style>
+    <size>8.25</size>
+  </font>
+  <rightToLeft>No</rightToLeft> <!-- [Yes/No] use for languages that read right to left -->
+  <!-- However, global rightToLeft can be overriden on a per <control/> basis -->
+  <!-- Here is defined each localizable string within Grimoire -->
+  <!-- 
+  A <control/> element contains information about a control in Grimoire.
+  
+  During Grimoires startup a localization call is made where every control on the displayed form is checked against the stored <controls/> of its current selected locale
+  By defining a <control/> and assigning it the same name (case sensitive) as the Grimoire control, you can manipulate the displayed string as-well as its parent controls
+  font, size and location as-well as text-alignment and toggle Right to Left display.
+  
+  Each <control/> as minimum must carry the attribute name, name="<controlName>" obviously. But can go on to have a comment applied via comment=""
+  
+  The control must contain a <text/> element. (e.g.)
+  
+  <text>RDB Utility</text>
+  
+  However these text element can be further configured with the use of the align and rightToLeft attributes (these attributes are optional!)
+  
+  align will change the TextAlign property of the target control (saying it has one) and you can define this value with the enumeration below
+  
+  System.Drawing.ContentAlignment https://docs.microsoft.com/en-us/dotnet/api/system.drawing.contentalignment?view=netframework-4.8 (be sure you case match e.g. MiddleLeft)
+  
+  rightToLeft will change the flow of text from left to right, to right to left for languages that read right to left (such as ar-ME) and can be defined with the enumeration
+  below.
+  
+  System.Windows.Forms.RightToLeft https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.righttoleft?view=netframework-4.8 (be sure you case match e.g. Yes)
+  
+  That being said the <control/> being defined can also define optional elements such as <font/>, <location/> and <size/>.
+  
+  If <font/> has been defined inside the root element (locale) it is generally safe not to define it per <control/> but if needed simply follow the below form
+  <font name="<family name>">
+    <style>Regular</style>
+    <size>8.25</size>
+  </font>
+  
+  Note that the <style/> element of <font/> determines if styles like bold, italics, underline and strikeout are applied and can be defined with the below enumeration
+  System.Drawing.FontStyles https://docs.microsoft.com/en-us/dotnet/api/system.drawing.fontstyle?view=netframework-4.8 (be sure you case match e.g. Regular)
+  
+  The <size/> and <location/> elements are System.Drawing.Size and System.Drawing.Point respectively and require and x, y configuration (e.g.)
+  <size>4,45</size>
+  
+  They control the physical dimensions (if applicable) of the control being listed, this provides adjustments if a localized string is not properly displayed in its control
+  -->
+  <controls>
+    <!-- GUI.BitFlag -->
+    <control name="clear_on_change_chkBx" comment="GUI.BitFlag">
+      <text>Clear on List Change</text>
+    </control>
+    <!-- GUI.DataRebuild -->
+    <control name="rebuildBtn" comment="GUI.DataRebuild">
+      <text>Rebuild</text>
+    </control>
+    <!-- GUI.Data.Input -->
+    <control name="okBtn" comment="GUI.Input">
+      <text>OK</text>
+    </control>
+    <!-- GUI.ListInput -->
+    <control name="descLbl" comment="GUI.ListInput">
+      <text>Please select a field</text>
+    </control>
+    <control name="inputLbl" comment="GUI.ListInput">    
+      <text>Input:</text>
+    </control>
+    <control name="okBtn" comment="GUI.ListInput">
+      <text>OK</text>
+    </control>
+    <!-- GUI.ListSelect -->
+    <control name="okBtn" comment="GUI.ListSelect">
+      <text>OK</text>
+    </control>
+    <!-- GUI.Main -->
+    <control name="newLbl" comment="GUI.Main">
+      <text>New:</text>
+    </control>
+    <control name="new_list" comment="GUI.Main">
+      <location>43, 7</location>
+      <size>92, 21</size>
+    </control>
+    <control name="ts_utilities" comment="GUI.Main">
+      <text >Utilities</text>
+    </control>
+    <control name="ts_bitflag_editor" comment="GUI.Main">
+      <text >BitFlag Editor</text>
+    </control>
+    <control name="ts_log_viewer" comment="GUI.Main">
+      <text >Log Viewer</text>
+    </control>
+    <control name="settingsBtn" comment="GUI.Main">
+      <text>Settings</text>
+    </control>
+    <control name="aboutLbl" comment="GUI.Main">
+      <text>About</text>
+      <font name="Microsoft Sans Serif">
+        <style>Underline</style>
+        <size>8.25</size>
+      </font>
+    </control>
+    <!-- GUI.MessageListBox -->
+    <control name="msg_grpBx" comment="GUI.MessageListBox">
+      <text >Message</text>
+    </control>
+    <control name="yesBtn" comment="GUI.MessageListBox">
+      <text align="MiddleCenter" >Yes</text>
+    </control>
+    <control name="noBtn" comment="GUI.MessageListBox">
+      <text align="MiddleCenter" >No</text>
+    </control>
+    <!-- ## Tabs.Styles ##-->
+    <!-- Data -->
+    <control name="ts_file_load" comment="Tabs.Styles.Data">
+      <text align="MiddleCenter" >Load</text>
+    </control>
+    <control name="ts_file_new" comment="Tabs.Styles.Data">
+      <text align="MiddleCenter" >New</text>
+    </control>
+    <control name="ts_file_rebuild" comment="Tabs.Styles.Data">
+      <text align="MiddleCenter" >Rebuild</text>
+    </control>
+    <control name="ext_grpBx" comment="Tabs.Styles.Data">
+      <text >Extensions</text>
+    </control>
+    <control name="search_grpBx" comment="Tabs.Styles.Data">
+      <text >Search</text>
+    </control>
+    <control name="stats_grpBx" comment="Tabs.Styles.Data">
+      <text >Statistics</text>
+    </control>
+    <control name="dataId_lbl" comment="Tabs.Styles.Data">
+      <text >Data ID:</text>
+    </control>
+    <control name="offsetLbl" comment="Tabs.Styles.Data">
+      <text >Offset:</text>
+    </control>
+    <control name="sizeLbl" comment="Tabs.Styles.Data">
+      <text >Size:</text>
+    </control>
+    <control name="encLbl" comment="Tabs.Styles.Data">
+      <text >Encrypted:</text>
+    </control>
+    <control name="extLbl" comment="Tabs.Styles.Data">
+      <text >Extension:</text>
+    </control>
+    <control name="upPathLbl" comment="Tabs.Styles.Data">
+      <text >Upload Path:</text>
+    </control>
+    <!-- Hasher -->
+    <control name="inst_grpBx" comment="Tabs.Styles.Hasher">
+      <text >Instant</text>
+    </control>
+    <control name="inst_inputLbl" comment="Tabs.Styles.Hasher">
+      <text>Input:</text>
+    </control>
+    <control name="inst_outLbl" comment="Tabs.Styles.Hasher">
+      <text>Output:</text>
+    </control>
+    <control name="inst_flipBtn" comment="Tabs.Styles.Hasher">
+      <text align="MiddleCenter" >Flip</text>
+    </control>
+    <control name="optName_grpBx" comment="Tabs.Styles.Hasher">  
+      <text >Name Options</text>
+    </control>
+    <control name="optNone_rBtn" comment="Tabs.Styles.Hasher">
+      <text>None</text>
+    </control>
+    <control name="optAppend_ascii_rBtn" comment="Tabs.Styles.Hasher">
+      <text>Append (ascii)</text>
+    </control>
+    <control name="optRemove_ascii_rBtn" comment="Tabs.Styles.Hasher">
+      <text>Remove (ascii)</text>
+    </control>
+    <control name="optGrid_grpBx" comment="Tabs.Styles.Hasher">
+      <text>Grid Options</text>
+    </control>
+    <control name="autoClear_chk" comment="Tabs.Styles.Hasher">
+      <text>Auto Clear</text>
+    </control>
+    <control name="autoConvert_chk" comment="Tabs.Styles.Hasher">
+      <text>Auto Convert</text>
+    </control>
+    <control name="multi_grpBx" comment="Tabs.Styles.Hasher">
+      <text>Multi-File</text>
+    </control>
+    <!-- RDB -->
+    <control name="ts_load" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >Load</text>
+    </control>
+    <control name="ts_load_file" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >File</text>
+    </control>
+    <control name="ts_load_sql" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >SQL</text>
+    </control>
+    <control name="ts_save" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >Save</text>
+    </control>
+    <control name="ts_save_file" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >File</text>
+    </control>
+    <control name="ts_save_file_rdb" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >RDB</text>
+    </control>
+    <control name="ts_save_file_csv" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >CSV</text>
+    </control>
+    <control name="ts_save_file_sql" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >SQL</text>
+    </control>
+    <control name="ts_save_enc" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >Encrypted</text>
+    </control>
+    <control name="ts_encLbl" comment="Tabs.Styles.RDB">
+      <text>Encoding:</text>
+    </control>
+    <control name="ts_structLb" comment="Tabs.Styles.RDB">
+      <text>Structure:</text>
+    </control>
+    <control name="ts_structLbl" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >Structure:</text>
+    </control>
+    <control name="ts_save_enc" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >Encryped:</text>
+    </control>
+    <control name="ts_save_w_ascii" comment="Tabs.Styles.RDB">
+      <text align="MiddleCenter" >(ASCII)</text>
+    </control>
+  </controls>
+</locale>

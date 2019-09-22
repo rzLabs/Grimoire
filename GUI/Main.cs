@@ -6,6 +6,7 @@ using Grimoire.Tabs;
 using System.Resources;
 using System.Globalization;
 using System.Threading;
+using Grimoire.Utilities;
 
 namespace Grimoire.GUI
 {
@@ -13,6 +14,7 @@ namespace Grimoire.GUI
     {
         readonly Tabs.Manager tManager;
         readonly Logs.Manager lManager;
+        readonly XmlManager xMan;
         public static Main Instance;
 
         public Main()
@@ -20,25 +22,17 @@ namespace Grimoire.GUI
             InitializeComponent();
             Instance = this;
             tManager = Tabs.Manager.Instance;
-            lManager = Logs.Manager.Instance;           
+            lManager = Logs.Manager.Instance;
             Utilities.OPT.Load();
+            xMan = XmlManager.Instance;
             check_first_start();
             generate_new_list();
-            load_strings();
+            localize();
         }
 
-        private void load_strings()
+        private void localize()
         {
-            // TODO: Move me I don't belong here
-            string lang = Utilities.OPT.GetString("lang");
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(string.Format("{0}-{1}", lang, lang.ToUpperInvariant()));
-
-            newLbl.Text = strings.newLbl;
-            ts_utilities.Text = strings.ts_utilities;
-            ts_bitflag_editor.Text = strings.ts_bitflag_editor;
-            ts_log_viewer.Text = strings.ts_log_viewer;
-            settingsBtn.Text = strings.settingsBtn;
-            aboutLbl.Text = strings.aboutLbl;
+            xMan.Localize(this, Localization.Enums.SenderType.GUI);
         }
 
         private void check_first_start()
@@ -147,6 +141,8 @@ namespace Grimoire.GUI
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             lManager.Enter(Logs.Sender.MAIN, Logs.Level.DEBUG, "Closing down...");
+
+            lManager.Save();
             Utilities.OPT.Save();
         }
 
@@ -215,6 +211,27 @@ namespace Grimoire.GUI
                 if (tManager.Style == Style.DATA)
                     tManager.DataTab.TS_File_Rebuild_Click(this, EventArgs.Empty);
             }
+            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.L)
+            {
+                xMan.RefreshLocale();
+
+                xMan.Localize(this, Localization.Enums.SenderType.GUI);
+
+                switch (tManager.Style)
+                {
+                    case Style.DATA:
+                        tManager.DataTab.Localize();
+                        break;
+
+                    case Style.RDB:
+                        tManager.RDBTab.Localize();
+                        break;
+
+                    case Style.HASHER:
+                        tManager.HashTab.Localize();
+                        break;
+                }
+            }
         }
 
         private void aboutLbl_Click(object sender, EventArgs e)
@@ -238,8 +255,7 @@ namespace Grimoire.GUI
 
         private void ts_log_viewer_Click(object sender, EventArgs e)
         {
-            using (LogViewer viewer = new LogViewer())
-                viewer.ShowDialog(this);
+            lManager.ShowViewer();
         }
     }
 }

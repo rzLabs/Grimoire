@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Windows.Forms;
+using Grimoire.Utilities;
 
 namespace Grimoire.GUI
 {
     public partial class InputBox : Form
     {
+        XmlManager xMan = XmlManager.Instance;
+
         public InputBox(string description, string defaultText)
         {
             InitializeComponent();
             Text = description;
             input.Text = defaultText;
             DialogResult = DialogResult.Cancel;
-            load_strings();
+            localize();
         }
 
         public InputBox(string description, bool resizable)
@@ -21,7 +24,7 @@ namespace Grimoire.GUI
             this.FormBorderStyle = (resizable) ? FormBorderStyle.SizableToolWindow : FormBorderStyle.FixedToolWindow;
             input.Multiline = resizable;
             DialogResult = DialogResult.Cancel;
-            load_strings();
+            localize();
         }
 
         public string Value { get { return (input.Text.Length > 0) ? input.Text : null; } set { input.Text = value; } }
@@ -37,9 +40,9 @@ namespace Grimoire.GUI
             input.Focus();
         }
 
-        private void load_strings()
+        private void localize()
         {
-            okBtn.Text = strings.okBtn;
+            xMan.Localize(this, Localization.Enums.SenderType.GUI);
         }
     }
 }

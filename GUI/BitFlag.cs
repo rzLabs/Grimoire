@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Grimoire.Utilities;
 
 namespace Grimoire.GUI
 {
@@ -21,6 +22,7 @@ namespace Grimoire.GUI
             InitializeComponent();
             lManager = Logs.Manager.Instance;
 
+            localize();
         }
 
         public BitFlag(int vector)
@@ -29,6 +31,7 @@ namespace Grimoire.GUI
             lManager = Logs.Manager.Instance;
 
             defaultFlag = vector;
+            localize();
         }
 
         #endregion
@@ -58,7 +61,8 @@ namespace Grimoire.GUI
             }
             set { flag = value; }
         }
-        
+
+        XmlManager xMan = XmlManager.Instance;
 
         #endregion
 
@@ -226,9 +230,9 @@ namespace Grimoire.GUI
             Utilities.OPT.Update("flag.clear_on_list_change", Convert.ToInt32(clear_on_change_chkBx.Checked).ToString());
         }
 
-        void load_strings()
+        void localize()
         {
-            clear_on_change_chkBx.Text = strings.clear_on_change;
+            xMan.Localize(this, Localization.Enums.SenderType.GUI);
         }
     }
 }
