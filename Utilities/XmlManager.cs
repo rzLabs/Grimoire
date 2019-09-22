@@ -293,6 +293,8 @@ namespace Grimoire.Utilities
             {
                 ControlConfig config = null;
 
+                // If the control is a MenuStrip we have to loop through its base controls (toolstripmenuitem)
+                // then if applicable we must loop through its children
                 if (control.GetType() == typeof(System.Windows.Forms.MenuStrip))
                 {
                     System.Windows.Forms.MenuStrip ms = (System.Windows.Forms.MenuStrip)control;
@@ -311,32 +313,34 @@ namespace Grimoire.Utilities
                                 tsmi.Size = config.Size;
                         }
 
-                        foreach (System.Windows.Forms.ToolStripMenuItem subTSMI in tsmi.DropDownItems)
-                        {
-                            config = locale.Controls.Find(c => c.Name == subTSMI.Name);
-
-                            if (config != null)
+                        if (tsmi.HasDropDownItems)
+                            foreach (System.Windows.Forms.ToolStripMenuItem subTSMI in tsmi.DropDownItems)
                             {
-                                subTSMI.Text = config.Text.Text;
-                                subTSMI.TextAlign = config.Text.Alignment;
-                                subTSMI.RightToLeft = config.Text.RightToLeft;
+                                config = locale.Controls.Find(c => c.Name == subTSMI.Name);
 
-                                if (!control.Size.IsEmpty)
-                                    subTSMI.Size = config.Size;
+                                if (config != null)
+                                {
+                                    subTSMI.Text = config.Text.Text;
+                                    subTSMI.TextAlign = config.Text.Alignment;
+                                    subTSMI.RightToLeft = config.Text.RightToLeft;
+
+                                    if (!control.Size.IsEmpty)
+                                        subTSMI.Size = config.Size;
+                                }
                             }
-                        }
-
                     }
-
                 }
                 else if (control.GetType() == typeof(System.Windows.Forms.GroupBox))
                 {
+                    // Define the base group_box and set his text
                     System.Windows.Forms.GroupBox grpBx = (System.Windows.Forms.GroupBox)control;
 
                     config = locale.Controls.Find(c => c.Name == grpBx.Name);
                     if (config != null)
                         grpBx.Text = config.Text.Text;
 
+                    // Define each child control inside of the group box
+                    // set their attributes accordingly
                     for (int i = 0; i < grpBx.Controls.Count; i++)
                     {
                         System.Windows.Forms.Control ctrl = grpBx.Controls[i];
@@ -348,9 +352,8 @@ namespace Grimoire.Utilities
                             config = locale.Controls.Find(c => c.Name == btn.Name);
 
                             if (config != null)
-                            {
-                                btn.TextAlign = config.Text.Alignment;                         
-                            }
+                                btn.TextAlign = config.Text.Alignment;
+
                         }
                         else if (ctrl.GetType() == typeof(System.Windows.Forms.RadioButton))
                         {
@@ -359,11 +362,8 @@ namespace Grimoire.Utilities
                             config = locale.Controls.Find(c => c.Name == rBtn.Name);
 
                             if (config != null)
-                            {
                                 rBtn.TextAlign = config.Text.Alignment;
-                                rBtn.Font = new System.Drawing.Font(config.Font.Name, (float)config.Font.Size, config.Font.Style);
-                                rBtn.RightToLeft = config.Text.RightToLeft;
-                            }
+
                         }
                         else if (ctrl.GetType() == typeof(System.Windows.Forms.Label))
                         {
@@ -372,11 +372,8 @@ namespace Grimoire.Utilities
                             config = locale.Controls.Find(c => c.Name == lbl.Name);
 
                             if (config != null)
-                            {
                                 lbl.TextAlign = config.Text.Alignment;
-                                lbl.Font = new System.Drawing.Font(config.Font.Name, (float)config.Font.Size, config.Font.Style);
-                                lbl.RightToLeft = config.Text.RightToLeft;
-                            }
+
                         }
                         else if (ctrl.GetType() == typeof(System.Windows.Forms.CheckBox))
                         {
@@ -385,20 +382,15 @@ namespace Grimoire.Utilities
                             config = locale.Controls.Find(c => c.Name == chkBx.Name);
 
                             if (config != null)
-                            {
                                 chkBx.TextAlign = config.Text.Alignment;
-                                chkBx.Font = new System.Drawing.Font(config.Font.Name, (float)config.Font.Size, config.Font.Style);
-                                chkBx.RightToLeft = config.Text.RightToLeft;
-                            }
+
                         }
-                        else if (ctrl.GetType() == typeof(System.Windows.Forms.TextBox))
-                        {
-                            /*Textbox shouldn't be touched*/
-                        }
+                        else if (ctrl.GetType() == typeof(System.Windows.Forms.TextBox)) { /*Textbox shouldn't be touched*/ }
 
                         if (config != null)
-
-                            ctrl.Font = config.Font;
+                        { 
+                            ctrl.Font = new System.Drawing.Font(config.Font.Name, (float)config.Font.Size, config.Font.Style);
+                            ctrl.RightToLeft = config.Text.RightToLeft;
 
                             if (!config.Location.IsEmpty)
                                 ctrl.Location = config.Location;
