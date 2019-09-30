@@ -52,7 +52,7 @@
   <controls>
     <!-- GUI.BitFlag -->
     <control name="clear_on_change_chkBx" comment="GUI.BitFlag">
-      <text>Clear on List Change</text>
+      <text>إزالة عند تغيير اللائحة</text>
     </control>
     <!-- GUI.DataRebuild -->
     <control name="rebuildBtn" comment="GUI.DataRebuild">
@@ -67,7 +67,7 @@
       <text>إختر حقل</text>
     </control>
     <control name="inputLbl" comment="GUI.ListInput">    
-      <text>Input:</text>
+      <text>المدخل:</text>
     </control>
     <control name="okBtn" comment="GUI.ListInput">
       <text>موافق</text>
@@ -125,7 +125,7 @@
       <text align="MiddleCenter" >إعادة بناء</text>
     </control>
     <control name="ext_grpBx" comment="Tabs.Styles.Data">
-      <text >Extensions</text>
+      <text >الصيغ</text>
     </control>
     <control name="search_grpBx" comment="Tabs.Styles.Data">
       <text >بحث</text>
@@ -140,60 +140,60 @@
       <text >Offset:</text>
     </control>
     <control name="sizeLbl" comment="Tabs.Styles.Data">
-      <text >Size:</text>
+      <text >الحجم:</text>
     </control>
     <control name="encLbl" comment="Tabs.Styles.Data">
-      <text >Encrypted:</text>
+      <text >مشفرة:</text>
     </control>
     <control name="extLbl" comment="Tabs.Styles.Data">
-      <text >Extension:</text>
+      <text >الصيغة:</text>
     </control>
     <control name="upPathLbl" comment="Tabs.Styles.Data">
       <text >مسار الرفع:</text>
     </control>
     <!-- Hasher -->
     <control name="inst_grpBx" comment="Tabs.Styles.Hasher">
-      <text >Instant</text>
+      <text >مباشر</text>
     </control>
     <control name="inst_inputLbl" comment="Tabs.Styles.Hasher">
-      <text>Input:</text>
+      <text>المدخل:</text>
     </control>
     <control name="inst_outLbl" comment="Tabs.Styles.Hasher">
-      <text>Output:</text>
+      <text>المخرج:</text>
     </control>
     <control name="inst_flipBtn" comment="Tabs.Styles.Hasher">
       <text align="MiddleCenter" >Flip</text>
     </control>
     <control name="optName_grpBx" comment="Tabs.Styles.Hasher">  
-      <text >Name Options</text>
+      <text >إسم الخيار</text>
     </control>
     <control name="optNone_rBtn" comment="Tabs.Styles.Hasher">
-      <text>None</text>
+      <text>لا شيء</text>
     </control>
     <control name="optAppend_ascii_rBtn" comment="Tabs.Styles.Hasher">
-      <text>Append (ascii)</text>
+      <text>تطبيق (ascii)</text>
     </control>
     <control name="optRemove_ascii_rBtn" comment="Tabs.Styles.Hasher">
-      <text>Remove (ascii)</text>
+      <text>ازالة (ascii)</text>
     </control>
     <control name="optGrid_grpBx" comment="Tabs.Styles.Hasher">
-      <text>Grid Options</text>
+      <text>خيارات الشبكة</text>
     </control>
     <control name="autoClear_chk" comment="Tabs.Styles.Hasher">
-      <text>Auto Clear</text>
+      <text>تنظيف تلقائي</text>
     </control>
     <control name="autoConvert_chk" comment="Tabs.Styles.Hasher">
-      <text>Auto Convert</text>
+      <text>تحويل تلقائي</text>
     </control>
     <control name="multi_grpBx" comment="Tabs.Styles.Hasher">
-      <text>Multi-File</text>
+      <text>ملفات متعددة</text>
     </control>
     <!-- RDB -->
     <control name="ts_load" comment="Tabs.Styles.RDB">
-      <text align="MiddleCenter" >Load</text>
+      <text align="MiddleCenter" >تحميل</text>
     </control>
     <control name="ts_load_file" comment="Tabs.Styles.RDB">
-      <text align="MiddleCenter" >File</text>
+      <text align="MiddleCenter" >ملف</text>
     </control>
     <control name="ts_load_sql" comment="Tabs.Styles.RDB">
       <text align="MiddleCenter" >SQL</text>
@@ -202,7 +202,7 @@
       <text align="MiddleCenter" >حفظ</text>
     </control>
     <control name="ts_save_file" comment="Tabs.Styles.RDB">
-      <text align="MiddleCenter" >File</text>
+      <text align="MiddleCenter" >ملف</text>
     </control>
     <control name="ts_save_file_rdb" comment="Tabs.Styles.RDB">
       <text align="MiddleCenter" >RDB</text>
@@ -214,19 +214,19 @@
       <text align="MiddleCenter" >SQL</text>
     </control>
     <control name="ts_save_enc" comment="Tabs.Styles.RDB">
-      <text align="MiddleCenter" >Encrypted</text>
+      <text align="MiddleCenter" >مشفر</text>
     </control>
     <control name="ts_encLbl" comment="Tabs.Styles.RDB">
-      <text>Encoding:</text>
+      <text>التشفير:</text>
     </control>
     <control name="ts_structLb" comment="Tabs.Styles.RDB">
-      <text>Structure:</text>
+      <text>الهيكل:</text>
     </control>
     <control name="ts_structLbl" comment="Tabs.Styles.RDB">
-      <text align="MiddleCenter" >Structure:</text>
+      <text align="MiddleCenter" >الهيكل:</text>
     </control>
     <control name="ts_save_enc" comment="Tabs.Styles.RDB">
-      <text align="MiddleCenter" >Encryped:</text>
+      <text align="MiddleCenter" >مشفر:</text>
     </control>
     <control name="ts_save_w_ascii" comment="Tabs.Styles.RDB">
       <text align="MiddleCenter" >(ASCII)</text>
