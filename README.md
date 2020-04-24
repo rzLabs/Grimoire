@@ -71,13 +71,12 @@ All in one minimalistic and purpose driven Rappelz Client/RDB Editing Suite.
 # Planned functionality
 * Admin Utility Tab
 * Map Editor Utility Tab
-~~* RDB Open via Drag-N-Drop~~
 * RDB Glandu2 Struct Importer GUI
-~~* Data Rebuild Wizard GUI~~
 
 # !!!Warning!!!
 
 Grimoire requires the latest dependancies be referenced!
   * DataCore ( http://github.com/ismokedrow/datacore )
   * Daedalus ( https://github.com/iSmokeDrow/Daedalus )
-  ~~* rdbCore ( http://github.com/ismokedrow/rdbcore )~~
+
+Development resumed 4/24/2020
