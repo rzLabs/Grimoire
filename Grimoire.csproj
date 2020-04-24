@@ -36,6 +36,10 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DataCore, Version=0.4.4.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\DataCore.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.SqlServer.BatchParser, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rd Party\Microsoft.SqlServer.BatchParser.dll</HintPath>
@@ -221,35 +225,30 @@
     <EmbeddedResource Include="GUI\BitFlag.resx">
       <DependentUpon>BitFlag.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\DataRebuild.resx">
+    <None Include="GUI\DataRebuild.resx">
       <DependentUpon>DataRebuild.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Input.resx">
+    </None>
+    <None Include="GUI\Input.resx">
       <DependentUpon>Input.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\ListInput.resx">
+    </None>
+    <None Include="GUI\ListInput.resx">
       <DependentUpon>ListInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\ListSelect.resx">
+    </None>
+    <None Include="GUI\ListSelect.resx">
       <DependentUpon>ListSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\LogViewer.resx">
+    </None>
+    <None Include="GUI\LogViewer.resx">
       <DependentUpon>LogViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Main.en.resx">
-      <DependentUpon>Main.cs</DependentUpon>
-    </EmbeddedResource>
+    </None>
     <EmbeddedResource Include="GUI\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Main.ssy.resx">
-      <DependentUpon>Main.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\MessageListBox.resx">
+    <None Include="GUI\MessageListBox.resx">
       <DependentUpon>MessageListBox.cs</DependentUpon>
-    </EmbeddedResource>
+    </None>
     <EmbeddedResource Include="GUI\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Setup.resx">
       <DependentUpon>Setup.cs</DependentUpon>
@@ -304,10 +303,6 @@
       <Project>{8591ef8a-cd35-494d-9cba-0efe0df646fe}</Project>
       <Name>Daedalus</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataCore\DataCore\DataCore.csproj">
-      <Project>{f234efe9-3104-45fc-a5be-fdc3d0cd888e}</Project>
-      <Name>DataCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
@@ -315,6 +310,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
+    <None Include="Resources\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />

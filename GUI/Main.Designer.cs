@@ -139,7 +139,7 @@
             this.ts_utilities});
             this.ms.Location = new System.Drawing.Point(141, 5);
             this.ms.Name = "ms";
-            this.ms.Size = new System.Drawing.Size(186, 24);
+            this.ms.Size = new System.Drawing.Size(66, 24);
             this.ms.TabIndex = 6;
             this.ms.Text = "menuStrip1";
             // 
@@ -155,14 +155,14 @@
             // ts_bitflag_editor
             // 
             this.ts_bitflag_editor.Name = "ts_bitflag_editor";
-            this.ts_bitflag_editor.Size = new System.Drawing.Size(180, 22);
+            this.ts_bitflag_editor.Size = new System.Drawing.Size(144, 22);
             this.ts_bitflag_editor.Text = "BitFlag Editor";
             this.ts_bitflag_editor.Click += new System.EventHandler(this.ts_bitflag_editor_Click);
             // 
             // ts_log_viewer
             // 
             this.ts_log_viewer.Name = "ts_log_viewer";
-            this.ts_log_viewer.Size = new System.Drawing.Size(180, 22);
+            this.ts_log_viewer.Size = new System.Drawing.Size(144, 22);
             this.ts_log_viewer.Text = "Log Viewer";
             this.ts_log_viewer.Click += new System.EventHandler(this.ts_log_viewer_Click);
             // 

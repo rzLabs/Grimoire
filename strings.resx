@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="aboutLbl" xml:space="preserve">
+    <value>About</value>
+    <comment>GUI.Main.aboutLbl.Text</comment>
+  </data>
+  <data name="autoClear_chk" xml:space="preserve">
+    <value>Auto Clear</value>
+    <comment>Tabs.Styles.Hasher.autoClear_chk.Text</comment>
+  </data>
+  <data name="autoConvert_chk" xml:space="preserve">
+    <value>Auto Convert</value>
+    <comment>Tabs.Styles.Hasher.autoConvert_chk.Text</comment>
+  </data>
+  <data name="clear_on_change" xml:space="preserve">
+    <value>Clear on List Change</value>
+    <comment>GUI.BitFlag.clear_on_change_chkBx.Text</comment>
+  </data>
+  <data name="dataId_lbl" xml:space="preserve">
+    <value>Data ID:</value>
+    <comment>Tabs.Styles.Data.dataId_lbl.Text</comment>
+  </data>
+  <data name="descLbl" xml:space="preserve">
+    <value>Please select a field</value>
+    <comment>GUI.ListInput.descLbl.Text</comment>
+  </data>
+  <data name="encLbl" xml:space="preserve">
+    <value>Encrypted:</value>
+    <comment>Tabs.Styles.Data.encLbl.Text</comment>
+  </data>
+  <data name="extLbl" xml:space="preserve">
+    <value>Extension:</value>
+    <comment>Tabs.Styles.Data.extLbl.Text</comment>
+  </data>
+  <data name="ext_grpBx" xml:space="preserve">
+    <value>Extensions</value>
+    <comment>Tabs.Styles.Data.ext_grpBx.Text</comment>
+  </data>
+  <data name="grid_grpBx" xml:space="preserve">
+    <value>Index</value>
+    <comment>Tabs.Styles.Data.grid_grpBx.Text</comment>
+  </data>
+  <data name="inputLbl" xml:space="preserve">
+    <value>Input:</value>
+    <comment>GUI.ListInput.inputLbl.Text</comment>
+  </data>
+  <data name="inst_flipBtn" xml:space="preserve">
+    <value>Flip</value>
+    <comment>Tabs.Styles.Hasher.inst_flipBtn.Text</comment>
+  </data>
+  <data name="inst_grpBx" xml:space="preserve">
+    <value>Instant</value>
+    <comment>Tabs.Styles.Hasher.inst_grpBx.Text</comment>
+  </data>
+  <data name="inst_inputLbl" xml:space="preserve">
+    <value>Input:</value>
+    <comment>Tabs.Styles.Hasher.inst_inputLbl.Text</comment>
+  </data>
+  <data name="inst_outLbl" xml:space="preserve">
+    <value>Output:</value>
+    <comment>Tabs.Styles.Hasher.inst_outLbl.Text</comment>
+  </data>
+  <data name="msg_grpBx" xml:space="preserve">
+    <value>Message</value>
+    <comment>GUI.MessageListBox.msg_grpBx.Text</comment>
+  </data>
+  <data name="multi_grpBx" xml:space="preserve">
+    <value>Multi-File</value>
+    <comment>Tabs.Styles.Hasher.multi_grpBx.Text</comment>
+  </data>
+  <data name="newLbl" xml:space="preserve">
+    <value>New</value>
+    <comment>GUI.Main.newLbl.Text</comment>
+  </data>
+  <data name="noBtn" xml:space="preserve">
+    <value>No</value>
+    <comment>GUI.MessageListBox.noBtn.Text</comment>
+  </data>
+  <data name="offsetLbl" xml:space="preserve">
+    <value>Offset:</value>
+    <comment>Tabs.Styles.Data.offsetLbl.Text</comment>
+  </data>
+  <data name="okBtn" xml:space="preserve">
+    <value>OK</value>
+    <comment>GUI.Input.okBtn.Text, GUI.ListSelect.okBtn</comment>
+  </data>
+  <data name="optAppend_ascii_rBtn" xml:space="preserve">
+    <value>Append (ascii)</value>
+    <comment>Tabs.Styles.Hasher.optAppend_ascii_rBtn.Text</comment>
+  </data>
+  <data name="optGrid_grpBx" xml:space="preserve">
+    <value>Grid Options</value>
+    <comment>Tabs.Styles.Hasher.optGrid_grpBx.Text</comment>
+  </data>
+  <data name="optName_grpBx" xml:space="preserve">
+    <value>Name Options:</value>
+    <comment>Tabs.Styles.Hasher.optName_grpBx.Text</comment>
+  </data>
+  <data name="optNone_rBtn" xml:space="preserve">
+    <value>None</value>
+    <comment>Tabs.Styles.Hasher.optNone_rBtn.Text</comment>
+  </data>
+  <data name="optRemove_ascii_rBtn" xml:space="preserve">
+    <value>Remove (ascii)</value>
+    <comment>Tabs.Styles.Hasher.optRemove_ascii_rBtn.Text</comment>
+  </data>
+  <data name="rebuildBtn" xml:space="preserve">
+    <value>Rebuild</value>
+    <comment>GUI.DataRebuild.rebuildBtn.Text</comment>
+  </data>
+  <data name="search_grpBx" xml:space="preserve">
+    <value>Search</value>
+    <comment>Tabs.Styles.Data.search_grpBx.Text</comment>
+  </data>
+  <data name="settingsBtn" xml:space="preserve">
+    <value>Settings</value>
+    <comment>GUI.Main.settingsBtn.Text</comment>
+  </data>
+  <data name="sizeLbl" xml:space="preserve">
+    <value>Size:</value>
+    <comment>Tabs.Styles.Data.sizeLbl.Text</comment>
+  </data>
+  <data name="stats_grpBx" xml:space="preserve">
+    <value>Statistics</value>
+    <comment>Tabs.Styles.Data.stats_grpBx.Text</comment>
+  </data>
+  <data name="ts_bitflag_editor" xml:space="preserve">
+    <value>BitFlag Editor</value>
+    <comment>GUI.Main.ts_bitflag_editor.Text</comment>
+  </data>
+  <data name="ts_encLbl" xml:space="preserve">
+    <value>Encoding:</value>
+    <comment>Tabs.Styles.RDB.ts_encLbl.Text</comment>
+  </data>
+  <data name="ts_file_load" xml:space="preserve">
+    <value>Load</value>
+    <comment>Tabs.Styles.Data.ts_file_load.Text</comment>
+  </data>
+  <data name="ts_file_new" xml:space="preserve">
+    <value>New</value>
+    <comment>Tabs.Styles.Data.ts_file_new.Text</comment>
+  </data>
+  <data name="ts_file_rebuild" xml:space="preserve">
+    <value>Rebuild</value>
+    <comment>Tabs.Styles.Data.ts_file_rebuild.Text</comment>
+  </data>
+  <data name="ts_file_save_rdb" xml:space="preserve">
+    <value>RDB</value>
+    <comment>Tabs.Styles.RDB.ts_file_save_rdb.Text</comment>
+  </data>
+  <data name="ts_load" xml:space="preserve">
+    <value>Load</value>
+    <comment>Tabs.Styles.RDB.ts_load.Text</comment>
+  </data>
+  <data name="ts_load_file" xml:space="preserve">
+    <value>File</value>
+    <comment>Tabs.Styles.RDB.ts_load_file.Text</comment>
+  </data>
+  <data name="ts_load_sql" xml:space="preserve">
+    <value>SQL</value>
+    <comment>Tabs.Styles.RDB.ts_load_sql.Text</comment>
+  </data>
+  <data name="ts_log_viewer" xml:space="preserve">
+    <value>Log Viewer</value>
+    <comment>GUI.Main.ts_log_viewer.Text</comment>
+  </data>
+  <data name="ts_save" xml:space="preserve">
+    <value>Save</value>
+    <comment>Tabs.Styles.RDB.ts_save.Text</comment>
+  </data>
+  <data name="ts_save_enc" xml:space="preserve">
+    <value>Encrypted</value>
+    <comment>Tabs.Styles.RDB.ts_save_enc.Text</comment>
+  </data>
+  <data name="ts_save_file" xml:space="preserve">
+    <value>File</value>
+    <comment>Tabs.Styles.RDB.ts_save_file.Text</comment>
+  </data>
+  <data name="ts_save_file_csv" xml:space="preserve">
+    <value>CSV</value>
+    <comment>Tabs.Styles.RDB.ts_save_file_csv.Text</comment>
+  </data>
+  <data name="ts_save_file_sql" xml:space="preserve">
+    <value>SQL</value>
+    <comment>Tabs.Styles.RDB.ts_save_file_sql.Text</comment>
+  </data>
+  <data name="ts_save_sql" xml:space="preserve">
+    <value>SQL</value>
+    <comment>Tabs.Styles.RDB.ts_save_sql.Text</comment>
+  </data>
+  <data name="ts_save_w_ascii" xml:space="preserve">
+    <value>(ASCII)</value>
+    <comment>Tabs.Styles.RDB.ts_save_w_ascii.Text</comment>
+  </data>
+  <data name="ts_structLb" xml:space="preserve">
+    <value>Structure:</value>
+    <comment>Tabs.Styles.RDB.ts_structLb.Text;</comment>
+  </data>
+  <data name="ts_utilities" xml:space="preserve">
+    <value>Utilities</value>
+    <comment>GUI.Main.ts_utilities.Text</comment>
+  </data>
+  <data name="upPathLbl" xml:space="preserve">
+    <value>Upload Path:</value>
+    <comment>Tabs.Styles.Data.upPathLbl.Text</comment>
+  </data>
+  <data name="yesBtn" xml:space="preserve">
+    <value>Yes</value>
+    <comment>GUI.MessageListBox.yesBtn.Text</comment>
+  </data>
+</root>

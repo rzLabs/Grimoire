@@ -19,7 +19,7 @@ namespace Grimoire.GUI
     {
         Tabs.Manager tManager = Tabs.Manager.Instance;
         Logs.Manager lManager = Logs.Manager.Instance;
-        DataCore.Core core = null;
+        Core core = null;
         XmlManager xMan = XmlManager.Instance;
         
         public DataRebuild()

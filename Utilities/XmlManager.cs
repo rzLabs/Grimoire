@@ -50,14 +50,14 @@ namespace Grimoire.Utilities
         {
             if (string.IsNullOrEmpty(key))
             {
-                string msg = "compileLocales() key is null!";
+                string msg = "compileLocales() key is null! Please check your grimpoite.opt \"locale\" value! (example value: en-US)";
                 lManager.Enter(Logs.Sender.MANAGER, Logs.Level.ERROR, msg);
                 System.Windows.Forms.MessageBox.Show(msg, "XML Exception", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
 
             if (!Directory.Exists(localeDir))
             {
-                string msg = "compileLocales() localeDir is null!";
+                string msg = "compileLocales() localeDir does not exist! Please check your grimoire.opt \"locale.directory\" value! (example value: C:\\Grimoire\\Localization)";
                 lManager.Enter(Logs.Sender.MANAGER, Logs.Level.ERROR, msg);
                 System.Windows.Forms.MessageBox.Show(msg, "XML Exception", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
@@ -353,7 +353,6 @@ namespace Grimoire.Utilities
 
                             if (config != null)
                                 btn.TextAlign = config.Text.Alignment;
-
                         }
                         else if (ctrl.GetType() == typeof(System.Windows.Forms.RadioButton))
                         {
@@ -363,7 +362,6 @@ namespace Grimoire.Utilities
 
                             if (config != null)
                                 rBtn.TextAlign = config.Text.Alignment;
-
                         }
                         else if (ctrl.GetType() == typeof(System.Windows.Forms.Label))
                         {
@@ -373,7 +371,6 @@ namespace Grimoire.Utilities
 
                             if (config != null)
                                 lbl.TextAlign = config.Text.Alignment;
-
                         }
                         else if (ctrl.GetType() == typeof(System.Windows.Forms.CheckBox))
                         {
@@ -383,7 +380,6 @@ namespace Grimoire.Utilities
 
                             if (config != null)
                                 chkBx.TextAlign = config.Text.Alignment;
-
                         }
                         else if (ctrl.GetType() == typeof(System.Windows.Forms.TextBox)) { /*Textbox shouldn't be touched*/ }
 

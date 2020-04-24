@@ -384,10 +384,7 @@ namespace Grimoire.Tabs.Styles
                 grid.SelectedCells[0].Value = bitflag;
         }
 
-        private void localize()
-        {
-            xMan.Localize(this, Localization.Enums.SenderType.Tab);
-        }
+        private void localize() => xMan.Localize(this, Localization.Enums.SenderType.Tab);
 
         #endregion
 
@@ -407,7 +404,7 @@ namespace Grimoire.Tabs.Styles
 
             if (Paths.FileResult != DialogResult.OK)
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "User cancelled file load on tab: {0}", tManager.Text);
+                lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User cancelled file load on tab: {0}", tManager.Text);
                 return;
             }
 
@@ -442,7 +439,8 @@ namespace Grimoire.Tabs.Styles
                 string filename = core.FileName;
                 if (string.IsNullOrEmpty(filename))
                 {
-                    DialogResult result = MessageBox.Show("It seems the structure lua does not have a filename listed, would you like to define one?\n\nReminder: Choosing no will cause me use this tabs name instead!", "Input Required", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show("It seems the structure lua does not have a filename listed, would you like to define one?\n\nReminder: Choosing no will cause me to use this tabs name instead!",
+                        "Input Required", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                     switch (result)
                     {
                         case DialogResult.Cancel:
@@ -502,15 +500,14 @@ namespace Grimoire.Tabs.Styles
 
         #region Methods (Public)
 
-        public void ResetProgress()
-        {
-            this.Invoke(new MethodInvoker(delegate { ts_prog.Maximum = 100; ts_prog.Value = 0; }));
-        }
+        public void ResetProgress() => Invoke(new MethodInvoker(delegate {
+            ts_prog.Maximum = 100;
+            ts_prog.Value = 0; }));
 
         public void SetColumns(DataGridViewTextBoxColumn[] columns)
-        {
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} columns set into tab: {1}", columns.Length, tManager.Text);
+        {         
             this.Invoke(new MethodInvoker(delegate { grid.Columns.AddRange(columns); }));
+            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} columns set into tab: {1}", columns.Length, tManager.Text);
         }
 
         public void Clear()
@@ -777,5 +774,10 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
+
+        private void ts_save_file_sql_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

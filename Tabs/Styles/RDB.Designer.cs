@@ -119,7 +119,7 @@
             // 
             this.ts_load_file.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_load_file.Name = "ts_load_file";
-            this.ts_load_file.Size = new System.Drawing.Size(180, 22);
+            this.ts_load_file.Size = new System.Drawing.Size(95, 22);
             this.ts_load_file.Text = "File";
             this.ts_load_file.Click += new System.EventHandler(this.TS_Load_File_Click);
             // 
@@ -127,7 +127,7 @@
             // 
             this.ts_load_sql.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_load_sql.Name = "ts_load_sql";
-            this.ts_load_sql.Size = new System.Drawing.Size(180, 22);
+            this.ts_load_sql.Size = new System.Drawing.Size(95, 22);
             this.ts_load_sql.Text = "SQL";
             this.ts_load_sql.Click += new System.EventHandler(this.ts_load_sql_Click);
             // 
@@ -173,6 +173,7 @@
             this.ts_save_file_sql.Name = "ts_save_file_sql";
             this.ts_save_file_sql.Size = new System.Drawing.Size(180, 22);
             this.ts_save_file_sql.Text = "SQL";
+            this.ts_save_file_sql.Click += new System.EventHandler(this.ts_save_file_sql_Click);
             // 
             // ts_save_sql
             // 

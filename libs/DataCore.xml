@@ -1,0 +1,806 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DataCore</name>
+    </assembly>
+    <members>
+        <member name="T:DataCore.Core">
+            <summary>
+            Provides interactive access to the Rappelz Data.XXX File Management System
+            </summary>
+        </member>
+        <member name="F:DataCore.Core.encoding">
+            <summary>
+            Defines the encoding of files to be the default of the system
+            unless changed by the caller during construction of Core
+            </summary>
+        </member>
+        <member name="F:DataCore.Core.Index">
+            <summary>
+            List storing all IndexEntrys inside of data.000
+            </summary>
+        </member>
+        <member name="P:DataCore.Core.RowCount">
+            <summary>
+            Count of IndexEntrys listed in the loaded Index
+            </summary>
+        </member>
+        <member name="P:DataCore.Core.DataDirectory">
+            <summary>
+            The directory where the Rappelz client data.xxx files are located
+            </summary>
+        </member>
+        <member name="E:DataCore.Core.MessageOccured">
+            <summary>
+            Occurs when a message is transmitted to the caller for display
+            </summary>
+        </member>
+        <member name="E:DataCore.Core.WarningOccured">
+            <summary>
+            Occurs when a non-critical issues has been encountered
+            </summary>
+        </member>
+        <member name="E:DataCore.Core.CurrentMaxDetermined">
+            <summary>
+            Occurs when the maximum progress of an operation has been determined
+            </summary>
+        </member>
+        <member name="E:DataCore.Core.CurrentProgressChanged">
+            <summary>
+            Ocurrs when the progress value of the current operation has been changed
+            </summary>
+        </member>
+        <member name="E:DataCore.Core.CurrentProgressReset">
+            <summary>
+            Occurs when an operation has completed and the progressbar values of the caller need to be reset
+            </summary>
+        </member>
+        <member name="M:DataCore.Core.OnMessage(DataCore.MessageArgs)">
+            <summary>
+            Raises an event that informs the caller of a message that has occured
+            </summary>
+            <param name="c"></param>
+        </member>
+        <member name="M:DataCore.Core.OnWarning(DataCore.WarningArgs)">
+            <summary>
+            Raises an event that informs the caller of a warning that has occured
+            </summary>
+            <param name="w">Description of the warning event ([Method-Name] Warning-String)</param>
+        </member>
+        <member name="M:DataCore.Core.OnCurrentMaxDetermined(DataCore.CurrentMaxArgs)">
+            <summary>
+            Raises an event that informs caller of CurrentProgress operations total
+            </summary>
+            <param name="c">Total number of processes to be completed</param>
+        </member>
+        <member name="M:DataCore.Core.OnCurrentProgressChanged(DataCore.CurrentChangedArgs)">
+            <summary>
+            Raises an event that informs the caller of current operations completed.
+            This event can additionally deliver a string (status update) to the caller
+            </summary>
+            <param name="c">CurrentChangedArgs containing event data</param>
+        </member>
+        <member name="M:DataCore.Core.OnCurrentProgressReset(DataCore.CurrentResetArgs)">
+            <summary>
+            Raises an event that informs the caller that the CurrentProgressbar should be reset to 0
+            </summary>
+            <param name="e">Dummy EventArg</param>
+        </member>
+        <member name="M:DataCore.Core.#ctor">
+            <summary>
+            Dummy constructor
+            </summary>
+        </member>
+        <member name="M:DataCore.Core.#ctor(System.Text.Encoding)">
+            <summary>
+            Instantiates the Core by providing encoding for operations
+            </summary>
+            <param name="encoding"></param>
+        </member>
+        <member name="M:DataCore.Core.#ctor(System.Boolean,System.Text.Encoding)">
+            <summary>
+            Instantiates the Core by providing backup and encoding for operations
+            </summary>
+            <param name="backup">Determines if this core will use the backup function</param>
+            <param name="encoding">Encoding to be applied to certain conversions</param>
+        </member>
+        <member name="M:DataCore.Core.#ctor(System.Boolean,System.String)">
+            <summary>
+            Instantiates the Core by providing backup and configuration file path
+            </summary>
+            <param name="backup">Determines if this core will use the backup function</param>
+            <param name="configPath">Path to the dCore.lua containing overrides</param>
+        </member>
+        <member name="M:DataCore.Core.#ctor(System.Text.Encoding,System.Boolean,System.String)">
+            <summary>
+            Instantiates the Core by providing file encoding and backup and configPath
+            </summary>
+            <param name="backup">Determines if this core will use the backup function</param>
+            <param name="encoding">Encoding to be applied to certain conversions</param>
+            <param name="configPath">Path to the dCore.lua containing overrides</param>
+        </member>
+        <member name="P:DataCore.Core.ExtensionList">
+            <summary>
+            Returns a list of valid extensions that can be exported
+            </summary>
+        </member>
+        <member name="M:DataCore.Core.ExtensionEncrypted(System.String)">
+            <summary>
+            Determines if the given extension is Encrypted
+            </summary>
+            <param name="extension">Extension to be determined</param>
+            <returns>True or False</returns>
+        </member>
+        <member name="M:DataCore.Core.New(System.String)">
+            <summary>
+            Generates a new data.000 index based on provided dumpDirectory
+            Expects: /tga /jpg /wav /dds style dump folder structure
+            (This function is to be used primarily in saving a newly created/modified 
+            index.000)
+            </summary>
+            <param name="dumpDirectory">Location of dump folders (e.g. client/output/dump/)</param>
+            <returns>Populated data.000 index</returns>
+        </member>
+        <member name="M:DataCore.Core.Load(System.String)">
+            <summary>
+            Reads the data.000 contents into a List of IndexEntries (note toggling on decodeNames will decrease speed)
+            </summary>
+            <param name="path">Path to the data.000 index</param>
+        </member>
+        <member name="M:DataCore.Core.Save(System.String)">
+            <summary>
+            Saves the provided indexList into a ready to use data.000 index
+            </summary>
+            <param name="buildDirectory">Location to build the new data.000 at</param>
+            <returns>bool value indicating success or failure</returns>
+        </member>
+        <member name="M:DataCore.Core.Sort(DataCore.SortType)">
+            <summary>
+            Reorders references index by sortType
+            </summary>
+            <param name="type">Type of sort to be performed</param>
+        </member>
+        <member name="M:DataCore.Core.GetStoredSize(System.Collections.Generic.List{DataCore.Structures.IndexEntry})">
+            <summary>
+            Gets the total size of all the files listed in the filteredList
+            </summary>
+            <param name="filteredList">List of files to be summed</param>
+            <returns>(long) File Size of filteredList</returns>
+        </member>
+        <member name="M:DataCore.Core.GetStoredSize(System.Int32)">
+            <summary>
+            Gets the total size of all the files listed for the given dataId
+            </summary>
+            <param name="dataId">ID of data unit to be calculated</param>
+            <returns>(long) File Size of all files in dataId</returns>
+        </member>
+        <member name="M:DataCore.Core.GetFragmentedSize">
+            <summary>
+            Gets the total size of fragmented space in the entire client
+            </summary>
+            <returns>(long) Total fragmented bytes in all data.00*</returns>
+        </member>
+        <member name="M:DataCore.Core.GetFragmentedSize(System.Int32)">
+            <summary>
+            Gets the total size of fragmented space in the storage unit
+            </summary>
+            <param name="dataId">ID of the data unit to be calculated</param>
+            <returns>(long) Total fragmented bytes in dataId</returns>
+        </member>
+        <member name="M:DataCore.Core.GetExtensionSize(System.String)">
+            <summary>
+            Gets the total size of all files in the Index ending with the given extension
+            </summary>
+            <param name="extension">Extension of the target files</param>
+            <returns>(long) Total Size</returns>
+        </member>
+        <member name="M:DataCore.Core.FindAll(System.String,System.String,System.Object)">
+            <summary>
+            Locates all IndexEntry with matching criteria and returns them as a list
+            </summary>
+            <param name="fieldName">Operand 1 of the search (e.g. name, data_id)</param>
+            <param name="op">Operator for the search (e.g. ==, >= etc..)</param>
+            <param name="criteria">Operand 2 of the search (e.g. "db_")</param>
+            <returns>List of matching IndexEntry</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntry(System.Int32)">
+            <summary>
+            Returns an IndexEntry based on its ordinal position
+            </summary>
+            <param name="index">Oridinal position of the desired IndexEntry</param>
+            <returns>(IndexEntry)</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntry(System.String)">
+            <summary>
+            Returns an IndexEntry based on it's [UNHASHED] name
+            </summary>
+            <param name="name">File name being searched for</param>
+            <returns>IndexEntry of name or null</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntry(System.Int32,System.Int32)">
+            <summary>
+            Returns an IndexEntry based on it's dataId and offset
+            </summary>
+            <param name="dataId">data.xxx id being searched</param>
+            <param name="offset">offset of file in dataId being searched</param>
+            <returns>IndexEntry of dataId and offset or null</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByPartialName(System.String)">
+            <summary>
+            Returns a List of all entries whose name contains partialName
+            </summary>
+            <param name="partialName">Partial fileName (e.g. db_) to be searched for</param>
+            <returns>Populated List of IndexEntries</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByDataId(System.Int32)">
+            <summary>
+            Returns a List of all entries matching dataId
+            </summary>
+            <param name="dataId">data.xxx Id being requested</param>
+            <returns>List for data.xx{dataId}</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByDataId(System.Int32,DataCore.SortType)">
+            <summary>
+            Returns a filtered List of all entries matching dataId
+            Return is sorted by sortType
+            </summary>
+            <param name="dataId">data.xxx Id being requested</param>
+            <param name="type">Type code for how to sort return</param>
+            LEGEND:
+            0 = Name
+            1 = Offset
+            2 = Size
+            <returns>List for data.xx{dataId}</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByDataId(System.Collections.Generic.List{DataCore.Structures.IndexEntry},System.Int32,DataCore.SortType)">
+            <summary>
+            Returns a filtered List of all entries matching dataId
+            Return is sorted by sortType
+            </summary>
+            <param name="filteredIndx">Reference to data.000 index</param>
+            <param name="dataId">data.xxx Id being requested</param>
+            <param name="type">Type code for how to sort return</param>
+            <returns>List for data.xx{dataId}</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByExtension(System.String)">
+            <summary>
+            Returns a filtered List of all entries matching extension
+            </summary>
+            <param name="extension">extension being searched (e.g. dds)</param>
+            <returns>Filtered List of extension</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByExtension(System.String,DataCore.SortType)">
+            <summary>
+            Returns a filtered List of all entries matching extension
+            </summary>
+            <param name="extension">extension being searched (e.g. dds)</param>
+            <param name="type">Type code for how to sort return</param>
+            <returns>Filtered List of extension</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByExtension(System.String,System.String)">
+            <summary>
+            Returns a filtered List of all entries matching both extension and term
+            </summary>
+            <param name="extension">Extension of desired files</param>
+            <param name="term">Term desired file names must contain</param>
+            <returns>Filtered List of files with extension whose names contain term</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByExtension(System.String,System.String,DataCore.SortType)">
+            <summary>
+            Returns a filtered List of all entries matching extension
+            </summary>
+            <param name="extension">extension being searched (e.g. dds)</param>
+            <param name="term">Term desired file names must contain</param>
+            <param name="type">Type code for how to sort return</param>
+            <returns>Filtered List of extension</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByExtension(System.String,System.Int32)">
+            <summary>
+            Gets all entries in the Index ending with the given extension with the given dataId
+            </summary>
+            <param name="extension">Extension of the target files</param>
+            <param name="dataID">Data ID of the target files</param>
+            <returns>Collection of entries matching the given extension and dataID</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByExtension(System.String,System.Int32,DataCore.SortType)">
+            <summary>
+            Gets all entries in the Index ending with the given extension with the given dataId sorted on the given type
+            </summary>
+            <param name="extension">Extension of the target files</param>
+            <param name="dataID">Data ID of the target files</param>
+            <param name="type">Desired SortType for the returned collection</param>
+            <returns>Collection of entries matching the given extension and dataID</returns>
+        </member>
+        <member name="M:DataCore.Core.GetEntriesByExtensions(System.String[])">
+            <summary>
+            Returns a filtered List of all entries with matching provided extensions
+            </summary>
+            <param name="extensions"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Core.DeleteEntriesByDataId(System.Int32)">
+            <summary>
+            Removes a set of entries bearing DataID = dataId from referenced data.000 index
+            </summary>
+            <param name="dataId">Id of file entries to be deleted</param>
+        </member>
+        <member name="M:DataCore.Core.DeleteEntryByName(System.String,System.String)">
+            <summary>
+            Removes a single entry bearing Name = name from referenced data.000 index
+            </summary>
+            <param name="fileName">Name of the IndexEntry being deleted</param>
+            <param name="dataDirectory">Directory of the data.xxx files</param>
+        </member>
+        <member name="M:DataCore.Core.DeleteEntryByIdandOffset(System.Int32,System.Int32)">
+            <summary>
+            Removes a single entry bearing DataID = id and Offset = offset from referenced data.000 index
+            </summary>
+            <param name="id">DataID of file entry to be deleted</param>
+            <param name="offset">Offset of file entry to be deleted</param>
+        </member>
+        <member name="M:DataCore.Core.UpdateEntryOffset(System.String,System.Int64)">
+            <summary>
+            Updates the offset for IndexEntry with given fileName in the referenced index
+            </summary>
+            <param name="fileName">Name of the IndexEntry being updated</param>
+            <param name="offset">New offset for the IndexEntry</param>
+        </member>
+        <member name="M:DataCore.Core.GetEntryNoLocale(System.String)">
+            <summary>
+            Gets the IndexEntry with given fileName regardless of locale
+            </summary>
+            <param name="fileName">Name o the IndexEntry being saught</param>
+            <returns>Matching IndexEntry of fileName</returns>
+        </member>
+        <member name="M:DataCore.Core.GetFileBytes(System.String)">
+            <summary>
+            Gets the collection of bytes that makes up a given file
+            </summary>
+            <param name="fileName">Name of the file to generate hash for</param>
+        </member>
+        <member name="M:DataCore.Core.GetFileBytes(System.String,System.Int32,System.Int64,System.Int64)">
+            <summary>
+            Gets the collection of bytes that makes up a given file
+            </summary>
+            <param name="fileName">Name of the target file</param>
+            <param name="dataId">ID of the target data.xxx</param>
+            <param name="offset">Offset of the target file</param>
+            <param name="length">Length of the target file</param>
+            <returns>Bytes of the target file</returns>
+        </member>
+        <member name="M:DataCore.Core.GetFileBytes(DataCore.Structures.IndexEntry)">
+            <summary>
+            Gets the collection of bytes that makes up a given file
+            </summary>
+            <param name="entry">(IndexEntry) containing information about the target file</param>
+            <returns>Bytes of the target file</returns>
+        </member>
+        <member name="M:DataCore.Core.ExportFileEntry(System.String,DataCore.Structures.IndexEntry)">
+            <summary>
+            Writes a single files from the data.xxx (specificed by dataXXX_path) to disk
+            Note: file is written in chunks as to report progress, if chunkSize is not 
+            defined it would default to 2% of total file size (unless n/a then it will
+            default to 64k)
+            </summary>
+            <param name="buildDir">Directory to create the exported file at</param>
+            <param name="entry">Entry information for file being exported</param>
+        </member>
+        <member name="M:DataCore.Core.ExportExtEntries(System.String,System.String)">
+            <summary>
+            Exports all files whose name ends with the given extension to the build directory
+            </summary>
+            <param name="buildDirectory">Directory to which exported files will be written</param>
+            <param name="ext">Extension of the target files</param>
+        </member>
+        <member name="M:DataCore.Core.ExportAllEntries(System.String)">
+            <summary>
+            Exports all entries indexed by the data.000 into the build directory
+            </summary>
+            <param name="buildDirectory">Directory in which exported files will be written</param>
+        </member>
+        <member name="M:DataCore.Core.ImportFileEntry(System.String)">
+            <summary>
+            Writes/Appends a file at the filePath in(to) the Rappelz data.xxx storage system
+            </summary>
+            <param name="filePath">Location of the file being imported</param>
+        </member>
+        <member name="M:DataCore.Core.ImportFileEntry(System.String,System.Byte[])">
+            <summary>
+            Writes/Appends a file represented by fileBytes in(to) the Rappelz data.xxx storage system with given fileName
+            </summary>
+            <param name="fileName">The name of the file being imported (e.g. db_item.rdb) [UNHASHED]</param>
+            <param name="fileBytes">Bytes that represent the file</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:DataCore.Core.DeleteFileEntry(System.Int32,System.Int32,System.Int32)" -->
+        <member name="M:DataCore.Core.BuildDataFiles(System.String,System.String)">
+            <summary>
+            Generates data.xxx file-system from dump structure (client/output/dump/)
+            </summary>
+            <param name="dumpDirectory">Location of dump folders (e.g. client/output/dump/)</param>
+            <param name="buildDirectory">Location of build folder (e.g. client/output/data-files/)</param>
+            <returns>Newly generated List to be saved</returns>
+        </member>
+        <member name="M:DataCore.Core.RebuildDataFile(System.Int32,System.String)">
+            <summary>
+            Rebuilds a data.xxx file potentially removing blank space created by the OEM update method.
+            Effectiveness increases depending on amount of updates made to desired data.xxx file.
+            </summary>
+            <param name="dataId">Id of the data.xxx file to be rebuilt</param>
+            <param name="buildDirectory">Location of build folder (e.g. client/output/data-files/)</param>
+        </member>
+        <member name="M:DataCore.Core.LoadConfig">
+            <summary>
+            Initializes the LUA engine used to load dCore.lua configurations
+            </summary>
+        </member>
+        <member name="M:DataCore.Core.Clear">
+            <summary>
+            Clears the loaded index
+            </summary>
+        </member>
+        <member name="M:DataCore.Core.createBackup(System.String)">
+            <summary>
+            Creates a backup of the target at filepath if it exists
+            </summary>
+            <param name="filepath">Target file to be backed up</param>
+        </member>
+        <member name="T:DataCore.SortType">
+            <summary>
+            Defines the type of sort to be performed on a given index
+            </summary>
+        </member>
+        <member name="F:DataCore.SortType.Name">
+            <summary>
+            By File Name (unhashed)
+            </summary>
+        </member>
+        <member name="F:DataCore.SortType.Offset">
+            <summary>
+            By File Offset
+            </summary>
+        </member>
+        <member name="F:DataCore.SortType.Size">
+            <summary>
+            By File Size
+            </summary>
+        </member>
+        <member name="F:DataCore.SortType.DataId">
+            <summary>
+            By DataID of the File
+            </summary>
+        </member>
+        <member name="T:DataCore.ExtensionType">
+            <summary>
+            Defines the extension type of a list of extensions
+            </summary>
+        </member>
+        <member name="F:DataCore.ExtensionType.Encrypted">
+            <summary>
+            This type of extension is encrypted in the data.xxx system
+            </summary>
+        </member>
+        <member name="F:DataCore.ExtensionType.Unencrypted">
+            <summary>
+            This type of extension is unencrypted in the data.xxx system
+            </summary>
+        </member>
+        <member name="T:DataCore.Functions.Extensions">
+            <summary>
+            Provides interactibility with file extensions
+            </summary>
+        </member>
+        <member name="P:DataCore.Functions.Extensions.ValidExtensions">
+            <summary>
+            List containing all valid extensions in the Rappelz File-System
+            </summary>
+        </member>
+        <member name="M:DataCore.Functions.Extensions.IsValid(System.String)">
+            <summary>
+            Determines if the provided ext exists in the validExts list
+            </summary>
+            <param name="ext">[LOWERCASE] extension (e.g. .dds)</param>
+            <returns>Bool value indicating existance</returns>
+        </member>
+        <member name="T:DataCore.Functions.Hash">
+            <summary>
+            Provides the ability to calculate file hashes into MD5/SHA1/SHA512
+            </summary>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetSHA1Hash(System.String)">
+            <summary>
+            Gets a hash of the file using SHA1.
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetSHA1Hash(System.IO.Stream)">
+            <summary>
+            Gets a hash of the file using SHA1.
+            </summary>
+            <param name="s">Stream to be used in calculation</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetMD5Hash(System.String)">
+            <summary>
+            Gets a hash of the file using MD5.
+            </summary>
+            <param name="filePath">Path of file used in calculation</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetMD5Hash(System.IO.Stream)">
+            <summary>
+            Gets a hash of the file using MD5.
+            </summary>
+            <param name="s">Stream used in calculation</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetMD5Hash(System.Byte[],System.Int32)">
+            <summary>
+            Gets a hash of the file using MD5
+            </summary>
+            <param name="data">Data bytes used in calculation</param>
+            <param name="count">Count of bytes to calculate</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetSHA512Hash(System.String)">
+            <summary>
+            Gets a hash of the file using SHA512
+            </summary>
+            <param name="filePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetSHA512Hash(System.IO.Stream)">
+            <summary>
+            Gets a hash of the file using SHA512.
+            </summary>
+            <param name="s">Steam used in calculation</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataCore.Functions.Hash.GetSHA512Hash(System.Byte[],System.Int32)">
+            <summary>
+            Gets a hash of the file using SHA512.
+            </summary>
+            <param name="data">Data bytes used in calculation</param>
+            <param name="count">Count of bytes to calculate</param>
+            <returns></returns>
+        </member>
+        <member name="T:DataCore.Functions.IO">
+            <summary>
+            Provides the ability to load all text lines from a .lua
+            </summary>
+        </member>
+        <member name="M:DataCore.Functions.IO.LoadConfig(System.String)">
+            <summary>
+            Loads the .lua in path and returns the contents
+            </summary>
+            <param name="path">Path of the .lua to be loaded</param>
+            <returns>string contents of .lua</returns>
+        </member>
+        <member name="T:DataCore.Functions.LUA">
+            <summary>
+            Provided the ability to execute LUA scripts
+            </summary>
+        </member>
+        <member name="M:DataCore.Functions.LUA.#ctor(System.String)">
+            <summary>
+            Instantiates the LUA class with provided script
+            </summary>
+            <param name="scriptCode">string containing the code of a .lua</param>
+        </member>
+        <member name="M:DataCore.Functions.LUA.GetExtensions">
+            <summary>
+            Gets the extension list stored in provided dCore.lua
+            </summary>
+            <returns>List of extensions</returns>
+        </member>
+        <member name="M:DataCore.Functions.LUA.GetUnencryptedExtensions">
+            <summary>
+            Gets the unencrypted extension list stored in provided dCore.lua
+            </summary>
+            <returns>List of unencrypted extensions</returns>
+        </member>
+        <member name="M:DataCore.Functions.LUA.GetGroupExports">
+            <summary>
+            Gets the list of grouped exports stored in provided dCore.lua
+            </summary>
+            <returns>List of grouped extensions</returns>
+        </member>
+        <member name="T:DataCore.Functions.StringCipher">
+            <summary>
+            Provides Encryption, Decryption and Information regarding the Rappelz data.xxx naming/encryption systems.
+            </summary>
+        </member>
+        <member name="T:DataCore.Functions.XOR">
+            <summary>
+            Original XOR class provided by Glandu2 and adapted originally by xXExiledXx for C# 
+            adapted and restructed for Portal by iSmokeDrow.
+            
+            </summary>
+        </member>
+        <member name="P:DataCore.Functions.XOR.UnencryptedExtensions">
+            <summary>
+            Legend of non-encrypted file extensions (files that will not be encoded during patching)
+            </summary>
+        </member>
+        <member name="F:DataCore.Functions.XOR.s_CipherTable">
+            <summary>
+            Table of bytes to use for encoding files during patching
+            </summary>
+        </member>
+        <member name="M:DataCore.Functions.XOR.Cipher(System.Byte[]@,System.Byte@)">
+            <summary>
+            Performs an crypto-ciper on given buffer
+            </summary>
+            <param name="buffer">Byte collection to be encrypted</param>
+            <param name="index">Index to perform encryption on buffer</param>
+        </member>
+        <member name="M:DataCore.Functions.XOR.Encrypted(System.String)">
+            <summary>
+            Determines if a specific file extension is to be encrypted or not
+            </summary>
+            <param name="ext">File extension (.dds etc) to be checked</param>
+            <returns>true/false</returns>
+        </member>
+        <member name="T:DataCore.Structures.BlankIndexEntry">
+            <summary>
+            Stores information regarding an orphaned file
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.BlankIndexEntry.PreviousName">
+            <summary>
+            The name this space had before being orphaned
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.BlankIndexEntry.AvailableSpace">
+            <summary>
+            The amount of space where the orphaned file resides
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.BlankIndexEntry.Offset">
+            <summary>
+            The offset of the orphaned file
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.BlankIndexEntry.DataID">
+            <summary>
+            The dataId of the orphaned file
+            </summary>
+        </member>
+        <member name="T:DataCore.Structures.ExtensionInfo">
+            <summary>
+            Information regarding a stored extension
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.ExtensionInfo.Count">
+            <summary>
+            Amount of the given extension type
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.ExtensionInfo.Type">
+            <summary>
+            Type of the extension in regards to this info
+            </summary>
+        </member>
+        <member name="T:DataCore.Structures.IndexEntry">
+            <summary>
+            Stores information regarding a data.000 entry
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.IndexEntry.Name">
+            <summary>
+            The unhashed file name
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.IndexEntry.Hash">
+            <summary>
+            The unhashed file name byte collection
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.IndexEntry.Length">
+            <summary>
+            The size of the file
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.IndexEntry.Offset">
+            <summary>
+            The offset the file will begin @ inside it's data.xxx housing
+            </summary>
+        </member>
+        <member name="P:DataCore.Structures.IndexEntry.DataID">
+            <summary>
+            Data.XXX file this entry belongs to
+            </summary>
+        </member>
+        <member name="T:DataCore.MessageArgs">
+            <summary>
+            GUI / Console compatible message containing the message string and formatting information
+            </summary>
+        </member>
+        <member name="P:DataCore.MessageArgs.Message">
+            <summary>
+            String containing the message
+            </summary>
+        </member>
+        <member name="P:DataCore.MessageArgs.Tab">
+            <summary>
+            Determines if this message needs to be tabbed [Console Only]
+            </summary>
+        </member>
+        <member name="P:DataCore.MessageArgs.TabCount">
+            <summary>
+            Determines the amount of tabs to be prepended to the message [Console Only]
+            </summary>
+        </member>
+        <member name="P:DataCore.MessageArgs.Break">
+            <summary>
+            Determines if this message needs to contain a line break [Console Only]
+            </summary>
+        </member>
+        <member name="P:DataCore.MessageArgs.BreakCount">
+            <summary>
+            Determines the amount of line breaks to be appended to the message [Console Only]
+            </summary>
+        </member>
+        <member name="T:DataCore.ErrorArgs">
+            <summary>
+            Houses arguments passed to caller during raising of ErrorOccured event
+            </summary>
+        </member>
+        <member name="P:DataCore.ErrorArgs.Error">
+            <summary>
+            string containing the error message
+            </summary>
+        </member>
+        <member name="M:DataCore.ErrorArgs.#ctor(System.String)">
+            <summary>
+            Constructor for the ErrorArgs, inheriting from Eventargs
+            Assigns the Error string
+            </summary>
+            <param name="error">Message to be set as Error</param>
+        </member>
+        <member name="T:DataCore.CurrentMaxArgs">
+            <summary>
+            Houses arguments passed to caller during raising of CurrentMaxDetermined Event
+            </summary>
+        </member>
+        <member name="T:DataCore.CurrentChangedArgs">
+            <summary>
+            Houses arguments passed to caller during raising of CurrentProgressChanged Event
+            </summary>
+        </member>
+        <member name="P:DataCore.CurrentChangedArgs.Value">
+            <summary>
+            Value that should be assigned to a 'Current' Progressbar.Value
+            </summary>
+        </member>
+        <member name="P:DataCore.CurrentChangedArgs.Status">
+            <summary>
+            String that should be assigned to a "Status" label.Text
+            </summary>
+        </member>
+        <member name="M:DataCore.CurrentChangedArgs.#ctor(System.Int64,System.String)">
+            <summary>
+            Constructor for the CurrentChangedArgs, inheriting from EventArgs
+            assigns the Value/Status properties
+            </summary>
+            <param name="value"></param>
+            <param name="status"></param>
+        </member>
+        <member name="T:DataCore.CurrentResetArgs">
+            <summary>
+            Houses arguments intended for Console applications
+            </summary>
+        </member>
+        <member name="P:DataCore.CurrentResetArgs.WriteOK">
+            <summary>
+            Determines if [OK] should be appended to the current line of a console when this event occurs
+            </summary>
+        </member>
+        <member name="M:DataCore.CurrentResetArgs.#ctor(System.Boolean)">
+            <summary>
+            Constructor for the CurrentResetArgs, inheriting from EventArgs
+            </summary>
+            <param name="writeOK">Determines if the [OK] should be appended</param>
+        </member>
+    </members>
+</doc>

@@ -1,5 +1,5 @@
 ﻿tab.styles:RDB,DATA,HASHER
-tab.default_style:HASHER
+tab.default_style:RDB
 db.ip:(local)
 db.port:1433
 db.world.name:Arcadia
@@ -10,12 +10,12 @@ db.save.drop:1
 db.save.backup:1
 db.connection.timeout:0
 rdb.structure.autoload:1
-rdb.structure.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Structures
-rdb.load.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Output\rdb
+rdb.structure.directory:E:\Code\Grimoire\bin\Debug\Structures
+rdb.load.directory:E:\Code\Grimoire\bin\Debug\Output\rdb
 rdb.use.ascii:1
 rdb.save.hashed:1
-rdb.csv.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\CSV
-build.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Output
+rdb.csv.directory:E:\Code\Grimoire\bin\Debug\CSV
+build.directory:E:\Code\Grimoire\bin\Debug\Output
 data.load.directory:C:\Webzen\Rappelz US
 data.encoding:1252
 data.backup:1
@@ -28,8 +28,8 @@ log.write.type:ALL
 log.display.type:ALL
 log.display.refresh:1500
 log.exit.save:1
-flag.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Flags
-flag.default_list:buff_flags_91
+flag.directory:E:\Code\Grimoire\bin\Debug\Flags
+flag.default_list:use_flags_81
 flag.clear_on_list_change:0
-locale:fr-FR
-locale.directory:C:\Users\dying\Documents\GitHub\Grimoire\bin\Debug\Localization
+locale:en-US
+locale.directory:E:\Code\Grimoire\bin\Debug\Localization

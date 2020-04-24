@@ -152,7 +152,7 @@ namespace Grimoire.GUI
                 flagFiles.Items.Add(list);
 
             string flagsDir = Grimoire.Utilities.OPT.GetString("flag.directory");
-            string listName = DefaultFlagFile ?? Grimoire.Utilities.OPT.GetString("flag.default._list");
+            string listName = DefaultFlagFile ?? Grimoire.Utilities.OPT.GetString("flag.default_list");
             if (listName == null)
             {
                 string msg = "No default path for flag file defined!";
