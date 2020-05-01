@@ -15,6 +15,7 @@ using System.Threading;
 using System.Collections.ObjectModel;
 using BrightIdeasSoftware;
 using Grimoire.Logs.Enums;
+using Grimoire.Configuration;
 
 namespace Grimoire.GUI
 {
@@ -26,6 +27,7 @@ namespace Grimoire.GUI
 
         List<Log> filteredEntries = new List<Log>();
 
+        ConfigMan configMan;
         Level displayLevel
         {
             get
@@ -49,7 +51,9 @@ namespace Grimoire.GUI
 
             this.lManager = lManager;
 
-            interval = OPT.GetInt("log.display.refresh");
+            configMan = GUI.Main.Instance.ConfigMan;
+
+            interval = configMan["RefreshInterval", "Log"];
             
             configureViewer();
 
