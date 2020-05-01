@@ -14,6 +14,7 @@ using Grimoire.Utilities;
 using System.Threading;
 using System.Collections.ObjectModel;
 using BrightIdeasSoftware;
+using Grimoire.Logs.Enums;
 
 namespace Grimoire.GUI
 {
@@ -25,16 +26,16 @@ namespace Grimoire.GUI
 
         List<Log> filteredEntries = new List<Log>();
 
-        DisplayLevel displayLevel
+        Level displayLevel
         {
             get
             {
-                DisplayLevel outLvl = DisplayLevel.ALL;
+                Level outLvl = Level.ALL;
 
                 if (InvokeRequired)
-                    Invoke(new MethodInvoker(delegate { outLvl = (DisplayLevel)displayType_lst.SelectedIndex; }));
+                    Invoke(new MethodInvoker(delegate { outLvl = (Level)displayType_lst.SelectedIndex; }));
                 else
-                    outLvl = (DisplayLevel)displayType_lst.SelectedIndex;
+                    outLvl = (Level)displayType_lst.SelectedIndex;
 
                 return outLvl;
             }
@@ -57,7 +58,7 @@ namespace Grimoire.GUI
 
         private void generate_type_list()
         {
-            displayType_lst.DataSource = Enum.GetValues(typeof(DisplayLevel));
+            displayType_lst.DataSource = Enum.GetValues(typeof(Level));
             displayType_lst.SelectedIndex = 0;
         }
 
@@ -79,31 +80,29 @@ namespace Grimoire.GUI
         {
             if (displayType_lst.SelectedIndex != -1)
             {
-                DisplayLevel level = (DisplayLevel)displayType_lst.SelectedIndex;
+                Level level = (Level)displayType_lst.SelectedIndex;
                 displayFilteredLogs(level);
             }
         }
 
-        void displayFilteredLogs(DisplayLevel level)
+        void displayFilteredLogs(Level level)
         {
             switch (level)
             {
-                case DisplayLevel.ALL:
+                case Level.ALL:
                     logView.SetObjects(lManager.Entries);
                     break;
 
-                case DisplayLevel.DEBUG:
+                case Level.DEBUG:
                     logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.DEBUG));
                     break;
 
-                case DisplayLevel.NOTICE:
+                case Level.NOTICE:
                     logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.NOTICE));
                     break;
 
-                case DisplayLevel.ERRORS:
-                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.ERROR ||
-                                                                 l.Level == Level.HASHER_ERROR ||
-                                                                 l.Level == Level.SQL_ERROR));
+                case Level.ERROR:
+                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.ERROR));
                     break;
             }
         }

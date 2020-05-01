@@ -59,7 +59,10 @@ namespace Grimoire.Tabs.Utilities
                     {
                         int rowCount = tManager.RDBCore.RowCount;
                         if (e.RowIndex >= rowCount) { return; }
-                        e.Value = tManager.RDBCore.Rows[e.RowIndex][e.ColumnIndex];
+                        if (tManager.RDBCore.RowCount > 0)
+                            e.Value = tManager.RDBCore.Rows[e.RowIndex][e.ColumnIndex];
+                        else
+                            e.Value = "NULL";
                     }
                     break;
 

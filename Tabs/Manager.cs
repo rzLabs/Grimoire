@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Grimoire.Logs.Enums;
 
 namespace Grimoire.Tabs
 {
@@ -32,7 +33,7 @@ namespace Grimoire.Tabs
             main = GUI.Main.Instance;
             tabs = main.TabControl;
             pages = tabs.TabPages;
-            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE, "Tab Manager Initialized.");
+            lManager.Enter(Sender.MANAGER, Level.NOTICE, "Tab Manager Initialized.");
         }
 
         public string Text
@@ -50,7 +51,7 @@ namespace Grimoire.Tabs
             set {
                 main.Invoke(new MethodInvoker(delegate
                 {
-                    lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE,"Tab: {0} name updated to {1}", pages[tabs.SelectedIndex].Text, value);
+                    lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab: {0} name updated to {1}", pages[tabs.SelectedIndex].Text, value);
                     pages[tabs.SelectedIndex].Text = value;
                 }));
             }
@@ -84,12 +85,6 @@ namespace Grimoire.Tabs
                 {
                     DataCore.Core ret = null;
                     GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.Data)pages[tabs.SelectedIndex].Controls[0]).Core; }));
-                    return ret;
-                }
-                else if (Style == Style.ITEM)
-                {
-                    DataCore.Core ret = null;
-                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.Item)pages[tabs.SelectedIndex].Controls[0]).Core; }));
                     return ret;
                 }
 
@@ -207,7 +202,7 @@ namespace Grimoire.Tabs
             pages.Add(tab);
             SetText(key, text);
             tabs.SelectedTab = pages[key];
-            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE,"Tab created with name: {0} and style: {1}", text, ((Style)style).ToString());
+            lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab created with name: {0} and style: {1}", text, ((Style)style).ToString());
         }
 
         public void Clear()
@@ -225,12 +220,12 @@ namespace Grimoire.Tabs
                     break;
             }
 
-            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE,"Tab: {0} contents have been cleared.", Page.Text);
+            lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab: {0} contents have been cleared.", Page.Text);
         }
 
         public void Destroy()
         {
-            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE,"Tab: {0} has been closed.", Page.Text);
+            lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab: {0} has been closed.", Page.Text);
             pages.RemoveAt(RightClick_TabIdx);
             tabs.SelectedIndex = pages.Count - 1;          
         }
@@ -238,11 +233,9 @@ namespace Grimoire.Tabs
         public void SetText(string key, string text)
         {
             if (pages.ContainsKey(key))
-            {
                 pages[key].Text = text;
-            }
             else
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.ERROR, "Tab Manager could not SetText because tab with key: {0} does not exist!", key);
+                lManager.Enter(Sender.MANAGER, Level.ERROR, "Tab Manager could not SetText because tab with key: {0} does not exist!", key);
         }
     }
 }

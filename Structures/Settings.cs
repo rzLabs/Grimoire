@@ -4,101 +4,98 @@ using System.Drawing.Design;
 using System.ComponentModel;
 
 using Grimoire.Utilities;
+using Grimoire.Configuration;
 
 namespace Grimoire.Structures
 {
     class Settings
     {
-        [Description("A list of styles that can be choosen from the 'New' drop-down (Delimited by ',')"), Category("Tab Style"), DisplayName("Styles")]
-        public string Styles { get { return OPT.GetString("tab.styles"); } set { OPT.Update("tab.styles", value); } }
+        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+
+        //[Description("A list of styles that can be choosen from the 'New' drop-down (Delimited by ',')"), Category("Tab Style"), DisplayName("Styles")]
+        //public string Styles { get => configMan["Styles"]; set => configMan["Styles"] = value; }
 
         [Description("Default Tab Style to be loaded when starting Grimoire (if any)"), Category("Tab Style"), DisplayName("Default Style"), DefaultValue(Tabs.Style.NONE)]
         public Tabs.Style DefaultStyle
         {
-            get
-            {
-                return (Tabs.Style)Enum.Parse(typeof(Tabs.Style), OPT.GetString("tab.default_style"));
-            }
-            set
-            {
-                OPT.Update("tab.default_style", ((Tabs.Style)value).ToString());
-            }
+            get => (Tabs.Style)Enum.Parse(typeof(Tabs.Style), configMan["DefaultStyle"]);
+            set => configMan["DefaultStye"] = ((Tabs.Style)value).ToString();
         }
 
         [Description("The IP at which your database can be connected to"), Category("Database")]
-        public string IP { get { return OPT.GetString("db.ip"); } set { OPT.Update("db.ip", value.ToString()); } }
+        public string IP { get => configMan["IP"]; set => configMan["IP"] = value; }
 
         [Description("The Port (if any) your database is behind"), Category("Database"), DefaultValue(1433)]
-        public int Port { get { return OPT.GetInt("db.port"); } set { OPT.Update("db.port", value.ToString()); } }
+        public int Port { get => (int)configMan["Port"]; set => configMan["Port"] = value; }
 
         [Description("Determines if Grimoire will use Windows Authentication to connect to the database, this does not require Username/Password."), Category("Database"), DisplayName("Trusted Connection")]
-        public bool Trusted { get { return OPT.GetBool("db.trusted.connection"); } set { OPT.Update("db.trusted.connection", Convert.ToInt32(value).ToString()); } }
+        public bool Trusted { get => configMan["Trusted", "DB"]; set => configMan["Trusted", "DB"] = value; }
 
         [Description("The database name of your Arcadia (world database) e.g. ....Arcadia or 62World"), Category("Database"), DefaultValue("Arcadia"), DisplayName("Arcadia Name")]
-        public string WorldName { get { return OPT.GetString("db.world.name"); } set { OPT.Update("db.world.name", value.ToString()); } }
+        public string WorldName { get => configMan["WorldName"]; set => configMan["WorldName"] = value; }
 
         [Description("The username used to connect to the world database. Leave blank if Trusted Connection is true"), Category("Database"), DefaultValue("sa"), DisplayName("Arcadia Username")]
-        public string WorldUser { get { return OPT.GetString("db.world.username"); } set { OPT.Update("db.world.username", value.ToString()); } }
+        public string WorldUser { get => configMan["WorldUser"]; set => configMan["WorldUser"] = value; }
 
         [Description("The password used to connect to the world database. Leave blank if Trusted Connection is true"), Category("Database"), DisplayName("Arcadia Password")]
-        public string WorldPass { get { return OPT.GetString("db.world.password"); } set { OPT.Update("db.world.password", value.ToString()); } }
+        public string WorldPass { get => configMan["WorldPass"]; set => configMan["WorldPass"] = value; }
 
         [Description("Determines if the target table of any SQL save operation will be dropped and recreated or truncated before inserting the .rdb data"), Category("Database"), DisplayName("Drop Table")]
-        public bool DropTable { get { return OPT.GetBool("db.save.drop"); } set { OPT.Update("db.save.drop", Convert.ToInt32(value).ToString()); } }
+        public bool DropTable { get => configMan["DropOnExport"]; set => configMan["DropOnExport"] = value; }
 
         [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data by creating a script (.sql) of the tables data in the /scripts/ folder"), Category("Database"), DisplayName("Backup Table")]
-        public bool BackupTable { get { return OPT.GetBool("db.save.backup"); } set { OPT.Update("db.save.backup", Convert.ToInt32(value).ToString()); } }
+        public bool BackupTable { get => configMan["Backup", "DB"]; set => configMan["Backup", "DB"] = value; }
 
         [Description("Determines the period of time (in seconds) a SQL Connection attempt will last before timing out (expiring)."), Category("Database"), DisplayName("Connection Timeout")]
-        public int ConnTimeout { get { return OPT.GetInt("db.connection.timeout"); } set { OPT.Update("db.connection.timeout", value.ToString()); } }
+        public int ConnTimeout { get => (int)configMan["Timeout", "DB"]; set => configMan["Timeout", "DB"] = value; }
 
         [Description("If defined, this is where any exported/built files will be placed. If not defined Grimoire will use/create the 'Output' folder."), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string BuildDirectory { get { return OPT.GetString("build.directory"); } set { OPT.Update("build.directory", value); } }
+        public string BuildDirectory { get => configMan["BuildDirectory", "Grim"]; set => configMan["BuildDirectory", "Grim"] = value; }
 
         // data
         [Description("The default directory displayed when opening local files in the Data Utility"), Category("Data Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string DataLoadDirectory { get { return OPT.GetString("data.load.directory"); } set { OPT.Update("data.load.directory", value.ToString()); } }
+        public string DataLoadDirectory { get => configMan["LoadDirectory", "Data"]; set => configMan["LoadDirectory", "Data"] = value; }
 
         [Description("Determines if files like data.000-008 will be backed up before any changes are made to them. (RECOMMENDED)"), Category("Data Utility"), DisplayName("Backups")]
-        public bool Backups { get { return OPT.GetBool("data.backup"); } set { OPT.Update("data.backup", Convert.ToInt32(value).ToString()); } }
+        public bool Backups { get => configMan["Backup", "Data"]; set => configMan["Backup", "Data"] = value; }
 
         [Description("Determines if the DataCore.Core will be cleared after a successful 'New' client has been created. If set to False the newly created client will be displayed as if loaded."), Category("Data Utility"), DisplayName("Clear on Create")]
-        public bool ClearCreate { get { return OPT.GetBool("data.clear_on_create"); } set { OPT.Update("data.clear_on_create", Convert.ToInt32(value).ToString()); } }
+        public bool ClearCreate { get => configMan["ClearOnCreate"]; set => configMan["ClearOnCreate"] = value; }
 
         // rdb
 
         [Description("Determines if the structure you select will be loaded the moment you select it or manually with \"Load\" button"), Category("RDB Utility"), DisplayName("Load on Select")]
-        public bool AutoLoad { get { return OPT.GetBool("rdb.structure.autoload"); } set { OPT.Update("rdb.structure.autoload", Convert.ToInt32(value).ToString()); } }
+        public bool AutoLoad { get => configMan["Struct_AutoLoad"]; set => configMan["Struct_AutoLoad"] = value; }
         
         [Description("The path where RDB Structure .lua Files are stored. Likely /structures/"), Category("RDB Utility"), DisplayName("Structures Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string RDBStructureDirectory {  get { return OPT.GetString("rdb.structure.directory"); } set { OPT.Update("rdb.structure.directory", value.ToString()); } }
+        public string RDBStructureDirectory { get => configMan["Directory", "RDB"]; set => configMan["Directory", "RDB"] = value; }
 
         [Description("The default directory displayed when opening local files in the RDB Utility"), Category("RDB Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string RDBLoadDirectory { get { return OPT.GetString("rdb.load.directory"); } set { OPT.Update("rdb.load.directory", value.ToString()); } }
+        public string RDBLoadDirectory { get => configMan["LoadDirectory", "RDB"]; set => configMan["LoadDirectory", "RDB"] = value; }
 
         [Description("Determines if (ascii) is appended to file names being loaded or saved"), Category("RDB Utility"), DefaultValue(false), DisplayName("Use ASCII")]
         public bool UseASCII
         {
-            get { return OPT.GetBool("rdb.use.ascii"); }
+            get => configMan["AppendASCII"];
             set
             {
                 Tabs.Manager.Instance.RDBTab.UseASCII = value;
-                OPT.Update("rdb.use.ascii", Convert.ToInt32(value).ToString());
+                configMan["AppendASCII"] = value;
             }
         }
 
         [Description("Determines if newly created .RDB files will be saved in their hash name version"), Category("RDB Utility"), DefaultValue(false), DisplayName("Save Hashed")]
-        public bool SaveHashed { get { return OPT.GetBool("rdb.save.hashed"); } set { OPT.Update("rdb.save.hashed", Convert.ToInt32(value).ToString()); } }
+        public bool SaveHashed { get => configMan["SaveHashed", "RDB"]; set => configMan["SaveHashed", "RDB"] = value; }
 
         [Description("The directory where all .csv will be saved to."), Category("RDB Utility"), DisplayName("CSV Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string CSVDirectory { get { return OPT.GetString("rdb.csv.directory"); } set { OPT.Update("rdb.csv.directory", value); } }
+        public string CSVDirectory { get => configMan["CSV_Directory"]; set => configMan["CSV_Directory"] = value; }
 
         // hasher
         [Description("Determines if the file entries will be cleared from the grid after conversion"), Category("Hasher Utility"), DisplayName("Auto Clear")]
-        public bool AutoClear { get { return OPT.GetBool("hash.auto_clear"); } set { OPT.Update("hash.auto_clear", Convert.ToInt32(value).ToString()); } }
+        public bool AutoClear { get => configMan["AutoClear", "Hash"]; set => configMan["AutoClear", "Hash"] = value; }
 
         [Description("Determines if files are automatically converted after being added to the grid."), Category("Hasher Utility"), DisplayName("Auto Convert")]
-        public bool AutoConvert { get { return OPT.GetBool("hash.auto_convert"); } set { OPT.Update("hash.auto_convert", Convert.ToInt32(value).ToString()); } }
+        public bool AutoConvert { get => configMan["AutoConvert", "Hash"]; set => configMan["AutoConvert", "Hash"] = value; }
 
         // logger
         //[Description("Determines the level'(s) of messages to be displayed/written by the logging system"), Category("Logger"), DisplayName("Logging Level")]
@@ -106,15 +103,18 @@ namespace Grimoire.Structures
 
         // use flag
         [Description("Directory where flag files are stored"), DisplayName("Flag Files Directory"), Category("Flag Editor"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string FlagDirectory { get { return OPT.GetString("flag.directory"); } set { OPT.Update("flag.directory", value.ToString()); } }
+        public string FlagDirectory { get => configMan["Directory", "Flag"]; set => configMan["Directory", "Flag"] = value; }
 
         [Description("Path of the flag file to be loaded by default"), Category("Flag Editor"), DisplayName("Flag List Path"), EditorAttribute(typeof(FileNameEditor), typeof(UITypeEditor))]
-        public string DefaultPath { get { return OPT.GetString("flag.default._list"); } set { OPT.Update("flag.default._list", value.ToString()); } }
+        public string DefaultPath { get => configMan["Default", "Flag"]; set => configMan["Default", "Flag"] = value; }
 
         [Description("Determines if the flag selections are reset when changing flag lists!"), DisplayName("Clear on List Changed"), Category("Flag Editor")]
-        public bool ClearOnChange { get { return OPT.GetBool("flag.clear_on_list_change"); } set { OPT.Update("flag.clear_on_list_change",  Convert.ToInt32(value).ToString()); } }
+        public bool ClearOnChange { get => configMan["ClearOnChange", "Flag"]; set => configMan["ClearOnChange", "Flag"] = value; }
 
-        [Description("Determines the displayed language of Grimoire"), DisplayName("Language"), Category("Language")]
-        public string Language { get { return OPT.GetString("lang"); } set { OPT.Update("lang", value); } }
+        [Description("Determines the displayed language of Grimoire"), DisplayName("Locale"), Category("Language")]
+        public string Locale { get => configMan["Locale", "Flag"]; set => configMan["Locale", "Flag"] = value; }
+
+        [Description("Directory where files relevant to the localization engine are located"), DisplayName("Localization Directory"), Category("Locale")]
+        public string LocaleDirectory { get => configMan["Directory", "Flag"]; set => configMan["Directory", "Flag"] = value; }
     }
 }

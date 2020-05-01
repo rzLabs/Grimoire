@@ -8,6 +8,8 @@ using System.Windows.Forms;
 using DataCore;
 using DataCore.Structures;
 using Grimoire.Utilities;
+using Grimoire.Logs.Enums;
+using Grimoire.Configuration;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -15,11 +17,13 @@ namespace Grimoire.Tabs.Styles
     {
         #region Properties
 
-        private string key;
-        private Core core;
-        private readonly Logs.Manager lManager;
-        private readonly Tabs.Manager tManager;
-        private readonly Utilities.Grid gridUtils;
+        string key;
+        Core core;
+        readonly Logs.Manager lManager;
+        readonly Tabs.Manager tManager;
+        readonly ConfigMan configMan;
+
+        readonly Utilities.Grid gridUtils;
         public List<IndexEntry> FilteredIndex = new List<IndexEntry>();
         public bool Filtered
         {
@@ -104,9 +108,12 @@ namespace Grimoire.Tabs.Styles
         public Data()
         {
             InitializeComponent();
-            initializeCore();
+
             lManager = Logs.Manager.Instance;
             tManager = Tabs.Manager.Instance;
+            configMan = GUI.Main.Instance.ConfigMan;
+
+            initializeCore();
             gridUtils = new Utilities.Grid();
             localize();
         }
@@ -115,9 +122,11 @@ namespace Grimoire.Tabs.Styles
         {
             InitializeComponent();
             this.key = key;
-            initializeCore();
             lManager = Logs.Manager.Instance;
             tManager = Tabs.Manager.Instance;
+            configMan = GUI.Main.Instance.ConfigMan;
+
+            initializeCore();
             gridUtils = new Utilities.Grid();
             localize();
         }
@@ -129,7 +138,7 @@ namespace Grimoire.Tabs.Styles
         private void Core_MessageOccured(object sender, MessageArgs e)
         {
             Invoke(new MethodInvoker(delegate { ts_status.Text = e.Message; }));
-            lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, e.Message);
+            lManager.Enter(Sender.DATA, Level.NOTICE, e.Message);
         }
 
         private void Core_CurrentMaxDetermined(object sender, CurrentMaxArgs e)
@@ -158,9 +167,9 @@ namespace Grimoire.Tabs.Styles
             if (Paths.FolderResult != DialogResult.OK)
                 return;
 
-            string buildDirectory = OPT.GetString("build.directory");
+            string buildDirectory = configMan.GetDirectory("BuildDirectory", "Grim");
 
-            lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Building new client to:\n\t-{0}", buildDirectory);
+            lManager.Enter(Sender.DATA, Level.NOTICE, "Building new client to:\n\t-{0}", buildDirectory);
 
             tab_disabled = true;
 
@@ -174,16 +183,16 @@ namespace Grimoire.Tabs.Styles
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
+                    lManager.Enter(Sender.DATA, Level.ERROR, ex);
                     return;
                 }
                 finally
                 {
                     string msg = "Client build completed!";
                     MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, msg);
+                    lManager.Enter(Sender.DATA, Level.NOTICE, msg);
 
-                    if (OPT.GetBool("data.clear_on_create"))
+                    if (configMan["ClearOnCreate", "Data"])
                         core.Clear();
                     else
                         display_data();
@@ -199,7 +208,7 @@ namespace Grimoire.Tabs.Styles
 
         public void TS_File_Load_Click(object sender, EventArgs e)
         {
-            Paths.DefaultDirectory = OPT.GetString("data.load.directory");
+            Paths.DefaultDirectory = configMan["LoadDirectory", "Data"];
             Paths.DefaultFileName = "data.000";
 
             string filePath = Paths.FilePath;
@@ -287,7 +296,7 @@ namespace Grimoire.Tabs.Styles
             if (grid.Rows.Count == 0)
                 return;
 
-            string buildDir = OPT.GetString("build.directory");
+            string buildDir = configMan.GetDirectory("BuildDirectory", "Grim");
 
             for (int i = 0; i < grid.SelectedRows.Count; i++)
             {
@@ -295,7 +304,7 @@ namespace Grimoire.Tabs.Styles
 
                 ts_status.Text = string.Format("Exporting: {0}...", entry.Name);
 
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Exporting: {0} to directory:\n\t- {1}\n\t- Size: {2}", entry.Name, buildDir, entry.Length);
+                lManager.Enter(Sender.DATA, Level.NOTICE, "Exporting: {0} to directory:\n\t- {1}\n\t- Size: {2}", entry.Name, buildDir, entry.Length);
 
                 try
                 {
@@ -307,7 +316,7 @@ namespace Grimoire.Tabs.Styles
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Export Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
+                    lManager.Enter(Sender.DATA, Level.ERROR, ex);
                 }
 
                 ts_status.Text = string.Empty;
@@ -316,7 +325,7 @@ namespace Grimoire.Tabs.Styles
 
         private async void extensions_cs_export_Click(object sender, EventArgs e)
         {
-            string buildDirectory = OPT.GetString("build.directory");
+            string buildDirectory = configMan.GetDirectory("BuildDirectory", "Grim");
 
             string ext = extensions.SelectedNode.Text;
             if (ext.Length >= 2)
@@ -347,11 +356,11 @@ namespace Grimoire.Tabs.Styles
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Extension Export Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
+                    lManager.Enter(Sender.DATA, Level.ERROR, ex);
                 }
                 finally
                 {
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Exported {0} Rows from Tab: {1}", entries.Count, tManager.Text);
+                    lManager.Enter(Sender.DATA, Level.NOTICE, "Exported {0} Rows from Tab: {1}", entries.Count, tManager.Text);
                 }
 
                 ts_status.Text = string.Empty;
@@ -378,14 +387,14 @@ namespace Grimoire.Tabs.Styles
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Compare Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
+                lManager.Enter(Sender.DATA, Level.ERROR, ex);
             }
             finally
             {
                 string result = (externalHash == internalHash) ? "MATCH" : "MISMATCHED";
                 string msg = string.Format("Compared files: {0}", result);
                 MessageBox.Show(msg, "Comparison Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "File Comparison:\n\tFilename: {0}\n\tResult: {1}", filename, result);
+                lManager.Enter(Sender.DATA, Level.NOTICE, "File Comparison:\n\tFilename: {0}\n\tResult: {1}", filename, result);
             }
         }
 
@@ -479,8 +488,8 @@ namespace Grimoire.Tabs.Styles
 
         private void initializeCore()
         {
-            bool backup = OPT.GetBool("data.backup");
-            int codepage = OPT.GetInt("data.encoding");
+            bool backup = configMan["Backup", "Data"];
+            int codepage = (int)configMan["Encoding", "Data"];
             Encoding encoding = Encoding.GetEncoding(codepage);
             core = new Core(backup, encoding);
             hook_core_events();
@@ -539,14 +548,14 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex, "Exception occured while attempting to load file at: {0}", path);
+                lManager.Enter(Sender.DATA, Level.ERROR, ex, "Exception occured while attempting to load file at: {0}", path);
             }
             finally
             {
                 ts_file_load.Enabled = false;
                 ts_file_new.Enabled = false;
 
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE,
+                lManager.Enter(Sender.DATA, Level.NOTICE,
                 "{0} entries loaded from data.000 to tab: {1} in {2}ms from path:\n\t- {3}",
                 core.RowCount,
                 tManager.Text,
@@ -606,7 +615,7 @@ namespace Grimoire.Tabs.Styles
                     tab_disabled = true;
                     string msg = string.Format("Importing: {0}...", Path.GetFileName(filePath));
                     ts_status.Text = msg;
-                    lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, msg);
+                    lManager.Enter(Sender.DATA, Level.NOTICE, msg);
 
                     await Task.Run(() => { core.ImportFileEntry(filePath); });
                 }
@@ -614,7 +623,7 @@ namespace Grimoire.Tabs.Styles
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Import Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
+                lManager.Enter(Sender.DATA, Level.ERROR, ex);
             }
             finally
             {

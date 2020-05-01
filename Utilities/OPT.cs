@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Grimoire.Logs.Enums;
 
 namespace Grimoire.Utilities
 {
@@ -60,13 +61,13 @@ namespace Grimoire.Utilities
                     }
                 }
 
-                lManager.Enter(Logs.Sender.OPT, Logs.Level.NOTICE, "OPT Manager Initialized.\n\t- {0} settings loaded from Grimoire.opt", settings.Count);
+                lManager.Enter(Sender.OPT, Level.NOTICE, "OPT Manager Initialized.\n\t- {0} settings loaded from Grimoire.opt", settings.Count);
             }
             else
             {
                 string error = "Failed to load Grimoire.opt, it does not exist! Cannot continue! Closing.";
                 System.Windows.Forms.MessageBox.Show(error, "Fatal Exception", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.OPT, Logs.Level.ERROR, error);
+                lManager.Enter(Sender.OPT, Level.ERROR, error);
                 GUI.Main.Instance.Close();
             }
         }
@@ -82,7 +83,7 @@ namespace Grimoire.Utilities
                     sW.Write(string.Format("{0}:{1}\n", pair.Key, pair.Value));
             }
 
-            lManager.Enter(Logs.Sender.OPT, Logs.Level.NOTICE, "Grimoire.opt saved.");
+            lManager.Enter(Sender.OPT, Level.NOTICE, "Grimoire.opt saved.");
         }
     }
 }

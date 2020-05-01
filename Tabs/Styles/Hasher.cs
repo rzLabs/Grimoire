@@ -3,6 +3,8 @@ using System.IO;
 using System.Windows.Forms;
 using DataCore.Functions;
 using Grimoire.Utilities;
+using Grimoire.Logs.Enums;
+using Grimoire.Configuration;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -11,6 +13,7 @@ namespace Grimoire.Tabs.Styles
         #region Properties
         Logs.Manager lManager;
         XmlManager xMan = XmlManager.Instance;
+        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
         #endregion
 
         #region Constructors
@@ -18,7 +21,7 @@ namespace Grimoire.Tabs.Styles
         {
             InitializeComponent();
             lManager = Logs.Manager.Instance;
-            lManager.Enter(Logs.Sender.HASHER, Logs.Level.NOTICE, "Hasher Utility Started.");
+            lManager.Enter(Sender.HASHER, Level.NOTICE, "Hasher Utility Started.");
             set_checks();
             localize();
         }
@@ -29,30 +32,26 @@ namespace Grimoire.Tabs.Styles
         private void input_TextChanged(object sender, EventArgs e)
         {
             if (input.Text.Length > 3)
-            {
                 output.Text = (StringCipher.IsEncoded(input.Text)) ? StringCipher.Decode(input.Text) : StringCipher.Encode(input.Text);
-            }
-            else if (input.Text.Length == 0) { output.ResetText(); }
+            else if (input.Text.Length == 0)
+                output.ResetText();
         }
 
-        private void cMenu_clear_Click(object sender, EventArgs e)
-        {
-            fileGrid.Rows.Clear();
-        }
+        private void cMenu_clear_Click(object sender, EventArgs e) => fileGrid.Rows.Clear();
 
         private void flipBtn_Click(object sender, EventArgs e)
         {
             if (output.Text.Length > 3)
                 input.Text = output.Text;
 
-            lManager.Enter(Logs.Sender.HASHER, Logs.Level.NOTICE, "User flipped input/output");
+            lManager.Enter(Sender.HASHER, Level.NOTICE, "User flipped input/output");
         }
 
         private void cMenu_add_file_Click(object sender, EventArgs e)
         {
-            string path = Grimoire.Utilities.Paths.FilePath;
+            string path = Paths.FilePath;
 
-            if (Grimoire.Utilities.Paths.FileResult != DialogResult.OK)
+            if (Paths.FileResult != DialogResult.OK)
                 return;
 
             add_file_to_grid(path);
@@ -67,21 +66,18 @@ namespace Grimoire.Tabs.Styles
                 fileGrid.Rows.Remove(fileGrid.SelectedRows[0]);
         }
 
-        private void cMenu_convert_all_Click(object sender, EventArgs e)
-        {
-            convertAllEntries();            
-        }
+        private void cMenu_convert_all_Click(object sender, EventArgs e) => convertAllEntries();
 
         private void autoClear_chk_CheckStateChanged(object sender, EventArgs e)
         {
-            Grimoire.Utilities.OPT.Update("hash.auto_clear", Convert.ToInt32(autoClear_chk.Checked).ToString());
-            Grimoire.Utilities.OPT.Save();
+            configMan["AutoConvert", "Hash"] = autoClear_chk.Checked;
+            //TODO: implement save bruh
         }
 
         private void opt_auto_convert_CheckStateChanged(object sender, EventArgs e)
         {
-            Grimoire.Utilities.OPT.Update("hash.auto_convert", Convert.ToInt32(autoConvert_chk.Checked).ToString());
-            Grimoire.Utilities.OPT.Save();
+            configMan["AutoClear", "Hash"] = autoClear_chk.Checked;
+            //TODO: implement save bruh
         }
 
         private void cMenu_add_folder_Click(object sender, EventArgs e)
@@ -167,38 +163,68 @@ namespace Grimoire.Tabs.Styles
             {
                 if (MessageBox.Show("The conversion of this file: {0} will result in overwriting a file with the same converted name.\nDo you wish to continue?", "File Already Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Hand) == DialogResult.No)
                 {
-                    lManager.Enter(Logs.Sender.HASHER, Logs.Level.NOTICE, "User opted to cancel conversion of {0}", (string)row.Cells[0].Value);
+                    lManager.Enter(Sender.HASHER, Level.NOTICE, "User opted to cancel conversion of {0}", (string)row.Cells[0].Value);
                     return;
                 }
 
                 File.Delete(convertedPath);
-                lManager.Enter(Logs.Sender.HASHER, Logs.Level.NOTICE, "Converted Path already exists, deleting file at path: {0}", convertedPath);
+                lManager.Enter(Sender.HASHER, Level.NOTICE, "Converted Path already exists, deleting file at path: {0}", convertedPath);
             }
 
             if (File.Exists(originalPath))
             {
                 File.Move(originalPath, convertedPath);
                 fileGrid.Rows[rowIndex].Cells[3].Value = "Complete";
-                lManager.Enter(Logs.Sender.HASHER, Logs.Level.NOTICE, "File at path: {0} converted to path: {1}", originalPath, convertedPath);
+                lManager.Enter(Sender.HASHER, Level.NOTICE, "File at path: {0} converted to path: {1}", originalPath, convertedPath);
             }
         }
 
         private void add_file_to_grid(string path)
         {
             string originalName = Path.GetFileName(path);
+            string outName = string.Empty;
+            bool IsEncoded = StringCipher.IsEncoded(originalName);
 
-            if (optAppend_ascii_rBtn.Checked)
+            switch (IsEncoded)
             {
-                if (!originalName.Contains("(ascii)"))
-                    originalName = originalName.Insert(originalName.Length - 4, "(ascii)");
+                case true:
+                    string decodedName = StringCipher.Decode(originalName);
+
+                    if (optRemove_ascii_rBtn.Checked)
+                        if (decodedName.Contains("(ascii)"))
+                            outName = decodedName.Replace("(ascii)", string.Empty);
+                    break;
+
+                case false:
+                    if (optAppend_ascii_rBtn.Checked)
+                        if (!originalName.Contains("(ascii)"))
+                            outName = originalName.Insert(originalName.Length - 4, "(ascii)");
+
+                    if (optRemove_ascii_rBtn.Checked)
+                        outName = originalName.Replace("(ascii)", string.Empty);
+                    break;
             }
 
-            if (optRemove_ascii_rBtn.Checked)
-                originalName = originalName.Replace("(ascii)", string.Empty);
+            if (string.IsNullOrEmpty(outName))
+                outName = originalName;
 
-            string convertedName = StringCipher.IsEncoded(originalName) ? StringCipher.Decode(originalName) : StringCipher.Encode(originalName);
 
-            fileGrid.Rows.Add(originalName, convertedName, Path.GetDirectoryName(path), "Pending");
+            switch (IsEncoded)
+            {
+                case true:
+                    {
+                        originalName = StringCipher.Decode(outName);
+                        fileGrid.Rows.Add(outName, originalName, Path.GetDirectoryName(path), "Pending");
+                    }
+                    break;
+
+                case false:
+                    {
+                        string convertedName = StringCipher.IsEncoded(outName) ? StringCipher.Decode(outName) : StringCipher.Encode(outName);
+                        fileGrid.Rows.Add(outName, convertedName, Path.GetDirectoryName(path), "Pending");
+                    }
+                    break;
+            }           
         }
 
         private void localize()

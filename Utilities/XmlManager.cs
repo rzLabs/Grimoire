@@ -9,20 +9,25 @@ using System.Xml.Linq;
 using System.Globalization;
 using Grimoire.Localization.Structures;
 using Grimoire.Localization.Enums;
+using Grimoire.Logs.Enums;
 
 namespace Grimoire.Utilities
 {
     public class XmlManager
     {
         Logs.Manager lManager = Logs.Manager.Instance;
+        Configuration.ConfigMan ConfigMan = GUI.Main.Instance.ConfigMan;
 
         List<Locale> locales = new List<Locale>();
         Locale locale
         {   
             get { return locales.Find(l => l.Name == key); }
         }
-        string key = OPT.GetString("locale");
-        string localeDir = OPT.GetString("locale.directory") ?? string.Format(@"{0}\Localization", Directory.GetCurrentDirectory());
+        //string key = OPT.GetString("locale");
+        //string localeDir = OPT.GetString("locale.directory") ?? string.Format(@"{0}\Localization", Directory.GetCurrentDirectory());
+
+        string key;
+        string localeDir;
 
         static XmlManager instance;
         public static XmlManager Instance
@@ -39,11 +44,14 @@ namespace Grimoire.Utilities
 
         public XmlManager()
         {
-            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE, "Localization Manager Started.");
+            key = ConfigMan["Locale"];
+            localeDir = ConfigMan.GetDirectory("Directory", "Localization");
+
+            lManager.Enter(Sender.MANAGER, Level.NOTICE, "Localization Manager Started.");
 
             compileLocales();
 
-            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, string.Format("{0} locales loaded from:\n\t- {1}", locales.Count, localeDir));
+            lManager.Enter(Sender.MANAGER, Level.DEBUG, string.Format("{0} locales loaded from:\n\t- {1}", locales.Count, localeDir));
         }
 
         void compileLocales()
@@ -51,21 +59,21 @@ namespace Grimoire.Utilities
             if (string.IsNullOrEmpty(key))
             {
                 string msg = "compileLocales() key is null! Please check your grimpoite.opt \"locale\" value! (example value: en-US)";
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.ERROR, msg);
+                lManager.Enter(Sender.MANAGER, Level.ERROR, msg);
                 System.Windows.Forms.MessageBox.Show(msg, "XML Exception", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
 
             if (!Directory.Exists(localeDir))
             {
                 string msg = "compileLocales() localeDir does not exist! Please check your grimoire.opt \"locale.directory\" value! (example value: C:\\Grimoire\\Localization)";
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.ERROR, msg);
+                lManager.Enter(Sender.MANAGER, Level.ERROR, msg);
                 System.Windows.Forms.MessageBox.Show(msg, "XML Exception", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
 
             string[] filePaths = Directory.GetFiles(localeDir);
             for (int i = 0; i < filePaths.Length; i++)
             {
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "{0} locales found in:\n\t- {1}", filePaths.Length, localeDir);
+                lManager.Enter(Sender.MANAGER, Level.DEBUG, "{0} locales found in:\n\t- {1}", filePaths.Length, localeDir);
 
                 parseXML(filePaths[i]);
             }
@@ -88,7 +96,7 @@ namespace Grimoire.Utilities
             {
                 key = "en-US";
                 string msg = string.Format("Requested Locale: {0} does not exist!\n\t Defaulting to en-US", key);
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.NOTICE, msg);
+                lManager.Enter(Sender.MANAGER, Level.NOTICE, msg);
                 System.Windows.Forms.MessageBox.Show(msg, "XML Warning", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Hand);
             }
 
@@ -102,7 +110,7 @@ namespace Grimoire.Utilities
                         {
                             localizeControls(f.Controls);
 
-                            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, string.Format("{0} control configurations loaded for gui: {1}", f.Controls.Count, f.Name));
+                            lManager.Enter(Sender.MANAGER, Level.DEBUG, string.Format("{0} control configurations loaded for gui: {1}", f.Controls.Count, f.Name));
                         }
                     }
                     break;
@@ -115,7 +123,7 @@ namespace Grimoire.Utilities
                         {
                             localizeControls(u.Controls);
 
-                            lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, string.Format("{0} control configurations loaded for tab: {1}", u.Controls.Count, u.Name));
+                            lManager.Enter(Sender.MANAGER, Level.DEBUG, string.Format("{0} control configurations loaded for tab: {1}", u.Controls.Count, u.Name));
                         }
                     }
                     break;
@@ -129,13 +137,13 @@ namespace Grimoire.Utilities
             List<XElement> element = xDoc.Elements("locale").ToList();
             if (element != null)
             {
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "<locale/> found for locale:{0}", key);
+                lManager.Enter(Sender.MANAGER, Level.DEBUG, "<locale/> found for locale:{0}", key);
 
                 Locale locale = new Locale();
 
                 if (!element[0].HasAttributes)
                 {
-                    lManager.Enter(Logs.Sender.MANAGER, Logs.Level.ERROR, "<locale/> element does not have expected attributes!");
+                    lManager.Enter(Sender.MANAGER, Level.ERROR, "<locale/> element does not have expected attributes!");
                     return;
                 }
 
@@ -157,7 +165,7 @@ namespace Grimoire.Utilities
                         globalFont.Style = (System.Drawing.FontStyle)Enum.Parse(typeof(System.Drawing.FontStyle), fontElements[0].Value);
                         globalFont.Size = Convert.ToDouble(fontElements[1].Value, CultureInfo.InvariantCulture);
 
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "Global <font/> is defined.\nFamily:{0}\nStyle:{1}\nSize:{2}", globalFont.Name,
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "Global <font/> is defined.\nFamily:{0}\nStyle:{1}\nSize:{2}", globalFont.Name,
                                                                                                                                              globalFont.Style.ToString(),
                                                                                                                                              globalFont.Size);
                     }
@@ -168,14 +176,14 @@ namespace Grimoire.Utilities
                     {
                         rightToLeft = (System.Windows.Forms.RightToLeft)Enum.Parse(typeof(System.Windows.Forms.RightToLeft), childNodes[3].Value);
 
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "Global <rightToLeft/> defined.");
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "Global <rightToLeft/> defined.");
                     }
                 }
 
                 // Get the <control/> nodes in the <controls/> elemenent
                 childNodes = childNodes[childNodes.Count - 1].Elements().ToList();
 
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "{0} <control/> nodes found.", childNodes.Count);
+                lManager.Enter(Sender.MANAGER, Level.DEBUG, "{0} <control/> nodes found.", childNodes.Count);
 
                 List<ControlConfig> controls = new List<ControlConfig>();
                 for (int c = 0; c < childNodes.Count; c++)
@@ -191,12 +199,12 @@ namespace Grimoire.Utilities
                         if (attributes.Count >= 2)
                             control.Comment = attributes[1].Value;
 
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "<control/> {0} has expected attributes.", control.Name);
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<control/> {0} has expected attributes.", control.Name);
                     }
                     else
                     {
                         string msg = string.Format("<control/> at index: {0} does not have attributes! Ignoring!", c);
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.WARNING, msg);
+                        lManager.Enter(Sender.MANAGER, Level.WARNING, msg);
                         System.Windows.Forms.MessageBox.Show(msg, "XML Exception", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
                     }
 
@@ -212,12 +220,12 @@ namespace Grimoire.Utilities
                         controlFont.Style = (System.Drawing.FontStyle)Enum.Parse(typeof(System.Drawing.FontStyle), fontElements[0].Value);
                         controlFont.Size = Convert.ToDouble(fontElements[1].Value, CultureInfo.InvariantCulture);
 
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "<font/> detected.\nFamily:{0}\nStyle:{2}\nSize:{1}", controlFont.Name,
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<font/> detected.\nFamily:{0}\nStyle:{2}\nSize:{1}", controlFont.Name,
                                                                                                                                                         controlFont.Style.ToString(),
                                                                                                                                                         controlFont.Size);
                     }
                     else
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "No <font/> detected for control: {0}", control.Name);
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "No <font/> detected for control: {0}", control.Name);
 
                     control.Font = (controlFont != null) ? controlFont : globalFont;
 
@@ -227,7 +235,7 @@ namespace Grimoire.Utilities
                         string[] location = childNodes[c].Elements("location").ToList()[0].Value.Split(',');
                         control.Location = new System.Drawing.Point(int.Parse(location[0]), int.Parse(location[1]));
 
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "<location/> detected.\nx:{0}\ny:{1}", control.Location.X,
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<location/> detected.\nx:{0}\ny:{1}", control.Location.X,
                                                                                                                      control.Location.Y);
                     }
                     else
@@ -239,7 +247,7 @@ namespace Grimoire.Utilities
                         string[] size = childNodes[c].Elements("size").ToList()[0].Value.Split(',');
                         control.Size = new System.Drawing.Size(int.Parse(size[0]), int.Parse(size[1]));
 
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "<size/> detected. \nheight:{0}\nwidth:{1}", control.Size.Height,
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<size/> detected. \nheight:{0}\nwidth:{1}", control.Size.Height,
                                                                                                                            control.Size.Width);
                     }
                     else
@@ -252,7 +260,7 @@ namespace Grimoire.Utilities
 
                     if (textElements.Count > 0)
                     {
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "<text/> element detected!");
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<text/> element detected!");
 
                         if (textElements[0].HasAttributes)
                         {
@@ -283,7 +291,7 @@ namespace Grimoire.Utilities
                 if (locale.Populated)
                     locales.Add(locale);
 
-                lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, string.Format("{0} controls configurations loaded from locale: {1} from\n\t- {2}", locale.Controls.Count, locale.Name, filePath));
+                lManager.Enter(Sender.MANAGER, Level.DEBUG, string.Format("{0} controls configurations loaded from locale: {1} from\n\t- {2}", locale.Controls.Count, locale.Name, filePath));
             }
         }
 
@@ -529,7 +537,7 @@ namespace Grimoire.Utilities
                         control.Text = config.Text.Text;
                     }
                     else
-                        lManager.Enter(Logs.Sender.MANAGER, Logs.Level.DEBUG, "Control: {0} is not configured! It will default.", control.Name);
+                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "Control: {0} is not configured! It will default.", control.Name);
                 }
             }
         }

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
-namespace Grimoire.Utilities
+namespace Grimoire.DB.Enums
 {
-    public class StructureManager
+    public enum EngineType
     {
+        MsSQL,
+        MySQL
     }
 }

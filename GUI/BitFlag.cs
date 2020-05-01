@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Grimoire.Utilities;
+using Grimoire.Logs.Enums;
+using Grimoire.Configuration;
 
 namespace Grimoire.GUI
 {
@@ -21,6 +23,7 @@ namespace Grimoire.GUI
         {
             InitializeComponent();
             lManager = Logs.Manager.Instance;
+            configMan = GUI.Main.Instance.ConfigMan;
 
             localize();
         }
@@ -29,6 +32,7 @@ namespace Grimoire.GUI
         {
             InitializeComponent();
             lManager = Logs.Manager.Instance;
+            configMan = GUI.Main.Instance.ConfigMan;
 
             defaultFlag = vector;
             localize();
@@ -39,6 +43,8 @@ namespace Grimoire.GUI
         #region Properties
 
         readonly Logs.Manager lManager;
+        readonly ConfigMan configMan;
+
         protected bool calculating = false;
         public List<string> lists = new List<string>();
         public string listPath = null;
@@ -70,14 +76,14 @@ namespace Grimoire.GUI
 
         void generate_file_list()
         {
-            string dir = Grimoire.Utilities.OPT.GetString("flag.directory") ?? string.Format(@"{0}\Flags", Directory.GetCurrentDirectory());
+            string dir = configMan.GetDirectory("Directory", "Flag");
 
             if (!Directory.Exists(dir))
             {
                 string msg = string.Format("flag.directory does not exist!\n\tDirectory: {0}", dir);
 
                 MessageBox.Show(msg, "Flag Utility Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.FLAG, Logs.Level.ERROR, msg);
+                lManager.Enter(Sender.FLAG, Level.ERROR, msg);
 
                 return;
             }
@@ -87,7 +93,7 @@ namespace Grimoire.GUI
             foreach (string filePath in paths)
                 lists.Add(Path.GetFileNameWithoutExtension(filePath));
 
-            lManager.Enter(Logs.Sender.FLAG, Logs.Level.DEBUG, "{0} flag files loaded from {1}", paths.Length, dir);
+            lManager.Enter(Sender.FLAG, Level.DEBUG, "{0} flag files loaded from {1}", paths.Length, dir);
         }
 
         void generate_flag_list()
@@ -96,7 +102,7 @@ namespace Grimoire.GUI
 
             flagList.Items.Clear();
 
-            if (Utilities.OPT.GetBool("flag.clear_on_list_change"))
+             if (configMan["ClearOnChange", "Flag"])
                 flagIO.Text = "0";
 
             List<string> flags = new List<string>();
@@ -113,7 +119,7 @@ namespace Grimoire.GUI
 
                 flagFiles.Text = Path.GetFileNameWithoutExtension(listPath);
 
-                lManager.Enter(Logs.Sender.FLAG, Logs.Level.NOTICE, "{0} Flags loaded to the Flag Editor", flags.Count);
+                lManager.Enter(Sender.FLAG, Level.NOTICE, "{0} Flags loaded to the Flag Editor", flags.Count);
 
                 flagList.Items.AddRange(flags.ToArray());
 
@@ -125,7 +131,7 @@ namespace Grimoire.GUI
             else
             {
                 string msg = string.Format("Could not load flag list at:\n{0}", listPath);
-                lManager.Enter(Logs.Sender.FLAG, Logs.Level.ERROR, msg);
+                lManager.Enter(Sender.FLAG, Level.ERROR, msg);
                 MessageBox.Show(msg, "Load Flags Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -143,7 +149,7 @@ namespace Grimoire.GUI
                 string msg = "generate_file_list() failed to generate the flag list!";
 
                 MessageBox.Show(msg, "Flag Utility Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.FLAG, Logs.Level.ERROR, msg);
+                lManager.Enter(Sender.FLAG, Level.ERROR, msg);
 
                 return;
             }
@@ -151,14 +157,14 @@ namespace Grimoire.GUI
             foreach (string list in lists)
                 flagFiles.Items.Add(list);
 
-            string flagsDir = Grimoire.Utilities.OPT.GetString("flag.directory");
-            string listName = DefaultFlagFile ?? Grimoire.Utilities.OPT.GetString("flag.default_list");
+            string flagsDir = configMan.GetDirectory("Directory", "Flag");
+            string listName = DefaultFlagFile ?? configMan["Default", "Flag"];
             if (listName == null)
             {
                 string msg = "No default path for flag file defined!";
 
                 MessageBox.Show(msg, "Flag Path Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                lManager.Enter(Logs.Sender.FLAG, Logs.Level.DEBUG, msg);
+                lManager.Enter(Sender.FLAG, Level.DEBUG, msg);
 
                 return;
             }
@@ -166,7 +172,7 @@ namespace Grimoire.GUI
             {
                 flagFiles.Text = listName;
 
-                lManager.Enter(Logs.Sender.FLAG, Logs.Level.DEBUG, "Default Flag Path: {0} selected.", listName);
+                lManager.Enter(Sender.FLAG, Level.DEBUG, "Default Flag Path: {0} selected.", listName);
             }
 
 
@@ -212,7 +218,7 @@ namespace Grimoire.GUI
             if (flagFiles.SelectedIndex == -1)
                 return;
 
-            listPath = string.Format(@"{0}\{1}.txt", Grimoire.Utilities.OPT.GetString("flag.directory"), flagFiles.Text);
+            listPath = $"{configMan.GetDirectory("Directory", "Flag")}\\{flagFiles.Text}.txt";
 
             generate_flag_list();
         }
@@ -225,14 +231,10 @@ namespace Grimoire.GUI
 
         #endregion
 
-        private void clear_on_list_change_CheckedChanged(object sender, EventArgs e)
-        {
-            Utilities.OPT.Update("flag.clear_on_list_change", Convert.ToInt32(clear_on_change_chkBx.Checked).ToString());
-        }
+        private void clear_on_list_change_CheckedChanged(object sender, EventArgs e) =>
+            configMan["ClearOnChange"] = clear_on_change_chkBx.Checked;
 
-        void localize()
-        {
+        void localize() =>
             xMan.Localize(this, Localization.Enums.SenderType.GUI);
-        }
     }
 }

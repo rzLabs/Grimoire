@@ -2,11 +2,14 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using Grimoire.Tabs;
 using System.Resources;
 using System.Globalization;
 using System.Threading;
 using Grimoire.Utilities;
+using Grimoire.Configuration;
+using Grimoire.Logs.Enums;
 
 namespace Grimoire.GUI
 {
@@ -14,26 +17,25 @@ namespace Grimoire.GUI
     {
         readonly Tabs.Manager tManager;
         readonly Logs.Manager lManager;
+        
         readonly XmlManager xMan;
         public static Main Instance;
+        public readonly ConfigMan ConfigMan;
 
         public Main()
         {
             InitializeComponent();
             Instance = this;
+            ConfigMan = new ConfigMan();
             tManager = Tabs.Manager.Instance;
             lManager = Logs.Manager.Instance;
-            Utilities.OPT.Load();
             xMan = XmlManager.Instance;
             check_first_start();
             generate_new_list();
             localize();
         }
 
-        private void localize()
-        {
-            xMan.Localize(this, Localization.Enums.SenderType.GUI);
-        }
+        private void localize() => xMan.Localize(this, Localization.Enums.SenderType.GUI);
 
         private void check_first_start()
         {
@@ -48,13 +50,13 @@ namespace Grimoire.GUI
 
         private void generate_new_list()
         {
-            string[] styles = Grimoire.Utilities.OPT.GetString("tab.styles").Trim().Split(',');
+            List<string> styles = ConfigMan["Styles"];
 
-            if (styles.Length == 0)
+            if (styles.Count == 0)
             {
                 string msg = "Setting: tab.styles is missing or empty, please add at-least one tab style!";
                 MessageBox.Show(msg);
-                lManager.Enter(Logs.Sender.MAIN, Logs.Level.ERROR, msg);
+                lManager.Enter(Sender.MAIN, Level.ERROR, msg);
             }
 
             new_list.Items.Clear();
@@ -63,11 +65,11 @@ namespace Grimoire.GUI
 
         private void set_default_tab()
         {
-            string styleName = Grimoire.Utilities.OPT.GetString("tab.default_style");
+            string styleName = ConfigMan["DefaultStyle"];
             bool useDefault = (styleName != null && styleName != "NONE");
             if (useDefault)
             {
-                lManager.Enter(Logs.Sender.MAIN, Logs.Level.NOTICE, "Automatically loading default style.");
+                lManager.Enter(Sender.MAIN, Level.NOTICE, "Automatically loading default style.");
 
                 tManager.Create((Style)Enum.Parse(typeof(Style), styleName));
             }
@@ -133,17 +135,14 @@ namespace Grimoire.GUI
             }
         }
 
-        private void Main_Shown(object sender, EventArgs e)
-        {
-            set_default_tab(); // If defined!
-        }
+        private void Main_Shown(object sender, EventArgs e) => set_default_tab(); // If defined!
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            lManager.Enter(Logs.Sender.MAIN, Logs.Level.DEBUG, "Closing down...");
+            lManager.Enter(Sender.MAIN, Level.DEBUG, "Closing down...");
 
             lManager.Save();
-            Utilities.OPT.Save();
+            //TODO: ConfigMan.Save()
         }
 
         private void tabs_MouseClick(object sender, MouseEventArgs e)
@@ -187,7 +186,7 @@ namespace Grimoire.GUI
                             tManager.RDBTab.Search(input.Field, input.Term);
                 }
                 else
-                    lManager.Enter(Logs.Sender.MAIN, Logs.Level.NOTICE, "Cannot activate ListInput without loaded data!");
+                    lManager.Enter(Sender.MAIN, Level.NOTICE, "Cannot activate ListInput without loaded data!");
             }
             else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
             {

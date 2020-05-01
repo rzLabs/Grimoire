@@ -73,8 +73,6 @@
             this.itemList.TabIndex = 0;
             this.itemList.UseCompatibleStateImageBehavior = false;
             this.itemList.VirtualMode = true;
-            this.itemList.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.itemList_RetrieveVirtualItem);
-            this.itemList.SelectedIndexChanged += new System.EventHandler(this.itemList_SelectedIndexChanged);
             // 
             // loadBtn
             // 
@@ -85,7 +83,6 @@
             this.loadBtn.TabIndex = 1;
             this.loadBtn.Text = "Load";
             this.loadBtn.UseVisualStyleBackColor = true;
-            this.loadBtn.Click += new System.EventHandler(this.loadBtn_Click);
             // 
             // groupBox1
             // 

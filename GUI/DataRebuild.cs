@@ -12,6 +12,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Forms;
 using DataCore;
 using Grimoire.Utilities;
+using Grimoire.Logs.Enums;
 
 namespace Grimoire.GUI
 {
@@ -43,7 +44,7 @@ namespace Grimoire.GUI
         private void Core_MessageOccured(object sender, MessageArgs e)
         {
             Invoke(new MethodInvoker(delegate { status.Text = e.Message; }));
-            lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, e.Message);
+            lManager.Enter(Sender.DATA, Level.NOTICE, e.Message);
         }
 
         private void Core_CurrentMaxDetermined(object sender, CurrentMaxArgs e)
@@ -129,7 +130,7 @@ namespace Grimoire.GUI
 
             string statusMsg = "Rebuilding Data Files...";
             status.Text = statusMsg;
-            lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, statusMsg);
+            lManager.Enter(Sender.DATA, Level.NOTICE, statusMsg);
 
             try
             {
@@ -153,13 +154,13 @@ namespace Grimoire.GUI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Rebuild Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.ERROR, ex);
+                lManager.Enter(Sender.DATA, Level.ERROR, ex);
             }
             finally
             {
                 statusMsg = "Rebuild complete!";
                 MessageBox.Show(statusMsg, "Rebuild Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, statusMsg);
+                lManager.Enter(Sender.DATA, Level.NOTICE, statusMsg);
                 status.ResetText();
             }
 
@@ -180,7 +181,7 @@ namespace Grimoire.GUI
                 File.Delete(path);
                 File.Move(newPath, path);
 
-                lManager.Enter(Logs.Sender.DATA, Logs.Level.NOTICE, "Backup cleaning completed!\n\tFile Deleted: {0}\n\tFile Moved\n\t\tFrom:{1}\n\t\tTo:{2}", path, newPath, path);
+                lManager.Enter(Sender.DATA, Level.NOTICE, "Backup cleaning completed!\n\tFile Deleted: {0}\n\tFile Moved\n\t\tFrom:{1}\n\t\tTo:{2}", path, newPath, path);
             }
 
         }

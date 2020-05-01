@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Grimoire.Structures;
 using Grimoire.Utilities;
+using Grimoire.Logs.Enums;
 
 namespace Grimoire.Logs
 {

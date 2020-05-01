@@ -10,12 +10,23 @@ namespace Grimoire.GUI
     {
         XmlManager xMan = XmlManager.Instance;
 
-        public ListSelect(string title, List<IndexEntry> selections)
+        public ListSelect(string title, List<IndexEntry> selections, string selection = null)
         {
             this.Text = title;
             InitializeComponent();
             populateList(selections);
             localize();
+
+            if (!string.IsNullOrEmpty(selection) && list.Items.Contains(selection))
+            {
+                for (int i = 0; i < list.Items.Count; i++)
+                {
+                    string strObj = list.Items[i] as string;
+
+                    if (strObj == selection)
+                        list.SelectedIndex = i;
+                }
+            }
         }
 
         public string SelectedText

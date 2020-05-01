@@ -1,21 +1,12 @@
-﻿namespace Grimoire.Logs
+﻿namespace Grimoire.Logs.Enums
 {
     public enum Level
     {
-        NOTICE = 0,
-        WARNING = 1,
-        ERROR = 2,
-        SQL_ERROR = 3,
-        HASHER_ERROR = 4,
-        DEBUG = 99
-    }
-
-    public enum DisplayLevel
-    {
-        ALL = 0,
-        NOTICE = 1,
-        DEBUG = 2,
-        ERRORS = 3        
+        ALL,
+        NOTICE,
+        DEBUG,
+        WARNING,
+        ERROR        
     }
 
     public enum Sender // TODO: Update me a-doi

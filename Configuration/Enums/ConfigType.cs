@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
-namespace Grimoire.Utilities
+namespace Grimoire.Configuration.Enums
 {
-    public class StructureManager
+    public enum ConfigType
     {
+        DB,
+        RDB,
+        Grim,
+        Tab,
+        Log
     }
 }

@@ -7,11 +7,17 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 using System.Text;
+using System.Data;
 using Grimoire.Utilities;
+using Grimoire.DB;
 using Daedalus;
 using Daedalus.Structures;
 using Daedalus.Enums;
 using System.Linq;
+using Grimoire.Logs.Enums;
+using Grimoire.Configuration;
+using Grimoire.DB.Enums;
+using System.Data.Common;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -22,7 +28,8 @@ namespace Grimoire.Tabs.Styles
         GUI.Main main = GUI.Main.Instance;
         Logs.Manager lManager = Logs.Manager.Instance;
         Manager tManager = Manager.Instance;
-        Database dManager = null;
+        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+
         public Daedalus.Core core = new Daedalus.Core();
         DataCore.Core dCore = null;
         string structsDir = null;
@@ -38,7 +45,9 @@ namespace Grimoire.Tabs.Styles
         {
             get
             {
-                if (core == null) { throw new Exception("Daedalus is null!"); }
+                if (core == null)
+                    throw new Exception("Daedalus is null!");
+
                 return core;
             }
         }
@@ -47,13 +56,15 @@ namespace Grimoire.Tabs.Styles
 
         public int ProgressMax
         {
-            set { this.Invoke(new MethodInvoker(delegate { ts_prog.Maximum = value; })); }
+            set => Invoke(new MethodInvoker(delegate { ts_prog.Maximum = value; }));
         }
 
         public int ProgressVal
         {
-            set { this.Invoke(new MethodInvoker(delegate { ts_prog.Value = value; })); }
+            set => Invoke(new MethodInvoker(delegate { ts_prog.Value = value; }));
         }
+
+        public string Status { get => ts_struct_status.Text; set => ts_struct_status.Text = value; }
 
         public bool UseASCII
         {
@@ -70,9 +81,9 @@ namespace Grimoire.Tabs.Styles
             InitializeComponent();
             this.key = key;
             gridUtil = new Utilities.Grid();
-            ts_save_enc.Checked = OPT.GetBool("rdb.save.hashed");
-            ts_save_w_ascii.Checked = OPT.GetBool("rdb.use.ascii");
-            structsDir = OPT.GetString("rdb.structure.directory") ?? string.Format(@"{0}\Structures\", Directory.GetCurrentDirectory());
+            ts_save_enc.Checked = configMan["SaveHashed", "RDB"];
+            ts_save_w_ascii.Checked = configMan["AppendASCII"];
+            structsDir = configMan.GetDirectory("Directory", "RDB");
             localize();
         }
 
@@ -93,7 +104,7 @@ namespace Grimoire.Tabs.Styles
             if (ts_enc_list.SelectedIndex != -1)
                 core.SetEncoding(Encodings.GetByName(ts_enc_list.Text));
 
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Encoding: {0} set.", ts_enc_list.Text);
+            lManager.Enter(Sender.RDB, Level.NOTICE, "Encoding: {0} set.", ts_enc_list.Text);
         }
 
         private async void ts_struct_list_SelectedIndexChanged(object sender, EventArgs e)
@@ -103,7 +114,7 @@ namespace Grimoire.Tabs.Styles
             {
                 if (!File.Exists(path))
                 {
-                    lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "The structure file could not be found at path:\n\t- {0}", path);
+                    lManager.Enter(Sender.RDB, Level.ERROR, "The structure file could not be found at path:\n\t- {0}", path);
                     return;
                 }
 
@@ -112,14 +123,14 @@ namespace Grimoire.Tabs.Styles
             }
             catch (MoonSharp.Interpreter.SyntaxErrorException sEx)
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "Exception Occured:\n\t- {0}", LuaException.Print(sEx.DecoratedMessage, ts_struct_list.Text));
+                lManager.Enter(Sender.RDB, Level.ERROR, "Exception Occured:\n\t- {0}", LuaException.Print(sEx.DecoratedMessage, ts_struct_list.Text));
             }
-            catch (Exception ex) { lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex); }
+            catch (Exception ex) { lManager.Enter(Sender.RDB, Level.ERROR, ex); }
             finally
             {
                 ts_struct_status.Text = "Loaded";
                 tManager.Text = string.Format("<{0}>", ts_struct_list.Text);
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Structure file: {0} successfully loaded on Tab: {1}", ts_struct_list.Text, tManager.Text);
+                lManager.Enter(Sender.RDB, Level.NOTICE, "Structure file: {0} successfully loaded on Tab: {1}", ts_struct_list.Text, tManager.Text);
 
                 ts_struct_list.Enabled = false;
 
@@ -152,7 +163,7 @@ namespace Grimoire.Tabs.Styles
                         {
                             if (input.ShowDialog(this) != DialogResult.OK) { return; }
 
-                            lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to provide Table name for load operation.\n\t- Table name provided: {0}", input.Value);
+                            lManager.Enter(Sender.RDB, Level.WARNING, "User opted to provide Table name for load operation.\n\t- Table name provided: {0}", input.Value);
                             tablename = input.Value;
                         }
 
@@ -160,39 +171,22 @@ namespace Grimoire.Tabs.Styles
                 }
             }
 
-            dManager = new Database();
-            int rowCount = dManager.FetchRowCount(tablename);
-            Daedalus.Structures.Row[] table_data = new Daedalus.Structures.Row[0];
+            DbConType sqlEngine = (DbConType)configMan["Engine", "DB"];
+            DBHelper dbHelper = new DBHelper(configMan, sqlEngine);
+            Row[] table_data = await dbHelper.ReadTable(tablename);
 
-            try
+            if (table_data.Length == 0)
             {
-                await Task.Run(() => { table_data = dManager.FetchTable(rowCount, tablename); });
-
-                if (table_data.Length == 0)
-                {
-                    lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "No results were loaded from the table!");
-                    return;
-                }
-
-                core.SetData(table_data);
-            }
-            catch (System.Data.SqlClient.SqlException ex)
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.SQL_ERROR, ex);
+                lManager.Enter(Sender.RDB, Level.ERROR, "No results were loaded from the table!");
                 return;
             }
-            catch (Exception ex)
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
-                return;
-            }
-            finally
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} rows were loaded from table: {1} into tab: {2}", table_data.Length, tablename, tManager.Text);
 
-                tManager.Text = Path.GetFileNameWithoutExtension(tablename);
-                initializeGrid();
-            }
+            core.SetData(table_data);
+
+            lManager.Enter(Sender.RDB, Level.NOTICE, "{0} rows were loaded from table: {1} into tab: {2}", table_data.Length, tablename, tManager.Text);
+
+            tManager.Text = Path.GetFileNameWithoutExtension(tablename);
+            initializeGrid();
         }
 
         private async void ts_save_sql_Click(object sender, EventArgs e)
@@ -223,7 +217,7 @@ namespace Grimoire.Tabs.Styles
                         {
                             if (input.ShowDialog(this) != DialogResult.OK) { return; }
 
-                            lManager.Enter(Logs.Sender.RDB, Logs.Level.WARNING, "User opted to provide Table name for save operation.\n\t- Table name provided: {0}", input.Value);
+                            lManager.Enter(Sender.RDB, Level.WARNING, "User opted to provide Table name for save operation.\n\t- Table name provided: {0}", input.Value);
                             tablename = input.Value;
                         }
 
@@ -231,44 +225,29 @@ namespace Grimoire.Tabs.Styles
                 }
             }
 
-            Database dManager = new Database();
+            DbConType sqlEngine = (DbConType)configMan["Engine", "DB"];
+            DBHelper dbHelper = new DBHelper(configMan, sqlEngine);
+            await dbHelper.WriteTable(tablename, tManager.RDBCore.Rows);
 
-            try
-            {
-                await Task.Run(() =>
-                {
-                    dManager.ExportToTable(tablename, tManager.RDBCore.Rows);
-                });
+            lManager.Enter(Sender.RDB, Level.NOTICE, "{0} rows were saved to table: {1} from tab: {2}", tManager.RDBCore.RowCount, tablename, tManager.Text);
 
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} rows were saved to table: {1} from tab: {2}", tManager.RDBCore.RowCount, tablename, tManager.Text);
-            }
-            catch (System.Data.SqlClient.SqlException ex)
-            {
-                //if (ex.Number == -2) <-- Timeout expired
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.SQL_ERROR, ex);
-                return;
-            }
-            catch (Exception ex)
-            {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
-                return;
-            }
+            MessageBox.Show("Database export successful!", "Export Successful!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         private void ts_save_enc_Click(object sender, EventArgs e)
         {
-            bool newVal = OPT.GetBool("rdb.save.hashed") ? false : true;
-            OPT.Update("rdb.save.hashed", Convert.ToInt32(newVal).ToString());
+            bool newVal = configMan["SaveHashed", "RDB"] ? false : true;
+            configMan["SaveHashed", "RDB"] = newVal;
             ts_save_enc.Checked = newVal;
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Save Encoded: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
+            lManager.Enter(Sender.RDB, Level.NOTICE, "Save Encoded: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
         }
 
         private void ts_save_w_ascii_Click(object sender, EventArgs e)
         {
-            bool newVal = OPT.GetBool("rdb.use.ascii") ? false : true;
-            OPT.Update("rdb.use.ascii", Convert.ToInt32(newVal).ToString());
+            bool newVal = configMan["AppendASCII", "RDB"] ? false : true;
+            configMan["AppendASCII", "RDB"] = newVal;
             ts_save_w_ascii.Checked = newVal;
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Save With ASCII: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
+            lManager.Enter(Sender.RDB, Level.NOTICE, "Save With ASCII: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
         }
 
         private void grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -296,7 +275,7 @@ namespace Grimoire.Tabs.Styles
                 foreach (DataGridViewColumn dgvColumn in grid.Columns)
                     dgvColumn.HeaderCell.SortGlyphDirection = SortOrder.None;
 
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "Sorting data-set by: {0} ({1}) on tab: {2}", cell.Name, newOrder.ToString(), tManager.Text);
+            lManager.Enter(Sender.RDB, Level.DEBUG, "Sorting data-set by: {0} ({1}) on tab: {2}", cell.Name, newOrder.ToString(), tManager.Text);
 
             Sort(cell, newOrder);
         }
@@ -315,9 +294,9 @@ namespace Grimoire.Tabs.Styles
 
             actionSW.Stop();
 
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "\t-Ready! ({0}ms)", actionSW.ElapsedMilliseconds.ToString("D4"));
+            lManager.Enter(Sender.RDB, Level.NOTICE, "\t-Ready! ({0}ms)", actionSW.ElapsedMilliseconds.ToString("D4"));
 
-            string csvDir = OPT.GetString("rdb.csv.directory") ?? string.Concat(Directory.GetCurrentDirectory(), @"\CSV");
+            string csvDir = configMan.GetDirectory("CSV_Directory");
             string csvPath = string.Format(@"{0}\{1}_{2}.csv", csvDir, core.FileName, DateTime.UtcNow.ToString("MM-dd-yyyy"));
 
             if (!Directory.Exists(csvDir))
@@ -326,7 +305,7 @@ namespace Grimoire.Tabs.Styles
             File.WriteAllText(csvPath, csvStr.ToString());
 
             string msg = string.Format("{0} written to .csv file at: {1}", tManager.Text, csvPath);
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, msg);
+            lManager.Enter(Sender.RDB, Level.DEBUG, msg);
 
             ts_prog.Value = 0;
             ts_prog.Maximum = 100;
@@ -398,13 +377,13 @@ namespace Grimoire.Tabs.Styles
                 return;
             }
 
-            Paths.DefaultDirectory = OPT.GetString("rdb.load.directory");
+            Paths.DefaultDirectory = configMan["LoadDirectory"];
             Paths.DefaultFileName = core.FileName;
             string fileName = Paths.FilePath;
 
             if (Paths.FileResult != DialogResult.OK)
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User cancelled file load on tab: {0}", tManager.Text);
+                lManager.Enter(Sender.RDB, Level.DEBUG, "User cancelled file load on tab: {0}", tManager.Text);
                 return;
             }
 
@@ -413,12 +392,12 @@ namespace Grimoire.Tabs.Styles
             switch (ext)
             {
                 case ".rdb":
-                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "Loading RDB from physical file with .rdb extension");
+                    lManager.Enter(Sender.RDB, Level.DEBUG, "Loading RDB from physical file with .rdb extension");
                     load_file(fileName);
                     break;
 
                 case ".000":
-                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "Loading RDB from Rappelz Client");
+                    lManager.Enter(Sender.RDB, Level.DEBUG, "Loading RDB from Rappelz Client");
                     load_data_file(fileName);
                     break;
             }
@@ -447,7 +426,7 @@ namespace Grimoire.Tabs.Styles
                             return;
 
                         case DialogResult.No:
-                            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User opted to use the tab name as Filename for save operation.\n\t- Filename provided: {0}", tManager.Text);
+                            lManager.Enter(Sender.RDB, Level.DEBUG, "User opted to use the tab name as Filename for save operation.\n\t- Filename provided: {0}", tManager.Text);
                             filename = string.Format("{0}.rdb", tManager.Text);
                             break;
 
@@ -457,7 +436,7 @@ namespace Grimoire.Tabs.Styles
                                 if (input.ShowDialog(this) != DialogResult.OK)
                                     return;
 
-                                lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User opted to provide Filename for save operation.\n\t- Filename provided: {0}", input.Value);
+                                lManager.Enter(Sender.RDB, Level.DEBUG, "User opted to provide Filename for save operation.\n\t- Filename provided: {0}", input.Value);
                                 filename = input.Value;
                             }
 
@@ -488,11 +467,11 @@ namespace Grimoire.Tabs.Styles
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "RDB Save Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
+                lManager.Enter(Sender.RDB, Level.ERROR, ex);
             }
             finally
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries written from tab: {1} into file: {2}", core.RowCount, tManager.Text, buildPath);
+                lManager.Enter(Sender.RDB, Level.NOTICE, "{0} entries written from tab: {1} into file: {2}", core.RowCount, tManager.Text, buildPath);
             }
         }
 
@@ -507,13 +486,14 @@ namespace Grimoire.Tabs.Styles
         public void SetColumns(DataGridViewTextBoxColumn[] columns)
         {         
             this.Invoke(new MethodInvoker(delegate { grid.Columns.AddRange(columns); }));
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} columns set into tab: {1}", columns.Length, tManager.Text);
+            lManager.Enter(Sender.RDB, Level.NOTICE, "{0} columns set into tab: {1}", columns.Length, tManager.Text);
         }
 
         public void Clear()
-        {
+        {       
             grid.Rows.Clear();
             grid.RowCount = 0;
+            core.ClearData();
         }
 
         public void LoadFile(string filePath) { load_file(filePath); }
@@ -613,20 +593,20 @@ namespace Grimoire.Tabs.Styles
         {
             ts_enc_list.Items.AddRange(Encodings.Names);
             ts_enc_list.SelectedIndex = 0;
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} Encodings loaded.", Encodings.Count);
+            lManager.Enter(Sender.RDB, Level.NOTICE, "{0} Encodings loaded.", Encodings.Count);
         }
 
         void loadStructs()
         {
             if (!Directory.Exists(structsDir))
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, "The structures directory does not exist!\n\t- Directory: {0}", structsDir);
+                lManager.Enter(Sender.RDB, Level.ERROR, "The structures directory does not exist!\n\t- Directory: {0}", structsDir);
                 return;
             }
             else
             {
                 string[] structs = Directory.GetFiles(structsDir);
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} Structure files loaded from:\n\t- {1}", structs.Length, structsDir);
+                lManager.Enter(Sender.RDB, Level.NOTICE, "{0} Structure files loaded from:\n\t- {1}", structs.Length, structsDir);
 
                 foreach (string filename in structs)
                 {
@@ -655,14 +635,14 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, ex);
+                lManager.Enter(Sender.RDB, Level.ERROR, ex);
                 MessageBox.Show(ex.Message, "RDB Load Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 actionSW.Stop();
 
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "{0} entries loaded from: {1} ({2}) in {3}ms", core.RowCount, fileName, StringExt.FormatToSize(fileBytes.Length), actionSW.ElapsedMilliseconds.ToString("D4"));
+                lManager.Enter(Sender.RDB, Level.NOTICE, "{0} entries loaded from: {1} ({2}) in {3}ms", core.RowCount, fileName, StringExt.FormatToSize(fileBytes.Length), actionSW.ElapsedMilliseconds.ToString("D4"));
                 tManager.SetText(key, fileName);
                 initializeGrid();
             }
@@ -672,7 +652,7 @@ namespace Grimoire.Tabs.Styles
         {
             dCore = new DataCore.Core(Encodings.GetByName(ts_enc_list.Text));
 
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, filePath);
+            lManager.Enter(Sender.RDB, Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, filePath);
 
             List<DataCore.Structures.IndexEntry> results = null;
 
@@ -685,11 +665,11 @@ namespace Grimoire.Tabs.Styles
                 results = dCore.GetEntriesByExtensions("rdb", "ref");
             });
 
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "File list retrived successfully! ({0}ms)\n\t- Selections available: {1}",
+            lManager.Enter(Sender.RDB, Level.DEBUG, "File list retrived successfully! ({0}ms)\n\t- Selections available: {1}",
                                                                                             actionSW.ElapsedMilliseconds.ToString("D4"),
                                                                                                                          results.Count);
 
-            using (Grimoire.GUI.ListSelect selectGUI = new GUI.ListSelect("Select RDB", results))
+            using (Grimoire.GUI.ListSelect selectGUI = new GUI.ListSelect("Select RDB", results, core.FileName))
             {
                 selectGUI.ShowDialog(Grimoire.GUI.Main.Instance);
 
@@ -699,14 +679,14 @@ namespace Grimoire.Tabs.Styles
                     DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
                     byte[] fileBytes = dCore.GetFileBytes(finalResult);
 
-                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User selected rdb: {0}", fileName);
+                    lManager.Enter(Sender.RDB, Level.DEBUG, "User selected rdb: {0}", fileName);
 
                     if (fileBytes.Length > 0)
                         load_file(fileName, fileBytes);
                 }
                 else
                 {
-                    lManager.Enter(Logs.Sender.RDB, Logs.Level.DEBUG, "User cancelled Data load on RDB Tab: {0}", tManager.Text);
+                    lManager.Enter(Sender.RDB, Level.DEBUG, "User cancelled Data load on RDB Tab: {0}", tManager.Text);
                     return;
                 }
             }
@@ -727,7 +707,7 @@ namespace Grimoire.Tabs.Styles
             string[] names = core.VisibleCellNames;
             sb.Append(string.Join(",", names));
 
-            lManager.Enter(Logs.Sender.RDB, Logs.Level.NOTICE, "Preparing to export {0} columns and {1} rows to CSV", names.Length, core.RowCount);
+            lManager.Enter(Sender.RDB, Level.NOTICE, "Preparing to export {0} columns and {1} rows to CSV", names.Length, core.RowCount);
 
             for (int r = 0; r < core.RowCount; r++)
             {
@@ -764,7 +744,7 @@ namespace Grimoire.Tabs.Styles
             {
                 string msg = "generateCSV failed to generate a csv string!";
 
-                lManager.Enter(Logs.Sender.RDB, Logs.Level.ERROR, msg);
+                lManager.Enter(Sender.RDB, Level.ERROR, msg);
                 MessageBox.Show(msg, "CSV Generate Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return null;
