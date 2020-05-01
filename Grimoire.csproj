@@ -138,6 +138,7 @@
     <Compile Include="Configuration\Config.cs" />
     <Compile Include="Configuration\ConfigDefaults.cs" />
     <Compile Include="Configuration\ConfigMan.cs" />
+    <Compile Include="Configuration\ConfigWriter.cs" />
     <Compile Include="Configuration\Enums\ConfigType.cs" />
     <Compile Include="DB\DbCmdType.cs" />
     <Compile Include="DB\DbConType.cs" />
