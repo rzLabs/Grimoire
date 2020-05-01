@@ -23,8 +23,6 @@ namespace Grimoire.Utilities
         {   
             get { return locales.Find(l => l.Name == key); }
         }
-        //string key = OPT.GetString("locale");
-        //string localeDir = OPT.GetString("locale.directory") ?? string.Format(@"{0}\Localization", Directory.GetCurrentDirectory());
 
         string key;
         string localeDir;
