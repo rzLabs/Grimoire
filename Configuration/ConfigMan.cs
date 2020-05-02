@@ -200,10 +200,49 @@ namespace Grimoire.Configuration
                 throw new JsonException();
         }
 
-        //TODO: Write Config.json
-        void write()
+        string[] parents
         {
+            get
+            {
+                string[] p = new string[Options.Count];
 
+                for (int i = 0; i < p.Length; i++)
+                    p[i] = Options[i].Parent;
+
+                return p;
+            }
+            
+            
+        }
+
+        Option[] getChildren(string parent) => Options.FindAll(o => o.Parent == parent).ToArray();
+
+        public void Save()
+        {
+            JObject rss = new JObject();
+
+            foreach (string parent in parents)
+            {
+                JProperty jParent = null;
+
+                JObject jChildren = new JObject();
+
+                foreach (Option child in Options.FindAll(c => c.Parent == parent))
+                    jChildren.Add(new JProperty(child.Name, child.Value));
+
+                jParent = new JProperty(parent, jChildren);
+
+                if (!rss.ContainsKey(parent))
+                    rss.Add(jParent);
+            }
+
+            if (rss.Count > 0)
+                using (StreamWriter sw = new StreamWriter("Config.json", false, Encoding.Default))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Formatting = Formatting.Indented;
+                    serializer.Serialize(sw, rss);
+                }
         }
     }
 }

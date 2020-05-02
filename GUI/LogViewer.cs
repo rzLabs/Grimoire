@@ -15,11 +15,13 @@ using System.Threading;
 using System.Collections.ObjectModel;
 using BrightIdeasSoftware;
 using Grimoire.Logs.Enums;
+using Grimoire.Configuration;
 
 namespace Grimoire.GUI
 {
     public partial class LogViewer : Form
     {
+        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
         int interval = 0;
 
         Logs.Manager lManager;
@@ -49,8 +51,8 @@ namespace Grimoire.GUI
 
             this.lManager = lManager;
 
-            interval = OPT.GetInt("log.display.refresh");
-            
+            interval = configMan["RefreshInterval"];
+
             configureViewer();
 
             generate_type_list();

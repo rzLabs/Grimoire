@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using DataCore;
 using Grimoire.Utilities;
 using Grimoire.Logs.Enums;
+using Grimoire.Configuration;
 
 namespace Grimoire.GUI
 {
@@ -20,6 +21,7 @@ namespace Grimoire.GUI
     {
         Tabs.Manager tManager = Tabs.Manager.Instance;
         Logs.Manager lManager = Logs.Manager.Instance;
+        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
         Core core = null;
         XmlManager xMan = XmlManager.Instance;
         
@@ -124,7 +126,8 @@ namespace Grimoire.GUI
         private async void rebuildBtn_Click(object sender, EventArgs e)
         {
             string warningMsg = string.Format("You are about to rebuild your client data storage files!\n\n Backups are currently: {0}\n\nAre you sure you want to continue?",
-                (Utilities.OPT.GetBool("data.backup") ? "ON" : "OFF"));
+                configMan["Backup", "Data"] ? "ON" : "OFF");
+                //(Utilities.OPT.GetBool("data.backup") ? "ON" : "OFF"));
             if (MessageBox.Show(warningMsg, "Input Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 

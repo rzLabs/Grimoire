@@ -1,10 +1,12 @@
 ﻿using System.Windows.Forms;
 using Grimoire.Utilities;
+using Grimoire.Configuration;
 
 namespace Grimoire.GUI
 {
     public partial class Settings : Form
     {
+        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
         object properties;
 
         public Settings()
@@ -13,5 +15,8 @@ namespace Grimoire.GUI
             properties = new Structures.Settings();
             propertyGrid.SelectedObject = properties;
         }
+
+        private void Settings_FormClosing(object sender, FormClosingEventArgs e) =>
+            configMan.Save();
     }
 }

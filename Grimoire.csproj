@@ -266,7 +266,6 @@
     <Compile Include="Utilities\Enums.cs" />
     <Compile Include="Utilities\FileIO.cs" />
     <Compile Include="Utilities\LuaException.cs" />
-    <Compile Include="Utilities\OPT.cs" />
     <Compile Include="Utilities\Paths.cs" />
     <Compile Include="Utilities\SPR.cs" />
     <Compile Include="Utilities\StringExt.cs" />
@@ -275,6 +274,9 @@
     <EmbeddedResource Include="GUI\BitFlag.resx">
       <DependentUpon>BitFlag.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="Config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="GUI\DataRebuild.resx">
       <DependentUpon>DataRebuild.cs</DependentUpon>
     </None>
@@ -341,9 +343,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Grimoire.opt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

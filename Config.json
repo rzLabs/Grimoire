@@ -1,0 +1,61 @@
+{
+  "Grim": {
+    "BuildDirectory": "/Output"
+  },
+  "Tab": {
+    "Styles": [
+      "RDB",
+      "DATA",
+      "HASHER"
+    ],
+    "DefaultStyle": "RDB"
+  },
+  "DB": {
+    "Engine": 0,
+    "IP": "127.0.0.1",
+    "Port": 1433,
+    "Trusted": true,
+    "WorldName": "Arcadia",
+    "WorldUser": "",
+    "WorldPass": "",
+    "Backup": false,
+    "DropOnExport": false,
+    "Timeout": 0
+  },
+  "RDB": {
+    "Struct_AutoLoad": true,
+    "Directory": "/Structures",
+    "LoadDirectory": "",
+    "AppendASCII": true,
+    "SaveHashed": true,
+    "CSV_Directory": "/CSV",
+    "SQL_Directory": "/SQL"
+  },
+  "Data": {
+    "LoadDirectory": "C:\\Webzen\\Rappelz US",
+    "Encoding": 1252,
+    "Backup": true,
+    "ClearOnCreate": false
+  },
+  "Hash": {
+    "AutoClear": true,
+    "AutoConvert": true,
+    "Type": 0
+  },
+  "Log": {
+    "Directory": "/Logs",
+    "DisplayLevel": 0,
+    "WriteLevel": 0,
+	"RefreshInterval": 2,
+    "SaveOnExit": true
+  },
+  "Flag": {
+    "Directory": "/Flags",
+    "Default": "use_flags_81",
+    "ClearOnChange": false
+  },
+  "Localization": {
+    "Directory": "/Localization",
+    "Locale": "en-US"
+  }
+}
