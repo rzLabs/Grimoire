@@ -104,7 +104,9 @@ namespace Grimoire.Tabs.Styles
             }
 
             foreach (string path in paths)
+            {
                 add_file_to_grid(path);
+            }
 
             if (autoConvert_chk.Checked)
                 convertAllEntries();
@@ -121,7 +123,7 @@ namespace Grimoire.Tabs.Styles
             autoClear_chk.Checked = configMan["AutoClear", "Hash"];
             autoConvert_chk.Checked = configMan["AutoConvert", "Hash"];
 
-            switch (configMan["hash.type"])
+            switch (configMan["Type", "Hash"])
             {
                 case 1:
                     optAppend_ascii_rBtn.Checked = true;

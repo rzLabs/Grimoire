@@ -21,13 +21,13 @@ namespace Grimoire.GUI
 {
     public partial class LogViewer : Form
     {
-        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
         int interval = 0;
 
         Logs.Manager lManager;
 
         List<Log> filteredEntries = new List<Log>();
 
+        ConfigMan configMan;
         Level displayLevel
         {
             get
@@ -51,8 +51,10 @@ namespace Grimoire.GUI
 
             this.lManager = lManager;
 
-            interval = configMan["RefreshInterval"];
+            configMan = GUI.Main.Instance.ConfigMan;
 
+            interval = configMan["RefreshInterval", "Log"];
+            
             configureViewer();
 
             generate_type_list();
