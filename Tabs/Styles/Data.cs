@@ -476,7 +476,7 @@ namespace Grimoire.Tabs.Styles
 
         public void Hook_Core_Events() { hook_core_events(); }
 
-        public void Load(string path) { load(path); }
+        new public void Load(string path) { load(path); }
 
         public void Insert(string[] filePaths) { insert_files(filePaths); }
 

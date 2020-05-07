@@ -1,23 +1,18 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 using System.Text;
-using System.Data;
 using Grimoire.Utilities;
 using Grimoire.DB;
 using Daedalus;
 using Daedalus.Structures;
 using Daedalus.Enums;
-using System.Linq;
 using Grimoire.Logs.Enums;
 using Grimoire.Configuration;
 using Grimoire.DB.Enums;
-using System.Data.Common;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -39,7 +34,7 @@ namespace Grimoire.Tabs.Styles
         XmlManager xMan = XmlManager.Instance;
 
         bool structLoaded { get { return (ts_struct_list.SelectedIndex != -1); } }
-        readonly string buildDir = string.Format(@"{0}\Output\", Directory.GetCurrentDirectory());
+        readonly string buildDir = string.Empty;
 
         public Core Core
         {
@@ -81,6 +76,7 @@ namespace Grimoire.Tabs.Styles
             InitializeComponent();
             this.key = key;
             gridUtil = new Utilities.Grid();
+            buildDir = configMan.GetDirectory("BuildDirectory", "Grim");
             ts_save_enc.Checked = configMan["SaveHashed", "RDB"];
             ts_save_w_ascii.Checked = configMan["AppendASCII"];
             structsDir = configMan.GetDirectory("Directory", "RDB");
@@ -92,11 +88,22 @@ namespace Grimoire.Tabs.Styles
         #region Private Events
 
         private void rdbTab_Load(object sender, EventArgs e)
-        {
+        {           
             loadEncodings();
             loadStructs();
+            setChecks();
             core.ProgressMaxChanged += (o, x) => { ProgressMax = x.Maximum; };
             core.ProgressValueChanged += (o, x) => { ProgressVal = x.Value; };
+            core.MessageOccured += (o, x) =>
+            {
+                lManager.Enter(Sender.RDB, Level.WARNING, x.Message);
+            };
+        }
+
+        private void setChecks()
+        {
+            ts_save_w_ascii.Checked = configMan["AppendASCII", "RDB"];
+            ts_save_enc.Checked = configMan["SaveHashed", "RDB"];
         }
 
         private void ts_enc_list_Click(object sender, EventArgs e)
@@ -118,8 +125,7 @@ namespace Grimoire.Tabs.Styles
                     return;
                 }
 
-                core.LuaPath = path;
-                core.Initialize();
+                core.Initialize(path);
             }
             catch (MoonSharp.Interpreter.SyntaxErrorException sEx)
             {
@@ -234,20 +240,9 @@ namespace Grimoire.Tabs.Styles
             MessageBox.Show("Database export successful!", "Export Successful!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
-        private void ts_save_enc_Click(object sender, EventArgs e)
+        private void ts_save_file_sql_Click(object sender, EventArgs e)
         {
-            bool newVal = configMan["SaveHashed", "RDB"] ? false : true;
-            configMan["SaveHashed", "RDB"] = newVal;
-            ts_save_enc.Checked = newVal;
-            lManager.Enter(Sender.RDB, Level.NOTICE, "Save Encoded: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
-        }
 
-        private void ts_save_w_ascii_Click(object sender, EventArgs e)
-        {
-            bool newVal = configMan["AppendASCII", "RDB"] ? false : true;
-            configMan["AppendASCII", "RDB"] = newVal;
-            ts_save_w_ascii.Checked = newVal;
-            lManager.Enter(Sender.RDB, Level.NOTICE, "Save With ASCII: {0} for tab: {1}", (newVal) ? "Enabled" : "Disabled", tManager.Text);
         }
 
         private void grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -363,7 +358,21 @@ namespace Grimoire.Tabs.Styles
                 grid.SelectedCells[0].Value = bitflag;
         }
 
-        private void localize() => xMan.Localize(this, Localization.Enums.SenderType.Tab);
+        private async void ts_save_enc_Click(object sender, EventArgs e)
+        {
+            bool flip = (ts_save_enc.Checked) ? false : true;
+            ts_save_enc.Checked = flip;
+            configMan["SaveHashed"] = flip;
+            await configMan.Save();
+        }
+
+        private async void ts_save_w_ascii_Click(object sender, EventArgs e)
+        {
+            bool flip = (ts_save_w_ascii.Checked) ? false : true;
+            ts_save_w_ascii.Checked = flip;
+            configMan["AppendASCII"] = flip;
+            await configMan.Save();
+        }
 
         #endregion
 
@@ -589,6 +598,8 @@ namespace Grimoire.Tabs.Styles
 
         #region Methods (private)
 
+        void localize() => xMan.Localize(this, Localization.Enums.SenderType.Tab);
+
         void loadEncodings()
         {
             ts_enc_list.Items.AddRange(Encodings.Names);
@@ -616,7 +627,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private void load_file(string filePath)
+        void load_file(string filePath)
         {
             core.RdbPath = filePath;
             string fileName = Path.GetFileName(filePath);
@@ -624,7 +635,7 @@ namespace Grimoire.Tabs.Styles
             load_file(fileName, buffer);
         }
 
-        private async void load_file(string fileName, byte[] fileBytes)
+        async void load_file(string fileName, byte[] fileBytes)
         {
             try
             {
@@ -648,7 +659,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private async void load_data_file(string filePath)
+        async void load_data_file(string filePath)
         {
             dCore = new DataCore.Core(Encodings.GetByName(ts_enc_list.Text));
 
@@ -681,7 +692,7 @@ namespace Grimoire.Tabs.Styles
 
                     lManager.Enter(Sender.RDB, Level.DEBUG, "User selected rdb: {0}", fileName);
 
-                    if (fileBytes.Length > 0)
+                    if (fileBytes.Length > 0) //TODO: set Daedalus.Core.RdbPath
                         load_file(fileName, fileBytes);
                 }
                 else
@@ -692,7 +703,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private void initializeGrid()
+        void initializeGrid()
         {
             grid.VirtualMode = true;
             grid.CellValueNeeded += gridUtil.Grid_CellValueNeeded;
@@ -700,7 +711,7 @@ namespace Grimoire.Tabs.Styles
             grid.RowCount = tManager.RDBCore.RowCount + 1; //core.Data.Count + 1;
         }
 
-        private string generateCSV()
+        string generateCSV()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -754,10 +765,5 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
-
-        private void ts_save_file_sql_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

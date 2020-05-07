@@ -59,7 +59,7 @@ namespace Grimoire.Logs
                 Sender = sender,
                 Level = level,
                 DateTime = DateTime.UtcNow,
-                Message = string.Format(message, args),
+                Message = (args.Length > 0) ? string.Format(message, args) : message,
                 StackTrace = null
             });
 

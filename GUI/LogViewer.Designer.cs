@@ -42,6 +42,7 @@
             this.logView.CellEditUseWholeCell = false;
             this.logView.Cursor = System.Windows.Forms.Cursors.Default;
             this.logView.DataSource = null;
+            this.logView.HideSelection = false;
             this.logView.Location = new System.Drawing.Point(0, 34);
             this.logView.Name = "logView";
             this.logView.Size = new System.Drawing.Size(800, 387);
@@ -79,6 +80,7 @@
             this.Name = "LogViewer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Log Viewer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogViewer_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.logView)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

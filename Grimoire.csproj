@@ -208,7 +208,6 @@
     <Compile Include="Localization\Structures\Locale.cs" />
     <Compile Include="Localization\Structures\Text.cs" />
     <Compile Include="Structures\Log.cs" />
-    <Compile Include="Structures\RdbStructure.cs" />
     <Compile Include="Structures\Settings.cs" />
     <Compile Include="Tabs\Enums\ItemBase.cs" />
     <Compile Include="Tabs\Enums\SortDirection.cs" />

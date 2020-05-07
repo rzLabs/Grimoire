@@ -112,9 +112,9 @@ namespace Grimoire.Structures
         public bool ClearOnChange { get => configMan["ClearOnChange", "Flag"]; set => configMan["ClearOnChange", "Flag"] = value; }
 
         [Description("Determines the displayed language of Grimoire"), DisplayName("Locale"), Category("Language")]
-        public string Locale { get => configMan["Locale", "Flag"]; set => configMan["Locale", "Flag"] = value; }
+        public string Locale { get => configMan["Locale", "Localization"]; set => configMan["Locale", "Localization"] = value; }
 
-        [Description("Directory where files relevant to the localization engine are located"), DisplayName("Localization Directory"), Category("Locale")]
-        public string LocaleDirectory { get => configMan["Directory", "Flag"]; set => configMan["Directory", "Flag"] = value; }
+        [Description("Directory where files relevant to the localization engine are located"), DisplayName("Localization Directory"), Category("Language")]
+        public string LocaleDirectory { get => configMan["Directory", "Localization"]; set => configMan["Directory", "Localization"] = value; }
     }
 }

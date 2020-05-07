@@ -266,7 +266,7 @@ namespace Grimoire.DB
                                         break;
 
                                     case CellType.TYPE_DATETIME:
-
+                                        row[i] = (DateTime)iRow[sqlIdx];
                                         break;
 
                                     case CellType.TYPE_BYTE:
@@ -292,9 +292,9 @@ namespace Grimoire.DB
                                     case CellType.TYPE_SINGLE:
                                         {
                                             decimal v1 = Convert.ToDecimal(iRow[sqlIdx]);
-                                            row[i] = decimal.ToSingle(v1);
-                                            break;
+                                            row[i] = decimal.ToSingle(v1);                                          
                                         }
+                                        break;
 
                                     case CellType.TYPE_DOUBLE:
                                         row[i] = Convert.ToDouble(iRow[sqlIdx]);
@@ -332,10 +332,12 @@ namespace Grimoire.DB
                                         break;
 
                                     case CellType.TYPE_INT:
+                                    case CellType.TYPE_INT_32:
                                         row[i] = row.KeyIsDuplicate(field.Name) ? row.GetShownValue(field.Name) : field.Default;
                                         break;
 
                                     case CellType.TYPE_SHORT:
+                                    case CellType.TYPE_INT_16:
                                         row[i] = Convert.ToInt16(field.Default);
                                         break;
 

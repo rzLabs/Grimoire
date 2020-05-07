@@ -16,7 +16,7 @@ namespace Grimoire.GUI
             propertyGrid.SelectedObject = properties;
         }
 
-        private void Settings_FormClosing(object sender, FormClosingEventArgs e) =>
-            configMan.Save();
+        private async void Settings_FormClosing(object sender, FormClosingEventArgs e) =>
+            await configMan.Save();
     }
 }

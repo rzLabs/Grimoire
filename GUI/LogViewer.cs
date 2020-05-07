@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Linq;
-using Grimoire.Logs;
 using Grimoire.Structures;
-using Grimoire.Utilities;
-using System.Threading;
-using System.Collections.ObjectModel;
 using BrightIdeasSoftware;
 using Grimoire.Logs.Enums;
 using Grimoire.Configuration;
@@ -53,7 +44,7 @@ namespace Grimoire.GUI
 
             configMan = GUI.Main.Instance.ConfigMan;
 
-            interval = configMan["RefreshInterval", "Log"];
+            interval = (int)configMan["RefreshInterval", "Log"];
             
             configureViewer();
 
@@ -94,20 +85,29 @@ namespace Grimoire.GUI
             switch (level)
             {
                 case Level.ALL:
-                    logView.SetObjects(lManager.Entries);
+                    logView.SetObjects(lManager.Entries.OrderBy(l => l.DateTime));
                     break;
 
                 case Level.DEBUG:
-                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.DEBUG));
+                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.DEBUG).OrderBy(l=>l.DateTime));
                     break;
 
                 case Level.NOTICE:
-                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.NOTICE));
+                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.NOTICE).OrderBy(l => l.DateTime));
                     break;
 
                 case Level.ERROR:
-                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.ERROR));
+                    logView.SetObjects(lManager.Entries.Where(l => l.Level == Level.ERROR).OrderBy(l => l.DateTime));
                     break;
+            }
+        }
+
+        private void LogViewer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                Hide();
             }
         }
     }

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Grimoire.Configuration.Enums;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace Grimoire.Configuration
 {
@@ -145,7 +146,10 @@ namespace Grimoire.Configuration
             else
                 fileDir = valStr;
 
-            filePath = $"{fileDir}{valStr as string}";
+            if (fileDir == valStr)
+                filePath = fileDir;
+            else
+                filePath = $"{fileDir}{valStr as string}";
 
             return filePath;
         }
@@ -217,32 +221,35 @@ namespace Grimoire.Configuration
 
         Option[] getChildren(string parent) => Options.FindAll(o => o.Parent == parent).ToArray();
 
-        public void Save()
+        public async Task Save()
         {
-            JObject rss = new JObject();
-
-            foreach (string parent in parents)
+            await Task.Run(() =>
             {
-                JProperty jParent = null;
+                JObject rss = new JObject();
 
-                JObject jChildren = new JObject();
-
-                foreach (Option child in Options.FindAll(c => c.Parent == parent))
-                    jChildren.Add(new JProperty(child.Name, child.Value));
-
-                jParent = new JProperty(parent, jChildren);
-
-                if (!rss.ContainsKey(parent))
-                    rss.Add(jParent);
-            }
-
-            if (rss.Count > 0)
-                using (StreamWriter sw = new StreamWriter("Config.json", false, Encoding.Default))
+                foreach (string parent in parents)
                 {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Formatting = Formatting.Indented;
-                    serializer.Serialize(sw, rss);
+                    JProperty jParent = null;
+
+                    JObject jChildren = new JObject();
+
+                    foreach (Option child in Options.FindAll(c => c.Parent == parent))
+                        jChildren.Add(new JProperty(child.Name, child.Value));
+
+                    jParent = new JProperty(parent, jChildren);
+
+                    if (!rss.ContainsKey(parent))
+                        rss.Add(jParent);
                 }
+
+                if (rss.Count > 0)
+                    using (StreamWriter sw = new StreamWriter("Config.json", false, Encoding.Default))
+                    {
+                        JsonSerializer serializer = new JsonSerializer();
+                        serializer.Formatting = Formatting.Indented;
+                        serializer.Serialize(sw, rss);
+                    }
+            });
         }
     }
 }

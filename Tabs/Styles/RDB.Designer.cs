@@ -151,27 +151,27 @@
             this.ts_save_file_csv,
             this.ts_save_file_sql});
             this.ts_save_file.Name = "ts_save_file";
-            this.ts_save_file.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_file.Size = new System.Drawing.Size(95, 22);
             this.ts_save_file.Text = "File";
             // 
             // ts_save_file_rdb
             // 
             this.ts_save_file_rdb.Name = "ts_save_file_rdb";
-            this.ts_save_file_rdb.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_file_rdb.Size = new System.Drawing.Size(96, 22);
             this.ts_save_file_rdb.Text = "RDB";
             this.ts_save_file_rdb.Click += new System.EventHandler(this.TS_Save_File_Click);
             // 
             // ts_save_file_csv
             // 
             this.ts_save_file_csv.Name = "ts_save_file_csv";
-            this.ts_save_file_csv.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_file_csv.Size = new System.Drawing.Size(96, 22);
             this.ts_save_file_csv.Text = "CSV";
             this.ts_save_file_csv.Click += new System.EventHandler(this.ts_save_file_csv_Click);
             // 
             // ts_save_file_sql
             // 
             this.ts_save_file_sql.Name = "ts_save_file_sql";
-            this.ts_save_file_sql.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_file_sql.Size = new System.Drawing.Size(96, 22);
             this.ts_save_file_sql.Text = "SQL";
             this.ts_save_file_sql.Click += new System.EventHandler(this.ts_save_file_sql_Click);
             // 
@@ -179,7 +179,7 @@
             // 
             this.ts_save_sql.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_save_sql.Name = "ts_save_sql";
-            this.ts_save_sql.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_sql.Size = new System.Drawing.Size(95, 22);
             this.ts_save_sql.Text = "SQL";
             this.ts_save_sql.Click += new System.EventHandler(this.ts_save_sql_Click);
             // 
@@ -239,8 +239,6 @@
             // 
             // ts_save_enc
             // 
-            this.ts_save_enc.Checked = true;
-            this.ts_save_enc.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ts_save_enc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_save_enc.Image = ((System.Drawing.Image)(resources.GetObject("ts_save_enc.Image")));
             this.ts_save_enc.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -251,8 +249,6 @@
             // 
             // ts_save_w_ascii
             // 
-            this.ts_save_w_ascii.Checked = true;
-            this.ts_save_w_ascii.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ts_save_w_ascii.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ts_save_w_ascii.Image = ((System.Drawing.Image)(resources.GetObject("ts_save_w_ascii.Image")));
             this.ts_save_w_ascii.ImageTransparentColor = System.Drawing.Color.Magenta;
