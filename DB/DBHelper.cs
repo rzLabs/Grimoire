@@ -76,7 +76,7 @@ namespace Grimoire.DB
         /// </summary>
         /// <param name="configManager"></param>
         /// <param name="type"></param>
-        public DBHelper(ConfigMan configManager, DbConType type)
+        public DBHelper(ConfigMan configManager, DbConType type = DbConType.MsSQL)
         {
             configMan = configManager;
 
@@ -219,140 +219,170 @@ namespace Grimoire.DB
 
                     int rowIdx = 0;
 
-                    foreach (IDataRecord iRow in dbRdr)
-                    {
-                        Row row = new Row((Cell[])fieldList.Clone());
-
-                        int sqlIdx = 0;
-
-                        for (int i = 0; i < fieldList.Length; i++)
-                        {
-                            Cell field = fieldList[i];
-
-                            if (field.Visible)
+                    if (dbRdr != null)
+                        if (dbRdr.HasRows)
+                            foreach (IDataRecord iRow in dbRdr)
                             {
-                                switch (field.Type)
+                                Row row = new Row((Cell[])fieldList.Clone());
+
+                                int sqlIdx = 0;
+
+                                for (int i = 0; i < fieldList.Length; i++)
                                 {
-                                    case CellType.TYPE_SHORT:
-                                        goto case CellType.TYPE_INT_16;
+                                    Cell field = fieldList[i];
 
-                                    case CellType.TYPE_INT_16:
-                                        row[i] = iRow[sqlIdx];
-                                        break;
-
-                                    case CellType.TYPE_USHORT:
-                                        goto case CellType.TYPE_UINT_16;
-
-                                    case CellType.TYPE_UINT_16:
-                                        row[i] = (ushort)iRow[sqlIdx];
-                                        break;
-
-                                    case CellType.TYPE_INT:
-                                        goto case CellType.TYPE_INT_32;
-
-                                    case CellType.TYPE_INT_32:
-                                        row[i] = Convert.ToInt32(iRow[sqlIdx]);
-                                        break;
-
-                                    case CellType.TYPE_UINT:
-                                        goto case CellType.TYPE_UINT_32;
-
-                                    case CellType.TYPE_UINT_32:
-                                        row[i] = (uint)iRow[sqlIdx];
-                                        break;
-
-                                    case CellType.TYPE_LONG:
-                                        row[i] = (long)iRow[sqlIdx];
-                                        break;
-
-                                    case CellType.TYPE_DATETIME:
-                                        row[i] = (DateTime)iRow[sqlIdx];
-                                        break;
-
-                                    case CellType.TYPE_BYTE:
+                                    if (field.Visible)
+                                    {
+                                        switch (field.Type)
                                         {
-                                            object fieldVal = Convert.ToByte(dbRdr[sqlIdx]);
-                                            byte val = new byte();
-                                            row[sqlIdx] = (Byte.TryParse(fieldVal.ToString(), out val)) ? val : 0;
+                                            case CellType.TYPE_SHORT:
+                                                goto case CellType.TYPE_INT_16;
+
+                                            case CellType.TYPE_INT_16:
+                                                row[i] = Convert.ToInt16(iRow[sqlIdx]);
+                                                break;
+
+                                            case CellType.TYPE_USHORT:
+                                                goto case CellType.TYPE_UINT_16;
+
+                                            case CellType.TYPE_UINT_16:
+                                                row[i] = (ushort)iRow[sqlIdx];
+                                                break;
+
+                                            case CellType.TYPE_INT:
+                                                goto case CellType.TYPE_INT_32;
+
+                                            case CellType.TYPE_INT_32:
+                                                {
+                                                    if (iRow.IsDBNull(sqlIdx))
+                                                        row[i] = default(int);
+                                                    else
+                                                        row[i] = Convert.ToInt32(iRow[sqlIdx]);
+                                                }
+                                                break;
+
+                                            case CellType.TYPE_UINT:
+                                                goto case CellType.TYPE_UINT_32;
+
+                                            case CellType.TYPE_UINT_32:
+                                                row[i] = (uint)iRow[sqlIdx];
+                                                break;
+
+                                            case CellType.TYPE_LONG:
+                                                row[i] = (long)iRow[sqlIdx];
+                                                break;
+
+                                            case CellType.TYPE_DATETIME:
+                                                row[i] = (DateTime)iRow[sqlIdx];
+                                                break;
+
+                                            case CellType.TYPE_BYTE:
+                                                {
+                                                    var fieldVal = 0;
+
+                                                    if (iRow.IsDBNull(sqlIdx))
+                                                        fieldVal = default(byte);
+                                                    else
+                                                    {
+                                                        int value = 0;
+                                                        string valStr = iRow[sqlIdx].ToString();
+
+                                                        if (string.IsNullOrEmpty(valStr) || valStr == " " || valStr == "False")
+                                                            valStr = "0";
+                                                        else if (valStr == "True")
+                                                            valStr = "1";
+
+                                                        if (!int.TryParse(valStr, out value))
+                                                            throw new InvalidCastException($"Cannot cast iRow[{sqlIdx}] to int!\nCurrent valStr: {valStr}");
+
+                                                        fieldVal = Convert.ToByte(value);
+                                                    }
+
+                                                    row[sqlIdx] = fieldVal;
+                                                }
+
+                                                break;
+
+                                            case CellType.TYPE_BIT_FROM_VECTOR:
+                                                row[i] = Convert.ToInt32(iRow[sqlIdx]);
+                                                break;
+
+                                            case CellType.TYPE_DECIMAL:
+                                                row[i] = Convert.ToDecimal(iRow[sqlIdx]);
+                                                break;
+
+                                            case CellType.TYPE_FLOAT:
+                                            case CellType.TYPE_FLOAT_32:
+                                                goto case CellType.TYPE_SINGLE;
+
+                                            case CellType.TYPE_SINGLE:
+                                                {
+                                                    decimal v1 = Convert.ToDecimal(iRow[sqlIdx]);
+                                                    row[i] = decimal.ToSingle(v1);
+                                                }
+                                                break;
+
+                                            case CellType.TYPE_DOUBLE:
+                                                row[i] = Convert.ToDouble(iRow[sqlIdx]);
+                                                break;
+
+                                            case CellType.TYPE_STRING:
+                                                row[i] = iRow[sqlIdx] as string;
+                                                break;
+
+                                            case CellType.TYPE_STRING_BY_LEN:
+                                                {
+                                                    string szVal = iRow[sqlIdx] as string;
+                                                    row[field.Dependency] = szVal.Length + 1;
+                                                    row[i] = szVal;
+                                                }
+                                                break;
+
+                                            case CellType.TYPE_STRING_BY_REF:
+                                                row[i] = iRow[sqlIdx] as string;
+                                                break;
                                         }
-                                        break;
 
-                                    case CellType.TYPE_BIT_FROM_VECTOR:
-                                        row[i] = Convert.ToInt32(iRow[sqlIdx]);
-                                        break;
-
-                                    case CellType.TYPE_DECIMAL:
-                                        row[i] = Convert.ToDecimal(iRow[sqlIdx]);
-                                        break;
-
-                                    case CellType.TYPE_FLOAT:
-                                    case CellType.TYPE_FLOAT_32:
-                                        goto case CellType.TYPE_SINGLE;
-
-                                    case CellType.TYPE_SINGLE:
+                                        sqlIdx++;
+                                    }
+                                    else
+                                    {
+                                        switch (field.Type)
                                         {
-                                            decimal v1 = Convert.ToDecimal(iRow[sqlIdx]);
-                                            row[i] = decimal.ToSingle(v1);                                          
+                                            case CellType.TYPE_BIT_VECTOR:
+                                                row[i] = new BitVector32(0);
+                                                break;
+
+                                            case CellType.TYPE_BYTE:
+                                                row[i] = Convert.ToByte(field.Default);
+                                                break;
+
+                                            case CellType.TYPE_INT:
+                                            case CellType.TYPE_INT_32:
+                                                row[i] = row.KeyIsDuplicate(field.Name) ? row.GetShownValue(field.Name) : field.Default;
+                                                break;
+
+                                            case CellType.TYPE_SHORT:
+                                            case CellType.TYPE_INT_16:
+                                                row[i] = Convert.ToInt16(field.Default);
+                                                break;
+
+                                            case CellType.TYPE_STRING:
+                                                row[i] = field.Default.ToString();
+                                                break;
                                         }
-                                        break;
-
-                                    case CellType.TYPE_DOUBLE:
-                                        row[i] = Convert.ToDouble(iRow[sqlIdx]);
-                                        break;
-
-                                    case CellType.TYPE_STRING:
-                                        row[i] = iRow[sqlIdx] as string;
-                                        break;
-
-                                    case CellType.TYPE_STRING_BY_LEN:
-                                        {
-                                            string szVal = iRow[sqlIdx] as string;
-                                            row[field.Dependency] = szVal.Length + 1;
-                                            row[i] = szVal;
-                                        }
-                                        break;
-
-                                    case CellType.TYPE_STRING_BY_REF:
-                                        row[i] = iRow[sqlIdx] as string;
-                                        break;
+                                    }
                                 }
 
-                                sqlIdx++;
+                                data[rowIdx++] = row;
+
+                                if ((rowIdx * 100 / rowCnt) != ((rowIdx - 1) * 100 / rowCnt))
+                                    TabMan.RDBTab.ProgressVal = rowIdx;
                             }
-                            else
-                            {
-                                switch (field.Type)
-                                {
-                                    case CellType.TYPE_BIT_VECTOR:
-                                        row[i] = new BitVector32(0);
-                                        break;
-
-                                    case CellType.TYPE_BYTE:
-                                        row[i] = Convert.ToByte(field.Default);
-                                        break;
-
-                                    case CellType.TYPE_INT:
-                                    case CellType.TYPE_INT_32:
-                                        row[i] = row.KeyIsDuplicate(field.Name) ? row.GetShownValue(field.Name) : field.Default;
-                                        break;
-
-                                    case CellType.TYPE_SHORT:
-                                    case CellType.TYPE_INT_16:
-                                        row[i] = Convert.ToInt16(field.Default);
-                                        break;
-
-                                    case CellType.TYPE_STRING:
-                                        row[i] = field.Default.ToString();
-                                        break;
-                                }
-                            }
-                        }
-
-                        data[rowIdx++] = row;
-
-                        if ((rowIdx * 100 / rowCnt) != ((rowIdx - 1) * 100 / rowCnt))
-                            TabMan.RDBTab.ProgressVal = rowIdx;
-                    }
+                        else
+                            throw new Exception("dbRdr has no rows!");
+                    else
+                        throw new Exception("dbRdr is null!");
                 }
                 catch (Exception ex)
                 {

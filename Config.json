@@ -46,7 +46,7 @@
     "Directory": "/Logs",
     "DisplayLevel": 0,
     "WriteLevel": 0,
-	"RefreshInterval": 2,
+	  "RefreshInterval": 2,
     "SaveOnExit": true
   },
   "Flag": {
