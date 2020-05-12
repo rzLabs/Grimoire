@@ -182,28 +182,49 @@ namespace Grimoire.Tabs.Styles
         private void add_file_to_grid(string path)
         {
             string originalName = Path.GetFileName(path);
+            string outName = string.Empty;
             bool IsEncoded = StringCipher.IsEncoded(originalName);
-            string outNameEncoded = HandleAscii(originalName);
-            string outName = IsEncoded ? outNameEncoded : StringCipher.Encode(outNameEncoded);
 
-            fileGrid.Rows.Add(originalName, outName, Path.GetDirectoryName(path), "Pending");
- 
-        }
+            switch (IsEncoded)
+            {
+                case true:
+                    string decodedName = StringCipher.Decode(originalName);
 
-        private string HandleAscii(string filename)
-        {
-            string convertedName = StringCipher.IsEncoded(filename) ? StringCipher.Decode(filename) : filename;
-            string fileWithoutExt = Path.GetFileNameWithoutExtension(convertedName);
-            string ext = Path.GetExtension(convertedName);
-            if (optAppend_ascii_rBtn.Checked)
-                if (!convertedName.Contains("(ascii)"))
-                    return $"{fileWithoutExt}(ascii){ext}";
+                    if (optRemove_ascii_rBtn.Checked)
+                        if (decodedName.Contains("(ascii)"))
+                            outName = decodedName.Replace("(ascii)", string.Empty);
+                    break;
 
-            if (optRemove_ascii_rBtn.Checked)
-                if (convertedName.Contains("(ascii)"))
-                    return fileWithoutExt.Replace("(ascii)", string.Empty) + ext;
+                case false:
+                    if (optAppend_ascii_rBtn.Checked)
+                        if (!originalName.Contains("(ascii)"))
+                            outName = originalName.Insert(originalName.Length - 4, "(ascii)");
 
-            return convertedName;
+                    if (optRemove_ascii_rBtn.Checked)
+                        outName = originalName.Replace("(ascii)", string.Empty);
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(outName))
+                outName = originalName;
+
+
+            switch (IsEncoded)
+            {
+                case true:
+                    {
+                        originalName = StringCipher.Decode(outName);
+                        fileGrid.Rows.Add(outName, originalName, Path.GetDirectoryName(path), "Pending");
+                    }
+                    break;
+
+                case false:
+                    {
+                        string convertedName = StringCipher.IsEncoded(outName) ? StringCipher.Decode(outName) : StringCipher.Encode(outName);
+                        fileGrid.Rows.Add(outName, convertedName, Path.GetDirectoryName(path), "Pending");
+                    }
+                    break;
+            }           
         }
 
         private void localize()

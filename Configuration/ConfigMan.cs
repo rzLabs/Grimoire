@@ -157,7 +157,7 @@ namespace Grimoire.Configuration
             if (File.Exists(confPath))
                 confText = File.ReadAllText(confPath);
             else
-                confText = write();
+                throw new FileNotFoundException("File not found");
 
             JObject grandParent = JObject.Parse(confText);
 
@@ -201,83 +201,9 @@ namespace Grimoire.Configuration
         }
 
         //TODO: Write Config.json
-        private string write()
+        void write()
         {
-            ConfigWriter config = new ConfigWriter
-            {
-                Grim = new Grim
-                {
-                    BuildDirectory = "/Output"
-                },
-                Tab = new Tab
-                {
-                    Styles = new string[] { "RDB", "DATA", "HASHER" },
-                    DefaultStyle = "RDB"
-                },
-                DB = new DB
-                {
-                    Engine = 0,
-                    IP = "127.0.0.1",
-                    Port = 1433,
-                    Trusted = true,
-                    WorldName = "Arcadia",
-                    WorldUser = "",
-                    WorldPass = "",
-                    Backup = false,
-                    DropOnExport = false,
-                    Timeout = 0
-                },
-                RDB = new RDB
-                {
-                    Struct_AutoLoad = true,
-                    Directory = "/Structures",
-                    LoadDirectory = "",
-                    AppendASCII = true,
-                    SaveHashed = true,
-                    CSV_Directory = "/CSV",
-                    SQL_Directory = "/SQL"
-                },
-                Data = new Data
-                {
-                    LoadDirectory = "C:\\Webzen\\Rappelz US",
-                    Encoding = 1252,
-                    Backup = true,
-                    ClearOnCreate = false
-                },
-                Hash = new Hash
-                {
-                    AutoClear = true,
-                    AutoConvert = true,
-                    Type = 0
-                },
-                Log = new Log
-                {
-                    Directory = "/Logs",
-                    DisplayLevel = 0,
-                    WriteLevel = 0,
-                    SaveOnExit = true,
-                    RefreshInterval = 1
-                },
-                Flag = new Flag
-                {
-                    Directory = "/Flags",
-                    Default = "use_flags_81",
-                    ClearOnChange = false
-                },
-                Localization = new Localization
-                {
-                    Directory = "/Localization",
-                    Locale = "en-US"
-                }
-            };
 
-
-            string configOutput = JsonConvert.SerializeObject(config, Formatting.Indented);
-
-            if (!File.Exists(confPath))
-                File.WriteAllText(confPath, configOutput);
-
-            return configOutput;
         }
     }
 }
