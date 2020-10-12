@@ -5,6 +5,7 @@ using DataCore.Functions;
 using Grimoire.Utilities;
 using Grimoire.Logs.Enums;
 using Grimoire.Configuration;
+using System.Threading.Tasks;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -14,6 +15,7 @@ namespace Grimoire.Tabs.Styles
         Logs.Manager lManager;
         XmlManager xMan = XmlManager.Instance;
         ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+        Tabs.Manager tMan = Tabs.Manager.Instance;
         #endregion
 
         #region Constructors
@@ -57,10 +59,10 @@ namespace Grimoire.Tabs.Styles
             add_file_to_grid(path);
         }
 
-        private void cMenu_convert_Click(object sender, EventArgs e)
+        private async void cMenu_convert_Click(object sender, EventArgs e)
         {
             if (fileGrid.SelectedRows.Count > 0)
-                convertEntry(fileGrid.SelectedRows[0].Index);
+                await convertEntry(fileGrid.SelectedRows[0].Index);
 
             if (autoClear_chk.Checked)
                 fileGrid.Rows.Remove(fileGrid.SelectedRows[0]);
@@ -68,23 +70,17 @@ namespace Grimoire.Tabs.Styles
 
         private void cMenu_convert_all_Click(object sender, EventArgs e) => convertAllEntries();
 
-        private void autoClear_chk_CheckStateChanged(object sender, EventArgs e)
-        {
+        private void autoClear_chk_CheckStateChanged(object sender, EventArgs e) =>
             configMan["AutoConvert", "Hash"] = autoClear_chk.Checked;
-            //TODO: implement save bruh
-        }
 
-        private void opt_auto_convert_CheckStateChanged(object sender, EventArgs e)
-        {
+        private void opt_auto_convert_CheckStateChanged(object sender, EventArgs e) =>
             configMan["AutoClear", "Hash"] = autoClear_chk.Checked;
-            //TODO: implement save bruh
-        }
 
         private void cMenu_add_folder_Click(object sender, EventArgs e)
         {
             string directory = Grimoire.Utilities.Paths.FolderPath;
 
-            if (Grimoire.Utilities.Paths.FolderResult != DialogResult.OK)
+            if (Paths.FolderResult != DialogResult.OK)
                 return;
 
             foreach (string path in Directory.GetFiles(directory))
@@ -139,16 +135,28 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private void convertAllEntries()
+        private async void convertAllEntries()
         {
-            foreach (DataGridViewRow row in fileGrid.Rows)
-                convertEntry(row.Index);
+            prgBar.Maximum = fileGrid.Rows.Count;
+
+            for (int i = 0; i < fileGrid.Rows.Count; i++)
+            {
+                DataGridViewRow row = fileGrid.Rows[i];
+
+                if (!await convertEntry(i).ConfigureAwait(true))
+                    return;
+
+                prgBar.Value = i;
+            }
+
+            prgBar.Maximum = 100;
+            prgBar.Value = 0;
 
             if (autoClear_chk.Checked)
                 cMenu_clear_Click(null, EventArgs.Empty);
         }
 
-        private void convertEntry(int rowIndex)
+        private async Task<bool> convertEntry(int rowIndex)
         {
             DataGridViewRow row = fileGrid.Rows[rowIndex];
             // [0] - Original Name
@@ -164,11 +172,12 @@ namespace Grimoire.Tabs.Styles
                 if (MessageBox.Show("The conversion of this file: {0} will result in overwriting a file with the same converted name.\nDo you wish to continue?", "File Already Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Hand) == DialogResult.No)
                 {
                     lManager.Enter(Sender.HASHER, Level.NOTICE, "User opted to cancel conversion of {0}", (string)row.Cells[0].Value);
-                    return;
+                    return false;
                 }
 
-                File.Delete(convertedPath);
                 lManager.Enter(Sender.HASHER, Level.NOTICE, "Converted Path already exists, deleting file at path: {0}", convertedPath);
+
+                File.Delete(convertedPath);                
             }
 
             if (File.Exists(originalPath))
@@ -176,6 +185,17 @@ namespace Grimoire.Tabs.Styles
                 File.Move(originalPath, convertedPath);
                 fileGrid.Rows[rowIndex].Cells[3].Value = "Complete";
                 lManager.Enter(Sender.HASHER, Level.NOTICE, "File at path: {0} converted to path: {1}", originalPath, convertedPath);
+
+                return true;
+            }
+            else
+            {
+                string msg = $"Cannot find the original file: {originalPath}!";
+
+                lManager.Enter(Sender.HASHER, Level.ERROR, msg);
+                MessageBox.Show(msg, "Hasher Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
             }
         }
 

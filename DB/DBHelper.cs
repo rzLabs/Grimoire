@@ -287,6 +287,7 @@ namespace Grimoire.DB
                                                         int value = 0;
                                                         string valStr = iRow[sqlIdx].ToString();
 
+                                                        //Got to account for galas fuckery -_-
                                                         if (string.IsNullOrEmpty(valStr) || valStr == " " || valStr == "False")
                                                             valStr = "0";
                                                         else if (valStr == "True")
@@ -357,14 +358,19 @@ namespace Grimoire.DB
                                                 row[i] = Convert.ToByte(field.Default);
                                                 break;
 
+                                            case CellType.TYPE_SHORT:
+                                            case CellType.TYPE_INT_16:
+                                                row[i] = Convert.ToInt16(field.Default);
+                                                break;
+
                                             case CellType.TYPE_INT:
                                             case CellType.TYPE_INT_32:
                                                 row[i] = row.KeyIsDuplicate(field.Name) ? row.GetShownValue(field.Name) : field.Default;
                                                 break;
 
-                                            case CellType.TYPE_SHORT:
-                                            case CellType.TYPE_INT_16:
-                                                row[i] = Convert.ToInt16(field.Default);
+                                            case CellType.TYPE_LONG:
+                                            case CellType.TYPE_INT_64:
+                                                row[i] = Convert.ToInt64(field.Default);
                                                 break;
 
                                             case CellType.TYPE_STRING:
@@ -400,7 +406,12 @@ namespace Grimoire.DB
                 return data;
             }
             else
-            { } //TODO: handle error bruv
+            {
+                string msg = "Failed to open SQL Connection!";
+
+                MessageBox.Show(msg, "SQL Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logs.Manager.Instance.Enter(Sender.DATABASE, Level.ERROR, msg);
+            }
 
             return null;
         }
@@ -442,7 +453,12 @@ namespace Grimoire.DB
                     executeBulk(dataTbl);
                 }
                 else
-                { } //Todo: handle exception bro                   
+                {
+                    string msg = "Failed to open SQL Connection!";
+
+                    MessageBox.Show(msg, "SQL Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Logs.Manager.Instance.Enter(Sender.DATABASE, Level.ERROR, msg);
+                }
             }
             catch (Exception ex)
             {
@@ -626,30 +642,20 @@ namespace Grimoire.DB
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    mySQL_cmd = null;
+                    mySQL_conn = null;
+                    msSQL_cmd = null;
+                    msSQL_conn = null;
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
 
                 disposedValue = true;
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~DBHelper()
-        // {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
         // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
         #endregion
     }

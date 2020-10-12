@@ -197,7 +197,7 @@ namespace Grimoire.Utilities
                         if (attributes.Count >= 2)
                             control.Comment = attributes[1].Value;
 
-                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<control/> {0} has expected attributes.", control.Name);
+                        //lManager.Enter(Sender.MANAGER, Level.DEBUG, "<control/> {0} has expected attributes.", control.Name);
                     }
                     else
                     {
@@ -222,8 +222,8 @@ namespace Grimoire.Utilities
                                                                                                                                                         controlFont.Style.ToString(),
                                                                                                                                                         controlFont.Size);
                     }
-                    else
-                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "No <font/> detected for control: {0}", control.Name);
+                    //else
+                        //lManager.Enter(Sender.MANAGER, Level.DEBUG, "No <font/> detected for control: {0}", control.Name);
 
                     control.Font = (controlFont != null) ? controlFont : globalFont;
 
@@ -233,8 +233,7 @@ namespace Grimoire.Utilities
                         string[] location = childNodes[c].Elements("location").ToList()[0].Value.Split(',');
                         control.Location = new System.Drawing.Point(int.Parse(location[0]), int.Parse(location[1]));
 
-                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<location/> detected.\nx:{0}\ny:{1}", control.Location.X,
-                                                                                                                     control.Location.Y);
+                        //lManager.Enter(Sender.MANAGER, Level.DEBUG, "<location/> detected.\nx:{0}\ny:{1}", control.Location.X, control.Location.Y);
                     }
                     else
                         control.Location = new System.Drawing.Point(0, 0);
@@ -245,8 +244,7 @@ namespace Grimoire.Utilities
                         string[] size = childNodes[c].Elements("size").ToList()[0].Value.Split(',');
                         control.Size = new System.Drawing.Size(int.Parse(size[0]), int.Parse(size[1]));
 
-                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<size/> detected. \nheight:{0}\nwidth:{1}", control.Size.Height,
-                                                                                                                           control.Size.Width);
+                        //lManager.Enter(Sender.MANAGER, Level.DEBUG, "<size/> detected. \nheight:{0}\nwidth:{1}", control.Size.Height, control.Size.Width);
                     }
                     else
                         control.Size = new System.Drawing.Size(0, 0);
@@ -258,7 +256,7 @@ namespace Grimoire.Utilities
 
                     if (textElements.Count > 0)
                     {
-                        lManager.Enter(Sender.MANAGER, Level.DEBUG, "<text/> element detected!");
+                        //lManager.Enter(Sender.MANAGER, Level.DEBUG, "<text/> element detected!");
 
                         if (textElements[0].HasAttributes)
                         {

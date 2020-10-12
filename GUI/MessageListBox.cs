@@ -22,7 +22,7 @@ namespace Grimoire.GUI
             Text = title;
             this.msg.Text = msg;
             populateList(filePaths);
-            localize();
+            //localize();
         }
 
         private void populateList(string[] filePaths)

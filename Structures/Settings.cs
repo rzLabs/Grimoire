@@ -2,8 +2,7 @@
 using System.Windows.Forms.Design;
 using System.Drawing.Design;
 using System.ComponentModel;
-
-using Grimoire.Utilities;
+using Grimoire.Tabs;
 using Grimoire.Configuration;
 
 namespace Grimoire.Structures
@@ -18,8 +17,8 @@ namespace Grimoire.Structures
         [Description("Default Tab Style to be loaded when starting Grimoire (if any)"), Category("Tab Style"), DisplayName("Default Style"), DefaultValue(Tabs.Style.NONE)]
         public Tabs.Style DefaultStyle
         {
-            get => (Tabs.Style)Enum.Parse(typeof(Tabs.Style), configMan["DefaultStyle"]);
-            set => configMan["DefaultStye"] = ((Tabs.Style)value).ToString();
+            get => (Tabs.Style)Enum.Parse(typeof(Style), configMan["DefaultStyle", "Tab"]);
+            set => configMan["DefaultStyle", "Tab"] = value.ToString();
         }
 
         [Description("The IP at which your database can be connected to"), Category("Database")]

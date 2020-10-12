@@ -1,14 +1,15 @@
 {
   "Grim": {
-    "BuildDirectory": "/Output"
+    "BuildDirectory": "/Output",
+    "Codepage": 1252
   },
   "Tab": {
     "Styles": [
       "RDB",
       "DATA",
-      "HASHER"
+      "HASHER",
     ],
-    "DefaultStyle": "RDB"
+    "DefaultStyle": "NONE"
   },
   "DB": {
     "Engine": 0,
@@ -25,6 +26,7 @@
   "RDB": {
     "Struct_AutoLoad": true,
     "Directory": "/Structures",
+    "Encoding": "Western Europe",
     "LoadDirectory": "",
     "AppendASCII": true,
     "SaveHashed": true,

@@ -16,6 +16,4 @@
         ASCII = 1,
         NON_ASCII = 2
     }
-
-
 }

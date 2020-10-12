@@ -225,6 +225,12 @@
     <Compile Include="Tabs\Styles\DropEditor.Designer.cs">
       <DependentUpon>DropEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tabs\Styles\GMTool.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tabs\Styles\GMTool.Designer.cs">
+      <DependentUpon>GMTool.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tabs\Styles\Hasher.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -323,6 +329,9 @@
     <EmbeddedResource Include="Tabs\Styles\DropEditor.resx">
       <DependentUpon>DropEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tabs\Styles\GMTool.resx">
+      <DependentUpon>GMTool.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\Hasher.resx">
       <DependentUpon>Hasher.cs</DependentUpon>
     </EmbeddedResource>
@@ -377,7 +386,7 @@
   </Target>
   <Target Name="RemoveSatelliteAssemblies" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>
-        <ReferenceCopyLocalPaths Remove="@(ReferenceSatellitePaths)" />
+      <ReferenceCopyLocalPaths Remove="@(ReferenceSatellitePaths)" />
     </ItemGroup>
   </Target>
 </Project>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows.Forms;
 
 namespace Grimoire.Utilities
@@ -53,19 +48,13 @@ namespace Grimoire.Utilities
                         return File.Exists(ofDlg.FileName) ? ofDlg.FileNames : null;
                 }
 
-                return null;
+                return new string[1] { null };
             }
         }
 
-        public static string FilePath // TODO: If cancel causes bug
-        {
-            get { return filePaths?[0]; }
-        }
+        public static string FilePath => filePaths?[0];
 
-        public static string[] FilePaths
-        {
-            get { return filePaths; }
-        }
+        public static string[] FilePaths => filePaths;
 
         public static string SavePath
         {

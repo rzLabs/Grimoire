@@ -140,9 +140,7 @@ namespace Grimoire.GUI
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             lManager.Enter(Sender.MAIN, Level.DEBUG, "Closing down...");
-
             lManager.Save();
-            //TODO: ConfigMan.Save()
         }
 
         private void tabs_MouseClick(object sender, MouseEventArgs e)

@@ -173,33 +173,34 @@ namespace Grimoire.Tabs.Styles
 
             tab_disabled = true;
 
-            await Task.Run(() => 
+            try
             {
-                try
+                core.Backups = false;
+                await Task.Run(() =>
                 {
-                    core.Backups = false;
                     core.BuildDataFiles(dumpDirectory, buildDirectory);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lManager.Enter(Sender.DATA, Level.ERROR, ex);
-                    return;
-                }
-                finally
-                {
-                    string msg = "Client build completed!";
-                    MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    lManager.Enter(Sender.DATA, Level.NOTICE, msg);
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lManager.Enter(Sender.DATA, Level.ERROR, ex);
+                return;
+            }
+            finally
+            {
+                string msg = "Client build completed!";
+                MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                lManager.Enter(Sender.DATA, Level.NOTICE, msg);
 
-                    if (configMan["ClearOnCreate", "Data"])
-                        core.Clear();
-                    else
-                        display_data();
+                if (configMan["ClearOnCreate", "Data"])
+                    core.Clear();
+                else
+                    display_data();
 
-                    core.Backups = true;
-                }
-            });           
+                core.Backups = true;
+            }
+         
 
             ts_status.Text = string.Empty;
 
@@ -223,9 +224,7 @@ namespace Grimoire.Tabs.Styles
             unhook_core_events();
 
             using (GUI.DataRebuild rebuildGUI = new GUI.DataRebuild())
-            {
                 rebuildGUI.ShowDialog(GUI.Main.Instance);
-            }
 
             hook_core_events();
         }
@@ -268,6 +267,7 @@ namespace Grimoire.Tabs.Styles
         private void grid_SelectionChanged(object sender, EventArgs e)
         {
             grid_cs.Items[2].Enabled = true;
+            grid_cs.Items[3].Enabled = true;
 
             int rowCount = grid.SelectedRows.Count;
 
@@ -545,13 +545,7 @@ namespace Grimoire.Tabs.Styles
                 await Task.Run(() => { core.Load(path); });
 
                 actionSW.Stop();
-            }
-            catch (Exception ex)
-            {
-                lManager.Enter(Sender.DATA, Level.ERROR, ex, "Exception occured while attempting to load file at: {0}", path);
-            }
-            finally
-            {
+
                 ts_file_load.Enabled = false;
                 ts_file_new.Enabled = false;
 
@@ -567,6 +561,10 @@ namespace Grimoire.Tabs.Styles
                 tab_disabled = false;
                 ts_file_new.Visible = false;
                 ts_file_rebuild.Visible = true;
+            }
+            catch (Exception ex)
+            {
+                lManager.Enter(Sender.DATA, Level.ERROR, ex, "Exception occured while attempting to load file at: {0}", path);
             }
         }
 

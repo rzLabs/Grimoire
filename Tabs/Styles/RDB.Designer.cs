@@ -199,6 +199,7 @@
             this.ts_enc_list.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ts_enc_list.Name = "ts_enc_list";
             this.ts_enc_list.Size = new System.Drawing.Size(114, 25);
+            this.ts_enc_list.SelectedIndexChanged += new System.EventHandler(this.ts_enc_list_SelectedIndexChanged);
             this.ts_enc_list.Click += new System.EventHandler(this.ts_enc_list_Click);
             // 
             // toolStripSeparator2

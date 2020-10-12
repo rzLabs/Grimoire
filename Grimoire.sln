@@ -9,9 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Daedalus", "..\Daedalus\Dae
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCore", "..\DataCore\DataCore\DataCore.csproj", "{F234EFE9-3104-45FC-A5BE-FDC3D0CD888E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCipher", "..\DataCipher\DataCipher.csproj", "{D4760A4A-E900-4345-AF79-36D63CC0DB3E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCipher_console", "..\DataCipher_console\DataCipher_console.csproj", "{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigUtil", "..\ConfigUtil\ConfigUtil.csproj", "{82221A15-54E4-436D-99DE-1861A9669776}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,22 +43,14 @@ Global
 		{F234EFE9-3104-45FC-A5BE-FDC3D0CD888E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F234EFE9-3104-45FC-A5BE-FDC3D0CD888E}.Release|x64.ActiveCfg = Release|Any CPU
 		{F234EFE9-3104-45FC-A5BE-FDC3D0CD888E}.Release|x64.Build.0 = Release|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Debug|x64.Build.0 = Debug|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Release|x64.ActiveCfg = Release|Any CPU
-		{D4760A4A-E900-4345-AF79-36D63CC0DB3E}.Release|x64.Build.0 = Release|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Debug|x64.Build.0 = Debug|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Release|x64.ActiveCfg = Release|Any CPU
-		{FDCEC2CD-716F-48C1-B5A1-288303BF48CF}.Release|x64.Build.0 = Release|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Debug|x64.Build.0 = Debug|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Release|x64.ActiveCfg = Release|Any CPU
+		{82221A15-54E4-436D-99DE-1861A9669776}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

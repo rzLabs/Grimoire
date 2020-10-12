@@ -30,7 +30,7 @@ namespace Grimoire.Utilities
                     len += new FileInfo(path).Length;
                 }
                 else
-                    throw new FileNotFoundException("File not found at path!", path); // TODO: Report Position in throw
+                    throw new FileNotFoundException("File not found at path!", path);
             }
 
             return len;

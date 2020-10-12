@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.prgBar = new System.Windows.Forms.ProgressBar();
             this.inst_grpBx = new System.Windows.Forms.GroupBox();
             this.inst_flipBtn = new System.Windows.Forms.Button();
             this.output = new System.Windows.Forms.TextBox();
@@ -64,14 +64,14 @@
             this.optGrid_grpBx.SuspendLayout();
             this.SuspendLayout();
             // 
-            // progressBar1
+            // prgBar
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.progressBar1.Location = new System.Drawing.Point(690, 433);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(75, 19);
-            this.progressBar1.TabIndex = 5;
+            this.prgBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.prgBar.Location = new System.Drawing.Point(690, 433);
+            this.prgBar.Margin = new System.Windows.Forms.Padding(2);
+            this.prgBar.Name = "prgBar";
+            this.prgBar.Size = new System.Drawing.Size(75, 19);
+            this.prgBar.TabIndex = 5;
             // 
             // inst_grpBx
             // 
@@ -357,7 +357,7 @@
             this.Controls.Add(this.multi_grpBx);
             this.Controls.Add(this.optName_grpBx);
             this.Controls.Add(this.inst_grpBx);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.prgBar);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Hasher";
             this.Size = new System.Drawing.Size(781, 454);
@@ -376,7 +376,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar prgBar;
         private System.Windows.Forms.GroupBox inst_grpBx;
         private System.Windows.Forms.TextBox output;
         private System.Windows.Forms.TextBox input;

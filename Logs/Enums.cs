@@ -9,7 +9,7 @@
         ERROR        
     }
 
-    public enum Sender // TODO: Update me a-doi
+    public enum Sender
     {
         RDB = 0,
         HASHER = 1,

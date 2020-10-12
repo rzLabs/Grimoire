@@ -16,6 +16,7 @@ using Grimoire.DB.Enums;
 
 namespace Grimoire.Tabs.Styles
 {
+    //TODO: Correct encoding
     public partial class rdbTab : UserControl
     {
         #region Properties
@@ -25,7 +26,7 @@ namespace Grimoire.Tabs.Styles
         Manager tManager = Manager.Instance;
         ConfigMan configMan = GUI.Main.Instance.ConfigMan;
 
-        public Daedalus.Core core = new Daedalus.Core();
+        public Core core = new Core();
         DataCore.Core dCore = null;
         string structsDir = null;
         readonly string key = null;
@@ -112,6 +113,13 @@ namespace Grimoire.Tabs.Styles
                 core.SetEncoding(Encodings.GetByName(ts_enc_list.Text));
 
             lManager.Enter(Sender.RDB, Level.NOTICE, "Encoding: {0} set.", ts_enc_list.Text);
+        }
+
+        private void ts_enc_list_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            core.SetEncoding(Encodings.GetByName(ts_enc_list.Text));
+
+            lManager.Enter(Sender.RDB, Level.NOTICE, "Encoding: {0} set for tab: {1}", ts_enc_list.Text, tManager.Text);
         }
 
         private async void ts_struct_list_SelectedIndexChanged(object sender, EventArgs e)
@@ -603,7 +611,11 @@ namespace Grimoire.Tabs.Styles
         void loadEncodings()
         {
             ts_enc_list.Items.AddRange(Encodings.Names);
-            ts_enc_list.SelectedIndex = 0;
+
+            string encStr = configMan["Encoding", "RDB"];
+
+            ts_enc_list.SelectedIndex = (encStr != null) ? Encodings.GetIndex(encStr) : 0;
+
             lManager.Enter(Sender.RDB, Level.NOTICE, "{0} Encodings loaded.", Encodings.Count);
         }
 
@@ -692,7 +704,7 @@ namespace Grimoire.Tabs.Styles
 
                     lManager.Enter(Sender.RDB, Level.DEBUG, "User selected rdb: {0}", fileName);
 
-                    if (fileBytes.Length > 0) //TODO: set Daedalus.Core.RdbPath
+                    if (fileBytes.Length > 0)
                         load_file(fileName, fileBytes);
                 }
                 else
@@ -765,5 +777,6 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
+
     }
 }

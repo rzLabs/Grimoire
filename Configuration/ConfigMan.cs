@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using Grimoire.Configuration.Structures;
 using Newtonsoft.Json;
-using Grimoire.Configuration.Enums;
-using System.Linq;
+using Grimoire.Configuration.Structures;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace Grimoire.Configuration
 {
@@ -93,7 +91,7 @@ namespace Grimoire.Configuration
                 if (index >= 0)
                     return Options[index].Value;
                 else
-                    return null;
+                    throw new IndexOutOfRangeException();
             }
             set
             {
@@ -101,6 +99,8 @@ namespace Grimoire.Configuration
 
                 if (index >= 0)
                     Options[index].Value = value;
+                else
+                    throw new IndexOutOfRangeException();
             }
         }
 
@@ -112,7 +112,7 @@ namespace Grimoire.Configuration
                 if (index >= 0)
                     return Options[index].Value;
                 else
-                    return null;
+                    throw new IndexOutOfRangeException();
             }
             set
             {
@@ -120,6 +120,8 @@ namespace Grimoire.Configuration
 
                 if (index >= 0)
                     Options[index].Value = value;
+                else
+                    throw new IndexOutOfRangeException();             
             }
         }
 
@@ -154,8 +156,6 @@ namespace Grimoire.Configuration
             return filePath;
         }
 
-        //TODO: GetPath
-
         void parse()
         {
             if (File.Exists(confPath))
@@ -174,7 +174,7 @@ namespace Grimoire.Configuration
                         foreach (JToken grandChild in child.Children())
                         {
                             var val = grandChild.Value<dynamic>();
-                            dynamic value = null;
+                            dynamic value;
 
                             string[] info = val.Path.ToString().Split('.');
 

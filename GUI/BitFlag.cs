@@ -58,9 +58,17 @@ namespace Grimoire.GUI
         {
             get
             {
-                if (flagList.SelectedItems.Count == 0 && flagIO.Text == "0")
+                int inputFlag = 0;
+                if (!int.TryParse(flagIO.Text, out inputFlag))
+                    throw new InvalidCastException();
+
+                int calcVal = default;
+
+                if (flagList.SelectedItems.Count == 0 && inputFlag == 0)
                     flag = defaultFlag;
-                else
+                else if (flagList.SelectedItems.Count == 0 && inputFlag > 0)
+                    flag = inputFlag;
+                else if ((calcVal = calculate()) != inputFlag)
                     flag = calculate();
 
                 return flag;
@@ -210,7 +218,10 @@ namespace Grimoire.GUI
         private void flagIO_TextChanged(object sender, EventArgs e)
         {
             if (!calculating)
+            {
+                flag = int.Parse(flagIO.Text);
                 reverse();
+            }
         }
 
         private void flagFiles_SelectedIndexChanged(object sender, EventArgs e)
