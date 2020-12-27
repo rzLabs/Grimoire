@@ -71,10 +71,27 @@ namespace Grimoire.Tabs
                 {
                     key = pages[tabs.SelectedIndex].Name;
                 }));
-                int style_id = (!string.IsNullOrEmpty(key)) ? Convert.ToInt32(key.Split('_')[1]) : 99;
 
-                return (Style)style_id;
+                return getStyle(key);
             }
+        }
+
+        public string[] GetKeysByStyle(Style style)
+        {
+            List<string> keys = new List<string>();
+
+            if (pages == null || pages.Count == 0)
+                return null;
+
+            foreach (TabPage page in pages)
+            {
+                Style cmpStyle = getStyle(page.Name);
+
+                if (style == cmpStyle)
+                    keys.Add(page.Name);
+            }
+
+            return keys.ToArray();
         }
 
         public DataCore.Core DataCore
@@ -92,6 +109,20 @@ namespace Grimoire.Tabs
             }
         }
 
+        public DataCore.Core DataCoreByKey(string key)
+        {
+            if (pages == null || pages.Count == 0)
+                return null;
+
+            if (!pages.ContainsKey(key))
+                return null;
+
+            DataCore.Core ret = null;
+            GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.Data)pages[key].Controls[0]).Core; }));
+
+            return ret;
+        }
+
         public Daedalus.Core RDBCore
         {
             get
@@ -105,6 +136,20 @@ namespace Grimoire.Tabs
 
                 return null;
             }
+        }
+
+        public Daedalus.Core RDBCoreByKey(string key)
+        {
+            if (pages == null || pages.Count == 0)
+                return null;
+
+            if (!pages.ContainsKey(key))
+                return null;
+
+            Daedalus.Core ret = null;
+            GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.rdbTab)pages[key].Controls[0]).Core; }));
+
+            return ret;
         }
 
         public Styles.Data DataTab
@@ -236,6 +281,24 @@ namespace Grimoire.Tabs
                 pages[key].Text = text;
             else
                 lManager.Enter(Sender.MANAGER, Level.ERROR, "Tab Manager could not SetText because tab with key: {0} does not exist!", key);
+        }
+
+        private Style getStyle(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return Style.NONE;
+
+            string[] keyBlocks = key.Split('_');
+
+            if (keyBlocks.Length != 2)
+            {
+                lManager.Enter(Sender.MANAGER, Level.ERROR, $"Failed to get tab style for provided key: {key}");
+                return Style.NONE;
+            }
+
+            int styleID = Convert.ToInt32(keyBlocks[1]);
+
+            return (Style)styleID;
         }
     }
 }

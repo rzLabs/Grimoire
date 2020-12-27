@@ -225,12 +225,6 @@
     <Compile Include="Tabs\Styles\DropEditor.Designer.cs">
       <DependentUpon>DropEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tabs\Styles\GMTool.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Tabs\Styles\GMTool.Designer.cs">
-      <DependentUpon>GMTool.cs</DependentUpon>
-    </Compile>
     <Compile Include="Tabs\Styles\Hasher.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -245,7 +239,6 @@
     </Compile>
     <Compile Include="Tabs\Utilities\Enums.cs" />
     <Compile Include="Tabs\Utilities\Grid.cs" />
-    <Compile Include="Tabs\Utilities\Structures.cs" />
     <Compile Include="Utilities\BitConverterExt.cs" />
     <Compile Include="Utilities\ByteConverterExt.cs" />
     <Compile Include="DB\DBHelper.cs" />
@@ -328,9 +321,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\DropEditor.resx">
       <DependentUpon>DropEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tabs\Styles\GMTool.resx">
-      <DependentUpon>GMTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\Hasher.resx">
       <DependentUpon>Hasher.cs</DependentUpon>

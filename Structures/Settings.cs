@@ -10,6 +10,7 @@ namespace Grimoire.Structures
     class Settings
     {
         ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+        Tabs.Manager tabMan = Tabs.Manager.Instance;
 
         //[Description("A list of styles that can be choosen from the 'New' drop-down (Delimited by ',')"), Category("Tab Style"), DisplayName("Styles")]
         //public string Styles { get => configMan["Styles"]; set => configMan["Styles"] = value; }
@@ -55,8 +56,52 @@ namespace Grimoire.Structures
         [Description("The default directory displayed when opening local files in the Data Utility"), Category("Data Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string DataLoadDirectory { get => configMan["LoadDirectory", "Data"]; set => configMan["LoadDirectory", "Data"] = value; }
 
+        [Description("Determines if Grimoire will use a modified xor encryption key to load/alter client data files"), Category("Data Utility"), DisplayNameAttribute("Use Modified XOR Key")]
+        public bool UseModifiedXOR { get => configMan["UseModifiedXOR"]; set => configMan["UseModifiedXOR"] = value; }
+
+        [Description("If UseModifiedXORKey is true, this key will be used in Data.xxx importing and Data.000 Load/Save operations"), Category("Data Utility"), DisplayName("Modified XOR Key")]
+        public byte[] ModifiedXORKey 
+        {
+            get
+            {
+                int[] nKeyArray = configMan["ModifiedXORKey"].ToArray();
+                byte[] bKeyArray = new byte[nKeyArray.Length];
+
+                for (int i = 0; i < nKeyArray.Length; i++)
+                    bKeyArray[i] = (byte)nKeyArray[i];
+
+                return bKeyArray;
+            }
+            set
+            {
+                int[] nKeyArray = new int[value.Length];
+
+                for (int i = 0; i < value.Length; i++)
+                    nKeyArray[i] = (int)value[i];
+
+                configMan["ModifiedXORKey"] = nKeyArray;
+            }
+        }
+
         [Description("Determines if files like data.000-008 will be backed up before any changes are made to them. (RECOMMENDED)"), Category("Data Utility"), DisplayName("Backups")]
-        public bool Backups { get => configMan["Backup", "Data"]; set => configMan["Backup", "Data"] = value; }
+        public bool Backups 
+        { 
+            get => configMan["Backup", "Data"];
+            set
+            {
+                configMan["Backup", "Data"] = value;
+
+                string[] keys = tabMan.GetKeysByStyle(Style.DATA) ?? new string[0];
+
+                foreach (string key in keys)
+                {
+                    DataCore.Core core = tabMan.DataCoreByKey(key);
+
+                    if (core != null)
+                        core.Backups = value;
+                }
+            }       
+        }
 
         [Description("Determines if the DataCore.Core will be cleared after a successful 'New' client has been created. If set to False the newly created client will be displayed as if loaded."), Category("Data Utility"), DisplayName("Clear on Create")]
         public bool ClearCreate { get => configMan["ClearOnCreate"]; set => configMan["ClearOnCreate"] = value; }

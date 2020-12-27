@@ -37,6 +37,9 @@
     "LoadDirectory": "C:\\Webzen\\Rappelz US",
     "Encoding": 1252,
     "Backup": true,
+    "UseModifiedXOR": false,
+    "ModifiedXORKey": [
+    ],
     "ClearOnCreate": false
   },
   "Hash": {

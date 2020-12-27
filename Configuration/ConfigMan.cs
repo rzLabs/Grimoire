@@ -131,6 +131,23 @@ namespace Grimoire.Configuration
 
         public dynamic GetOption(string key, string parent) => Options.Find(o => o.Name == key && o.Parent == parent);
 
+        // WARNING! Must be called on an option with a value of int[] type!
+        public byte[] GetByteArray(string key)
+        {
+            int idx = Options.FindIndex(o => o.Name == key);
+
+            if (idx == -1)
+                throw new KeyNotFoundException();
+
+            int[] val = Options[idx].Value.ToArray();
+            byte[] ret = new byte[val.Length];
+
+            for (int i = 0; i < ret.Length; i++)
+                ret[i] = (byte)val[i];
+
+            return ret ?? null;
+        }
+
         public string GetDirectory(string key, string parent = null)
         {
             Option opt = (parent != null) ? GetOption(key, parent) : GetOption(key);
@@ -180,12 +197,24 @@ namespace Grimoire.Configuration
 
                             if (val.Value.Type == JTokenType.Array)
                             {
-                                List<string> array = new List<string>();
+                                if (info[1] == "ModifiedXORKey")
+                                {
+                                    List<int> array = new List<int>();
 
-                                foreach (var item in val.Value.Children())
-                                    array.Add(item.Value);
+                                    foreach (var item in val.Value.Children())
+                                        array.Add((int)item.Value);
 
-                                value = array;
+                                    value = array;
+                                }
+                                else
+                                {
+                                    List<string> array = new List<string>();
+
+                                    foreach (var item in val.Value.Children())
+                                        array.Add(item.Value);
+
+                                    value = array;
+                                }
                             }
                             else
                                 value = val.Value.Value;

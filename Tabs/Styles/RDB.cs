@@ -339,7 +339,7 @@ namespace Grimoire.Tabs.Styles
 
         private void grid_cs_open_flag_editor_Click(object sender, EventArgs e)
         {
-            int bitflag = grid.SelectedCells[0].Value as int? ?? default(int);
+            int bitflag = Convert.ToInt32(grid.SelectedCells[0].Value);
             bool changed = false;
 
             if (bitflag > 0)
@@ -463,6 +463,8 @@ namespace Grimoire.Tabs.Styles
 
                 if (!filename.Contains("ascii") && ts_save_w_ascii.Checked)
                     filename = string.Format(@"{0}(ascii).rdb", filename.Split('.')[0]);
+                else if (filename.Contains("ascii") && !ts_save_w_ascii.Checked)
+                    filename = filename.Remove(filename.Length - 11, 7);
 
                 if (ts_save_enc.Checked)
                     filename = DataCore.Functions.StringCipher.Encode(filename);
@@ -674,6 +676,10 @@ namespace Grimoire.Tabs.Styles
         async void load_data_file(string filePath)
         {
             dCore = new DataCore.Core(Encodings.GetByName(ts_enc_list.Text));
+
+            dCore.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];
+            if (dCore.UseModifiedXOR)
+                dCore.SetXORKey(configMan.GetByteArray("ModifiedXORKey"));
 
             lManager.Enter(Sender.RDB, Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, filePath);
 

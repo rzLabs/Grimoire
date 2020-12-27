@@ -492,6 +492,11 @@ namespace Grimoire.Tabs.Styles
             int codepage = (int)configMan["Encoding", "Data"];
             Encoding encoding = Encoding.GetEncoding(codepage);
             core = new Core(backup, encoding);
+            
+            core.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];
+            if (core.UseModifiedXOR)
+                Core.SetXORKey(configMan.GetByteArray("ModifiedXORKey"));
+            
             hook_core_events();
         }
 
@@ -521,8 +526,7 @@ namespace Grimoire.Tabs.Styles
         }
 
         private void populate_selection_info(IndexEntry entry)
-        {
-            Invoke(new MethodInvoker(delegate {
+        {            Invoke(new MethodInvoker(delegate {
                 string ext = entry.Extension;
                 dataId.Text = entry.DataID.ToString();
                 offset.Text = entry.Offset.ToString();
