@@ -139,7 +139,7 @@ namespace Grimoire.Configuration
             if (idx == -1)
                 throw new KeyNotFoundException();
 
-            int[] val = Options[idx].Value.ToArray();
+            int[] val = Options[idx].Value;
             byte[] ret = new byte[val.Length];
 
             for (int i = 0; i < ret.Length; i++)
@@ -148,29 +148,35 @@ namespace Grimoire.Configuration
             return ret ?? null;
         }
 
+        public void UpdateByteArray(string key, byte[] array)
+        {
+            int idx = Options.FindIndex(o => o.Name == key);
+
+            if (idx == -1)
+                throw new KeyNotFoundException();
+
+            int[] nArray = new int[array.Length];
+
+            for (int i = 0; i < nArray.Length; i++)
+                nArray[i] = (int)array[i];
+
+            Options[idx].Value = nArray;
+        }
+
         public string GetDirectory(string key, string parent = null)
         {
             Option opt = (parent != null) ? GetOption(key, parent) : GetOption(key);
 
-            string fileDir = null;
-            string filePath = null;
-            string valStr = opt.Value;
+            string optPath = opt.Value;
+            bool isRelative = !Path.IsPathRooted(optPath);
 
-            if (valStr.StartsWith("/")) //Only the folder name is given
-            {
-                string workingDir = Directory.GetCurrentDirectory();
-                fileDir = workingDir;
-                valStr = valStr.Replace("/", "\\");
-            }
-            else
-                fileDir = valStr;
+            if (!string.IsNullOrEmpty(optPath))
+                if (!isRelative)
+                    return optPath;
+                else
+                    return Path.GetFullPath(optPath);
 
-            if (fileDir == valStr)
-                filePath = fileDir;
-            else
-                filePath = $"{fileDir}{valStr as string}";
-
-            return filePath;
+            return null;
         }
 
         void parse()
@@ -204,7 +210,7 @@ namespace Grimoire.Configuration
                                     foreach (var item in val.Value.Children())
                                         array.Add((int)item.Value);
 
-                                    value = array;
+                                    value = array.ToArray();
                                 }
                                 else
                                 {

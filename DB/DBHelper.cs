@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
@@ -11,7 +12,8 @@ using Grimoire.Configuration;
 using Grimoire.Logs.Enums;
 using Daedalus.Enums;
 using Daedalus.Structures;
-using System.Windows.Forms;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace Grimoire.DB
 {
@@ -40,6 +42,21 @@ namespace Grimoire.DB
         #endregion
 
         Stopwatch actionSW;
+
+        public event EventHandler<DBError> Error;
+        public event EventHandler<DBProgressMax> ProgressMaxSet;
+        public event EventHandler<DBProgressValue> ProgressValueSet;
+        public event EventHandler<DBMessage> Message;
+        public event EventHandler ProgressReset;
+
+        public void OnError(DBError e) => Error?.Invoke(this, e);
+        public void OnProgressMaxSet(DBProgressMax p) => ProgressMaxSet?.Invoke(this, p);
+
+        public void OnProgressValueSet(DBProgressValue p) => ProgressValueSet?.Invoke(this, p);
+
+        public void OnMessage(DBMessage m) => Message?.Invoke(this, m);
+
+        public void OnProgressReset() => ProgressReset.Invoke(this, null);
 
         /// <summary>
         /// Provides enumeration to the ConnectionState property
@@ -80,11 +97,7 @@ namespace Grimoire.DB
         {
             configMan = configManager;
 
-            string ip = configMan["IP"];
-            string name = configMan["WorldName"];
-            string user = configMan["WorldUser"];
-            string pass = configMan["WorldPass"];
-            bool trusted = configMan["Trusted", "DB"];
+            connType = type;
 
             switch (type)
             {
@@ -92,34 +105,61 @@ namespace Grimoire.DB
                     goto case DbConType.MsSQL;
 
                 case DbConType.MySQL:
-                    mySQL_conn = new MySqlConnection($"server={ip};database={name};user={user};password={pass}");
+                    mySQL_conn = new MySqlConnection(ConnectionString);
                     mySQL_cmd = new MySqlCommand() { Connection = mySQL_conn };
                     break;
 
                 case DbConType.MsSQL:
-                    string connStr = $"Server={ip};Database={name};";
-
-                    if (trusted)
-                        connStr += "Trusted_Connection=true;";
-                    else
-                        connStr += $"User ID={user};Password={pass}";
-
-                    msSQL_conn = new SqlConnection(connStr);
+                    msSQL_conn = new SqlConnection(ConnectionString);
                     msSQL_cmd = new SqlCommand() { Connection = msSQL_conn };
                     break;
             }
         }
 
-        public async Task<dynamic> Execute(string text, DbParameter parameters, DbCmdType type = DbCmdType.NonQuery, bool keepAlive = false)
+        string ConnectionString
+        {
+            get
+            {
+                string ip = configMan["IP"];
+                string name = configMan["WorldName"];
+                string user = configMan["WorldUser"];
+                string pass = configMan["WorldPass"];
+                bool trusted = configMan["Trusted", "DB"];
+
+                switch (connType)
+                {
+                    case DbConType.MySQL:
+                        return $"server={ip};database={name};user={user};password={pass}";
+
+                    case DbConType.MsSQL:
+                        {
+                            string connStr = $"Server={ip};Database={name};";
+
+                            if (trusted)
+                                connStr += "Trusted_Connection=true;";
+                            else
+                                connStr += $"User ID={user};Password={pass}";
+
+                            return connStr;
+                        }
+                }
+
+                return null;
+            }
+            
+        }
+
+        public async Task<dynamic> Execute(string text, DbParameter parameters, DbCmdType type = DbCmdType.NonQuery)
         {
             try
             {
-                NewCommand(text);
+                NewCommand(text, parameters);
+
                 return await execute(type);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}", "Execute", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                OnError(new DBError($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}"));
             }
 
             return null;
@@ -130,11 +170,12 @@ namespace Grimoire.DB
             try
             {
                 NewCommand(text);
+
                 return await execute(type);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}", "Execute", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                OnError(new DBError($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}"));
             }
 
             return null;
@@ -149,7 +190,7 @@ namespace Grimoire.DB
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}", "execute", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                OnError(new DBError($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}"));
             }
 
             return null;
@@ -157,37 +198,36 @@ namespace Grimoire.DB
 
         async Task<dynamic> execute(DbCmdType type = DbCmdType.NonQuery)
         {
-            if (State == ConnectionState.Connected)
-                switch (connType)
-                {
-                    case DbConType.MsSQL:
-                        switch (type)
-                        {
-                            case DbCmdType.NonQuery:
-                                return await msSQL_cmd.ExecuteNonQueryAsync().ConfigureAwait(true);
+            switch (connType)
+            {
+                case DbConType.MsSQL:
+                    switch (type)
+                    {
+                        case DbCmdType.NonQuery:
+                            return await msSQL_cmd.ExecuteNonQueryAsync().ConfigureAwait(true);
 
-                            case DbCmdType.Scalar:
-                                return await msSQL_cmd.ExecuteScalarAsync().ConfigureAwait(true);
+                        case DbCmdType.Scalar:
+                            return await msSQL_cmd.ExecuteScalarAsync().ConfigureAwait(true);
 
-                            case DbCmdType.Reader:
-                                return await msSQL_cmd.ExecuteReaderAsync().ConfigureAwait(true);
-                        }
-                        break;
+                        case DbCmdType.Reader:
+                            return await msSQL_cmd.ExecuteReaderAsync().ConfigureAwait(true);
+                    }
+                    break;
 
-                    case DbConType.MySQL:
-                        switch (type)
-                        {
-                            case DbCmdType.NonQuery:
-                                return await mySQL_cmd.ExecuteNonQueryAsync().ConfigureAwait(true);
+                case DbConType.MySQL:
+                    switch (type)
+                    {
+                        case DbCmdType.NonQuery:
+                            return await mySQL_cmd.ExecuteNonQueryAsync().ConfigureAwait(true);
 
-                            case DbCmdType.Scalar:
-                                return await mySQL_cmd.ExecuteScalarAsync().ConfigureAwait(true);
+                        case DbCmdType.Scalar:
+                            return await mySQL_cmd.ExecuteScalarAsync().ConfigureAwait(true);
 
-                            case DbCmdType.Reader:
-                                return await mySQL_cmd.ExecuteReaderAsync().ConfigureAwait(true);
-                        }
-                        break;
-                }
+                        case DbCmdType.Reader:
+                            return await mySQL_cmd.ExecuteReaderAsync().ConfigureAwait(true);
+                    }
+                    break;
+            }
 
             return null;
         }
@@ -215,7 +255,7 @@ namespace Grimoire.DB
 
                 try
                 {
-                    Tabs.Manager.Instance.RDBTab.ProgressMax = rowCnt;
+                    OnProgressMaxSet(new DBProgressMax(rowCnt));
 
                     int rowIdx = 0;
 
@@ -226,6 +266,10 @@ namespace Grimoire.DB
                                 Row row = new Row((Cell[])fieldList.Clone());
 
                                 int sqlIdx = 0;
+
+                                // TODO: implement null checking all possible sql fields
+                                //if (iRow.IsDBNull(sqlIdx))
+                                //    row[sqlIdx] = getDefault(iRow[sqlIdx].GetType());
 
                                 for (int i = 0; i < fieldList.Length; i++)
                                 {
@@ -346,7 +390,7 @@ namespace Grimoire.DB
 
                                         sqlIdx++;
                                     }
-                                    else
+                                    else //TODO: Fields defaults should be set by attempting to call Cell.Value when no value is present!
                                     {
                                         switch (field.Type)
                                         {
@@ -383,35 +427,31 @@ namespace Grimoire.DB
                                 data[rowIdx++] = row;
 
                                 if ((rowIdx * 100 / rowCnt) != ((rowIdx - 1) * 100 / rowCnt))
-                                    TabMan.RDBTab.ProgressVal = rowIdx;
+                                    OnProgressValueSet(new DBProgressValue(rowIdx));
                             }
                         else
-                            throw new Exception("dbRdr has no rows!");
+                            OnError(new DBError("dbRdr has no rows!"));
                     else
-                        throw new Exception("dbRdr is null!");
+                        OnError(new DBError("dbRdr is null!"));
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}", "Read Table", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    OnError(new DBError($"An Exception has occured!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}"));
                 }
                 finally
                 {
                     CloseConnection(true);
-                    TabMan.RDBTab.ResetProgress();
+                    OnProgressReset();
 
                     actionSW.Stop();
-                    Logs.Manager.Instance.Enter(Sender.DATABASE, Level.DEBUG, $"{table} successfully loaded in {actionSW.ElapsedMilliseconds}ms");
+
+                    OnMessage(new DBMessage($"{table} successfully loaded in {actionSW.ElapsedMilliseconds}ms"));
                 }
 
                 return data;
             }
             else
-            {
-                string msg = "Failed to open SQL Connection!";
-
-                MessageBox.Show(msg, "SQL Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Logs.Manager.Instance.Enter(Sender.DATABASE, Level.ERROR, msg);
-            }
+                OnError(new DBError("Failed to connect to the Database!"));
 
             return null;
         }
@@ -421,19 +461,15 @@ namespace Grimoire.DB
             actionSW = new Stopwatch();
             actionSW.Start();
 
-            Tabs.Styles.rdbTab rTab = TabMan.RDBTab;
-            int rowCnt = data.Length;
-
             try
             {
                 if (await OpenConnection())
                 {
-                    if (configMan["DropOnExport", "DB"])
-                        await Execute($"drop table {table}");
-                    else
-                        await Execute($"truncate table {table}");
+                    clearTable(table);
 
                     DataTable dataTbl = generateDataTable(table);
+
+                    OnProgressMaxSet(new DBProgressMax(data.Length, "Enumerating export data..."));
 
                     for (int r = 0; r < data.Length; r++) //loop rows
                     {
@@ -448,26 +484,28 @@ namespace Grimoire.DB
                         }
 
                         dataTbl.Rows.Add(newRow);
+
+                        if ((r * 100 / data.Length) != ((r - 1) * 100 / data.Length))
+                            OnProgressValueSet(new DBProgressValue(r));
                     }
 
+                    OnProgressReset();
+
                     executeBulk(dataTbl);
+
+                    return true;
                 }
                 else
-                {
-                    string msg = "Failed to open SQL Connection!";
-
-                    MessageBox.Show(msg, "SQL Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Logs.Manager.Instance.Enter(Sender.DATABASE, Level.ERROR, msg);
-                }
+                    OnError(new DBError("Failed to connect to the Database!"));
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occured during the export!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}");
+                OnError(new DBError($"An error occured during the export!\nMessage: {ex.Message}\nStack-Trace: {ex.StackTrace}"));
             }
             finally
             {
                 CloseConnection();
-                rTab.ResetProgress();
+                OnProgressReset();
 
                 actionSW.Stop();
                 Logs.Manager.Instance.Enter(Sender.DATABASE, Level.DEBUG, $"{table} exported loaded in {actionSW.ElapsedMilliseconds}ms");
@@ -501,7 +539,7 @@ namespace Grimoire.DB
             int rowCnt = table.Rows.Count;
             long processed = 0;
 
-            Tabs.Manager.Instance.RDBTab.ProgressMax = rowCnt;
+            OnProgressMaxSet(new DBProgressMax(rowCnt, "Exporting data..."));
 
             switch (connType)
             {
@@ -515,7 +553,7 @@ namespace Grimoire.DB
                             processed += x.RowsCopied;
 
                             if ((processed * 100 / rowCnt) != ((processed - 1) * 100 / rowCnt))
-                                TabMan.RDBTab.ProgressVal = (int)processed;
+                                OnProgressValueSet(new DBProgressValue((int)processed));
                         };
                     }
                         break;
@@ -530,13 +568,13 @@ namespace Grimoire.DB
                             processed += x.RowsCopied;
 
                             if ((processed * 100 / rowCnt) != ((processed - 1) * 100 / rowCnt))
-                                TabMan.RDBTab.ProgressVal = (int)processed;
+                                OnProgressValueSet(new DBProgressValue((int)processed));
                         };
                     }
                     break;
             }
 
-            Tabs.Manager.Instance.RDBTab.ResetProgress();
+            OnProgressReset();
         }
 
         public async Task<bool> OpenConnection()
@@ -631,6 +669,106 @@ namespace Grimoire.DB
             }
 
             return statement;
+        }
+
+        async void clearTable(string table)
+        {
+            string scriptDir = configMan.GetDirectory("ScriptsDirectory", "DB");
+
+            if (configMan["Engine", "DB"] == 0) // This feature depends on MsSQL SMO and cannot be used on MySQL/MariaDB!
+            {
+                if (configMan["Backup", "DB"])
+                    await Task.Run(() => { scriptTable(table, true); });
+
+                if (configMan["DropOnExport", "DB"])
+                {
+                    scriptTable(table, false);
+
+                    await Execute($"drop table {table}");
+
+                    string scriptPath = $"{scriptDir}\\{table}_{DateTime.Now.ToString("hhMMddyyy")}_so.sql";
+
+                    if (await executeScript(scriptPath) == -1)
+                        OnError(new DBError($"Failed to execute script: {scriptPath}"));
+                }
+            }
+            else
+                await Execute($"truncate table {table}");
+        }
+
+        void scriptTable(string tableName, bool scriptData)
+        {
+            Microsoft.Data.SqlClient.SqlConnection sqlCon = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+            ServerConnection svConn = new ServerConnection(sqlCon);
+            Server sv = new Server(svConn);
+            Database db = sv.Databases[configMan["WorldName", "DB"]];
+
+            string scriptDir = configMan.GetDirectory("ScriptsDirectory", "DB");
+
+            ScriptingOptions opts = new ScriptingOptions()
+            {
+                ScriptData = scriptData,
+                ScriptDrops = false,
+                ScriptSchema = true,
+                IncludeDatabaseContext = true,
+                FileName = string.Format(@"{0}\{1}_{2}{3}.sql",
+                                                     scriptDir,
+                                                     tableName,
+                                                     DateTime.Now.ToString("hhMMddyyyy"),
+                                                     (!scriptData) ? "_so" : string.Empty)
+            };
+
+            OnMessage(new DBMessage(string.Format("Scripting {0} {1}", tableName, (scriptData) ? "Data" : "Schema")));
+
+            if (db != null)
+            {
+                if (db.Tables.Contains(tableName))
+                    db.Tables[tableName].EnumScript(opts);
+                else
+                    OnError(new DBError($"Database object does not contain table with key: {tableName}"));
+            }
+
+            else
+                throw new NullReferenceException("Database object is null!");
+        }
+
+        async Task<int> executeScript(string filename)
+        {
+            Microsoft.Data.SqlClient.SqlConnection sqlCon = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+            ServerConnection svConn = new ServerConnection(sqlCon);
+            Server sv = new Server(svConn);
+
+            if (File.Exists(filename))
+            {
+                string script = new StreamReader(filename).ReadToEnd(); //TODO: Check that the _so actually exists?
+
+                if (string.IsNullOrEmpty(script))
+                    OnError(new DBError("Failed to load the schema (_so) script needed to restore the table!"));
+                else
+                {
+                    if (sv != null)
+                        try
+                        {
+                            return sv.ConnectionContext.ExecuteNonQuery(script);
+                        }
+                        catch (Exception ex)
+                        {
+                           OnError(new DBError($"An exception occured during script execution!\nMessage: {ex.Message}\n\nCall-Stack: {ex.StackTrace}"));                          
+                       }
+                    else
+                        OnError(new DBError("Database object is null!"));
+                }
+            }
+
+            return -1;
+        }
+
+        object getDefault(Type type)
+        {
+            if (type.IsValueType)
+                return Activator.CreateInstance(type);
+
+            return null;
         }
 
         #region IDisposable Support

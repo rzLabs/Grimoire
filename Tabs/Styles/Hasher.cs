@@ -215,6 +215,7 @@ namespace Grimoire.Tabs.Styles
             string convertedName = StringCipher.IsEncoded(filename) ? StringCipher.Decode(filename) : filename;
             string fileWithoutExt = Path.GetFileNameWithoutExtension(convertedName);
             string ext = Path.GetExtension(convertedName);
+
             if (optAppend_ascii_rBtn.Checked)
                 if (!convertedName.Contains("(ascii)"))
                     return $"{fileWithoutExt}(ascii){ext}";
@@ -225,6 +226,8 @@ namespace Grimoire.Tabs.Styles
 
             return convertedName;
         }
+
+        internal void Clear() => fileGrid.Rows.Clear();
 
         private void localize()
         {

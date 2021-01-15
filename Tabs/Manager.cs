@@ -263,6 +263,10 @@ namespace Grimoire.Tabs
                     DataTab.Clear();
                     DataCore.Clear();
                     break;
+
+                case Style.HASHER:
+                    HashTab.Clear();
+                    break;
             }
 
             lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab: {0} contents have been cleared.", Page.Text);

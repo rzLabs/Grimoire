@@ -16,7 +16,6 @@ using Grimoire.DB.Enums;
 
 namespace Grimoire.Tabs.Styles
 {
-    //TODO: Correct encoding
     public partial class rdbTab : UserControl
     {
         #region Properties
@@ -33,6 +32,7 @@ namespace Grimoire.Tabs.Styles
         readonly Tabs.Utilities.Grid gridUtil;
         readonly Stopwatch actionSW = new Stopwatch();
         XmlManager xMan = XmlManager.Instance;
+        DBHelper db = null;
 
         bool structLoaded { get { return (ts_struct_list.SelectedIndex != -1); } }
         readonly string buildDir = string.Empty;
@@ -60,7 +60,10 @@ namespace Grimoire.Tabs.Styles
             set => Invoke(new MethodInvoker(delegate { ts_prog.Value = value; }));
         }
 
-        public string Status { get => ts_struct_status.Text; set => ts_struct_status.Text = value; }
+        public string Status
+        {
+            set => Invoke(new MethodInvoker(delegate { statusLb.Text = value; }));
+        }
 
         public bool UseASCII
         {
@@ -93,12 +96,49 @@ namespace Grimoire.Tabs.Styles
             loadEncodings();
             loadStructs();
             setChecks();
+            configureDB();
+
             core.ProgressMaxChanged += (o, x) => { ProgressMax = x.Maximum; };
             core.ProgressValueChanged += (o, x) => { ProgressVal = x.Value; };
             core.MessageOccured += (o, x) =>
             {
+                Status = x.Message;
                 lManager.Enter(Sender.RDB, Level.WARNING, x.Message);
             };
+
+        }
+
+        private void configureDB()
+        {
+            DbConType sqlEngine = (DbConType)configMan["Engine", "DB"];
+            db = new DBHelper(configMan, sqlEngine);
+
+            db.ProgressMaxSet += (o, x) =>
+            {
+                ProgressMax = x.Maximum;
+
+                if (x.Message != null)
+                    Status = x.Message;
+            };
+
+            db.ProgressValueSet += (o, x) =>
+            {
+                ProgressVal = x.Value;
+
+                if (x.Message != null)
+                    Status = x.Message;
+            };
+
+            db.ProgressReset += (o, x) =>
+            {
+                ProgressMax = 100;
+                ProgressVal = 0;
+                statusLb.ResetText();
+            };
+
+            db.Message += (o, x) => Status = x.Message;
+
+            db.Error += (o, x) => MessageBox.Show(x.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void setChecks()
@@ -185,9 +225,7 @@ namespace Grimoire.Tabs.Styles
                 }
             }
 
-            DbConType sqlEngine = (DbConType)configMan["Engine", "DB"];
-            DBHelper dbHelper = new DBHelper(configMan, sqlEngine);
-            Row[] table_data = await dbHelper.ReadTable(tablename);
+            Row[] table_data = await db.ReadTable(tablename);
 
             if (table_data.Length == 0)
             {
@@ -229,7 +267,8 @@ namespace Grimoire.Tabs.Styles
                     case DialogResult.Yes:
                         using (GUI.InputBox input = new GUI.InputBox("Enter desired table name", false))
                         {
-                            if (input.ShowDialog(this) != DialogResult.OK) { return; }
+                            if (input.ShowDialog(this) != DialogResult.OK)
+                                return;
 
                             lManager.Enter(Sender.RDB, Level.WARNING, "User opted to provide Table name for save operation.\n\t- Table name provided: {0}", input.Value);
                             tablename = input.Value;
@@ -239,9 +278,9 @@ namespace Grimoire.Tabs.Styles
                 }
             }
 
-            DbConType sqlEngine = (DbConType)configMan["Engine", "DB"];
-            DBHelper dbHelper = new DBHelper(configMan, sqlEngine);
-            await dbHelper.WriteTable(tablename, tManager.RDBCore.Rows);
+            
+            
+            await db.WriteTable(tablename, tManager.RDBCore.Rows);
 
             lManager.Enter(Sender.RDB, Level.NOTICE, "{0} rows were saved to table: {1} from tab: {2}", tManager.RDBCore.RowCount, tablename, tManager.Text);
 

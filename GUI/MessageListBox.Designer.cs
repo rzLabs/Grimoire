@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessageListBox));
             this.list = new System.Windows.Forms.ListBox();
             this.yesBtn = new System.Windows.Forms.Button();
             this.noBtn = new System.Windows.Forms.Button();
@@ -77,6 +76,8 @@
             // 
             // msg_grpBx
             // 
+            this.msg_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.msg_grpBx.Controls.Add(this.msg);
             this.msg_grpBx.Location = new System.Drawing.Point(9, 3);
             this.msg_grpBx.Margin = new System.Windows.Forms.Padding(2);
@@ -89,6 +90,8 @@
             // 
             // msg
             // 
+            this.msg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.msg.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.msg.Location = new System.Drawing.Point(4, 17);
             this.msg.Margin = new System.Windows.Forms.Padding(2);

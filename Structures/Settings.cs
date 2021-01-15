@@ -40,17 +40,25 @@ namespace Grimoire.Structures
         [Description("The password used to connect to the world database. Leave blank if Trusted Connection is true"), Category("Database"), DisplayName("Arcadia Password")]
         public string WorldPass { get => configMan["WorldPass"]; set => configMan["WorldPass"] = value; }
 
+        [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data by creating a script (.sql) of the tables data in the /scripts/ folder"), Category("Database"), DisplayName("Backup Table")]
+        public bool BackupTable { get => configMan["Backup", "DB"]; set => configMan["Backup", "DB"] = value; }
+
         [Description("Determines if the target table of any SQL save operation will be dropped and recreated or truncated before inserting the .rdb data"), Category("Database"), DisplayName("Drop Table")]
         public bool DropTable { get => configMan["DropOnExport"]; set => configMan["DropOnExport"] = value; }
 
-        [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data by creating a script (.sql) of the tables data in the /scripts/ folder"), Category("Database"), DisplayName("Backup Table")]
-        public bool BackupTable { get => configMan["Backup", "DB"]; set => configMan["Backup", "DB"] = value; }
+        [Description("Directory where sql related scripts will be stored."), Category("Database"), DisplayName("Scripts Directory")]
+        public string ScriptsDirectory { get => configMan["ScriptsDirectory", "DB"]; set => configMan["ScriptsDirectory", "DB"] = value; }
 
         [Description("Determines the period of time (in seconds) a SQL Connection attempt will last before timing out (expiring)."), Category("Database"), DisplayName("Connection Timeout")]
         public int ConnTimeout { get => (int)configMan["Timeout", "DB"]; set => configMan["Timeout", "DB"] = value; }
 
         [Description("If defined, this is where any exported/built files will be placed. If not defined Grimoire will use/create the 'Output' folder."), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string BuildDirectory { get => configMan["BuildDirectory", "Grim"]; set => configMan["BuildDirectory", "Grim"] = value; }
+
+        // SPR / Dump utilities
+
+        [Description("Directory where a previously generated data dump is located"), DisplayName("Dump Directory"), Category("SPR Generator / Dump Updater"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        public string DumpDirectory { get => configMan["DumpDirectory", "Grim"]; set => configMan["DumpDirectory", "Grim"] = value; }
 
         // data
         [Description("The default directory displayed when opening local files in the Data Utility"), Category("Data Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
@@ -59,29 +67,12 @@ namespace Grimoire.Structures
         [Description("Determines if Grimoire will use a modified xor encryption key to load/alter client data files"), Category("Data Utility"), DisplayNameAttribute("Use Modified XOR Key")]
         public bool UseModifiedXOR { get => configMan["UseModifiedXOR"]; set => configMan["UseModifiedXOR"] = value; }
 
-        [Description("If UseModifiedXORKey is true, this key will be used in Data.xxx importing and Data.000 Load/Save operations"), Category("Data Utility"), DisplayName("Modified XOR Key")]
-        public byte[] ModifiedXORKey 
-        {
-            get
-            {
-                int[] nKeyArray = configMan["ModifiedXORKey"].ToArray();
-                byte[] bKeyArray = new byte[nKeyArray.Length];
-
-                for (int i = 0; i < nKeyArray.Length; i++)
-                    bKeyArray[i] = (byte)nKeyArray[i];
-
-                return bKeyArray;
-            }
-            set
-            {
-                int[] nKeyArray = new int[value.Length];
-
-                for (int i = 0; i < value.Length; i++)
-                    nKeyArray[i] = (int)value[i];
-
-                configMan["ModifiedXORKey"] = nKeyArray;
-            }
-        }
+        //[Description("If UseModifiedXORKey is true, this key will be used in Data.xxx importing and Data.000 Load/Save operations"), Category("Data Utility"), DisplayName("Modified XOR Key")]
+        //public byte[] ModifiedXORKey //Because JSON must store the key as int array, we must convert it
+        //{
+        //    get => configMan.GetByteArray("ModifiedXORKey"); 
+        //    set => configMan.UpdateByteArray("ModifiedXORKey", value);
+        //}
 
         [Description("Determines if files like data.000-008 will be backed up before any changes are made to them. (RECOMMENDED)"), Category("Data Utility"), DisplayName("Backups")]
         public bool Backups 
@@ -154,6 +145,24 @@ namespace Grimoire.Structures
 
         [Description("Determines if the flag selections are reset when changing flag lists!"), DisplayName("Clear on List Changed"), Category("Flag Editor")]
         public bool ClearOnChange { get => configMan["ClearOnChange", "Flag"]; set => configMan["ClearOnChange", "Flag"] = value; }
+
+        // Dump Updater
+
+        [Description("Determines if existing files (in the dump) will be overwritten (without warning) by files being copied into it."), DisplayName("Overwrite Existing Files"), Category("Dump Updater")]
+        public bool OverwriteExisting { get => configMan["OverwriteExisting", "DumpUpdater"]; set => configMan["OverwriteExisting", "DumpUpdater"] = value; }
+
+        // Spr Generator
+
+        [Description("Determines if images whose size does not match the expected size will be processed"), DisplayName("Ignore Invalid Size"), Category("SPR Generator")]
+        public bool IgnoreSize { get => configMan["IgnoreSize", "SPR"]; set => configMan["IgnoreSize", "SPR"] = value; }
+
+        [Description("Determines if a warning will be shown to the caller during generating"), DisplayName("Show Warnings"), Category("SPR Generator")]
+        public bool ShowWarnings { get => configMan["ShowWarnings", "SPR"]; set => configMan["ShowWarnings", "SPR"] = value; }
+
+        [Description("Determines if unverified/ignored spr icons will be listed at the end of generating"), DisplayName("Show Ignored"), Category("SPR Generator")]
+        public bool ShowIgnored { get => configMan["ShowIgnored", "SPR"]; set => configMan["ShowIgnored", "SPR"] = value; }
+
+        // locale
 
         [Description("Determines the displayed language of Grimoire"), DisplayName("Locale"), Category("Language")]
         public string Locale { get => configMan["Locale", "Localization"]; set => configMan["Locale", "Localization"] = value; }

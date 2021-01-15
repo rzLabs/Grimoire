@@ -25,6 +25,16 @@ namespace Grimoire.GUI
             //localize();
         }
 
+        public MessageListBox(string title, string msg, List<string> items)
+        {
+            InitializeComponent();
+            Text = title;
+            this.msg.Text = msg;
+            list.Items.AddRange(items.ToArray());
+            yesBtn.Visible = false;
+            noBtn.Text = "Ok";
+        }
+
         private void populateList(string[] filePaths)
         {
             foreach (string filePath in filePaths)

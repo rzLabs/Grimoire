@@ -40,8 +40,11 @@
             this.aboutLbl = new System.Windows.Forms.Label();
             this.ms = new System.Windows.Forms.MenuStrip();
             this.ts_utilities = new System.Windows.Forms.ToolStripMenuItem();
-            this.ts_bitflag_editor = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_log_viewer = new System.Windows.Forms.ToolStripMenuItem();
+            this.ts_bitflag_editor = new System.Windows.Forms.ToolStripMenuItem();
+            this.ts_dump_updater = new System.Windows.Forms.ToolStripMenuItem();
+            this.ts_spr_gen = new System.Windows.Forms.ToolStripMenuItem();
+            this.ts_xor_editor = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs_cMenu.SuspendLayout();
             this.ms.SuspendLayout();
             this.SuspendLayout();
@@ -139,32 +142,56 @@
             this.ts_utilities});
             this.ms.Location = new System.Drawing.Point(141, 5);
             this.ms.Name = "ms";
-            this.ms.Size = new System.Drawing.Size(66, 24);
+            this.ms.Size = new System.Drawing.Size(186, 24);
             this.ms.TabIndex = 6;
             this.ms.Text = "menuStrip1";
             // 
             // ts_utilities
             // 
             this.ts_utilities.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ts_log_viewer,
             this.ts_bitflag_editor,
-            this.ts_log_viewer});
+            this.ts_dump_updater,
+            this.ts_spr_gen,
+            this.ts_xor_editor});
             this.ts_utilities.Name = "ts_utilities";
             this.ts_utilities.Size = new System.Drawing.Size(58, 20);
             this.ts_utilities.Text = "Utilities";
             // 
-            // ts_bitflag_editor
-            // 
-            this.ts_bitflag_editor.Name = "ts_bitflag_editor";
-            this.ts_bitflag_editor.Size = new System.Drawing.Size(144, 22);
-            this.ts_bitflag_editor.Text = "BitFlag Editor";
-            this.ts_bitflag_editor.Click += new System.EventHandler(this.ts_bitflag_editor_Click);
-            // 
             // ts_log_viewer
             // 
             this.ts_log_viewer.Name = "ts_log_viewer";
-            this.ts_log_viewer.Size = new System.Drawing.Size(144, 22);
+            this.ts_log_viewer.Size = new System.Drawing.Size(180, 22);
             this.ts_log_viewer.Text = "Log Viewer";
             this.ts_log_viewer.Click += new System.EventHandler(this.ts_log_viewer_Click);
+            // 
+            // ts_bitflag_editor
+            // 
+            this.ts_bitflag_editor.Name = "ts_bitflag_editor";
+            this.ts_bitflag_editor.Size = new System.Drawing.Size(180, 22);
+            this.ts_bitflag_editor.Text = "BitFlag Editor";
+            this.ts_bitflag_editor.Click += new System.EventHandler(this.ts_bitflag_editor_Click);
+            // 
+            // ts_dump_updater
+            // 
+            this.ts_dump_updater.Name = "ts_dump_updater";
+            this.ts_dump_updater.Size = new System.Drawing.Size(180, 22);
+            this.ts_dump_updater.Text = "Dump Updater";
+            this.ts_dump_updater.Click += new System.EventHandler(this.ts_dump_updater_Click);
+            // 
+            // ts_spr_gen
+            // 
+            this.ts_spr_gen.Name = "ts_spr_gen";
+            this.ts_spr_gen.Size = new System.Drawing.Size(180, 22);
+            this.ts_spr_gen.Text = "SPR Generator";
+            this.ts_spr_gen.Click += new System.EventHandler(this.ts_spr_gen_Click);
+            // 
+            // ts_xor_editor
+            // 
+            this.ts_xor_editor.Name = "ts_xor_editor";
+            this.ts_xor_editor.Size = new System.Drawing.Size(180, 22);
+            this.ts_xor_editor.Text = "XOR Editor";
+            this.ts_xor_editor.Click += new System.EventHandler(this.ts_xor_editor_Click);
             // 
             // Main
             // 
@@ -211,6 +238,9 @@
         private System.Windows.Forms.ToolStripMenuItem ts_utilities;
         private System.Windows.Forms.ToolStripMenuItem ts_bitflag_editor;
         private System.Windows.Forms.ToolStripMenuItem ts_log_viewer;
+        private System.Windows.Forms.ToolStripMenuItem ts_spr_gen;
+        private System.Windows.Forms.ToolStripMenuItem ts_dump_updater;
+        private System.Windows.Forms.ToolStripMenuItem ts_xor_editor;
     }
 }
 

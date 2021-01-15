@@ -105,19 +105,6 @@ namespace Grimoire.Tabs.Styles
 
         #region Constructors
 
-        public Data()
-        {
-            InitializeComponent();
-
-            lManager = Logs.Manager.Instance;
-            tManager = Tabs.Manager.Instance;
-            configMan = GUI.Main.Instance.ConfigMan;
-
-            initializeCore();
-            gridUtils = new Utilities.Grid();
-            localize();
-        }
-
         public Data(string key)
         {
             InitializeComponent();
@@ -169,6 +156,12 @@ namespace Grimoire.Tabs.Styles
 
             string buildDirectory = configMan.GetDirectory("BuildDirectory", "Grim");
 
+            if (!await check_locations(dumpDirectory).ConfigureAwait(true))
+            {
+                lManager.Enter(Sender.DATA, Level.ERROR, "There are unresolved issues with your dump structure! Please verify that files are in their proper extension folder (e.g. .nfe in /nfe/ folder!)");
+                return;
+            }
+
             lManager.Enter(Sender.DATA, Level.NOTICE, "Building new client to:\n\t-{0}", buildDirectory);
 
             tab_disabled = true;
@@ -180,15 +173,7 @@ namespace Grimoire.Tabs.Styles
                 {
                     core.BuildDataFiles(dumpDirectory, buildDirectory);
                 });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Sender.DATA, Level.ERROR, ex);
-                return;
-            }
-            finally
-            {
+
                 string msg = "Client build completed!";
                 MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 lManager.Enter(Sender.DATA, Level.NOTICE, msg);
@@ -199,6 +184,12 @@ namespace Grimoire.Tabs.Styles
                     display_data();
 
                 core.Backups = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lManager.Enter(Sender.DATA, Level.ERROR, ex);
+                return;
             }
          
 
@@ -601,6 +592,63 @@ namespace Grimoire.Tabs.Styles
             extStatus.ResetText();
         }
 
+        async Task<bool> check_locations(string dir)
+        {
+            string[] extDirs = Directory.GetDirectories(dir);
+
+            ts_progress.Maximum = extDirs.Length;
+
+            for (int extIdx = 0; extIdx < extDirs.Length; extIdx++)
+            {
+                string extDir = extDirs[extIdx];
+
+                //check if dir is 2 characters long (e.g. .db/.fx)
+                int extOffset = 0;
+                extOffset = (extDir[extDir.Length - 3] == '\\') ? 2 : 3;
+
+                string dirExt = extDir.Substring(extDir.Length - extOffset);
+
+                ts_status.Text = $"Checking directory: {extDirs[extIdx]}...";
+
+                string[] dirFiles = Directory.GetFiles(extDirs[extIdx]);
+
+                for (int dirFileIdx = 0; dirFileIdx < dirFiles.Length; dirFileIdx++)
+                {
+                    string name = Path.GetFileName(dirFiles[dirFileIdx]);
+
+                    extOffset = (name[name.Length - 3] == '.') ? 2 : 3;
+                    string ext = name.Substring(name.Length - extOffset);
+
+                    if (ext != dirExt)
+                    {
+                        if (MessageBox.Show($"File: {name} does not belong to the directory: /{dirExt}/\n\nWould you like to move it", "Directory Mistmatch Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            string destName = $"{dir}//{ext}//{name}";
+                            string sourceName = $"{extDir}//{name}";
+
+                            if (File.Exists(destName))
+                                if (MessageBox.Show($"A file with the same name already exists in the destination folder!\n\nWould you like to delete it?", "Duplicate File Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                                    File.Delete(destName);
+                                else
+                                    return false;
+
+                            File.Move(sourceName, destName);
+                        }
+                        else
+                            return false;
+                    }
+                }
+
+                ts_progress.Value = extIdx;
+            }
+
+            ts_status.Text = "";
+            ts_progress.Maximum = 100;
+            ts_progress.Value = 0;
+
+            return true;
+        }
+
         private async void insert_files(string[] filePaths)
         {
             using (GUI.MessageListBox msgbox = new GUI.MessageListBox("Review Files", "You are about to import the following files!\r\n\r\nAre you sure you want to do that?", filePaths))
@@ -612,25 +660,30 @@ namespace Grimoire.Tabs.Styles
 
             try
             {
-                foreach (string filePath in filePaths)
+                tab_disabled = true;
+
+                if (filePaths.Length == 1)
                 {
-                    tab_disabled = true;
-                    string msg = string.Format("Importing: {0}...", Path.GetFileName(filePath));
+                    string path = filePaths[0];
+                    string msg = $"Importing: {Path.GetFileName(path)}";
                     ts_status.Text = msg;
                     lManager.Enter(Sender.DATA, Level.NOTICE, msg);
 
-                    await Task.Run(() => { core.ImportFileEntry(filePath); });
+                    await Task.Run(() => { core.ImportFileEntry(path); });
                 }
+                else if (filePaths.Length > 1)
+                    await Task.Run(() => { core.ImportFileEntries(filePaths); });
+
+                core.Save();
             }
             catch (Exception ex)
             {
+                Core_CurrentProgressReset(null, new CurrentResetArgs(false));
                 MessageBox.Show(ex.Message, "Import Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 lManager.Enter(Sender.DATA, Level.ERROR, ex);
             }
             finally
             {
-                core.Save();
-
                 tab_disabled = false;
                 ts_status.Text = string.Empty;
             }

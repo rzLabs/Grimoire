@@ -1,19 +1,20 @@
 {
   "Grim": {
-    "BuildDirectory": "/Output",
+    "BuildDirectory": ".\\Output",
+    "DumpDirectory": "",
     "Codepage": 1252
   },
   "Tab": {
     "Styles": [
       "RDB",
       "DATA",
-      "HASHER",
+      "HASHER"
     ],
     "DefaultStyle": "NONE"
   },
   "DB": {
     "Engine": 0,
-    "IP": "127.0.0.1",
+    "IP": "(local)",
     "Port": 1433,
     "Trusted": true,
     "WorldName": "Arcadia",
@@ -21,17 +22,18 @@
     "WorldPass": "",
     "Backup": false,
     "DropOnExport": false,
+    "ScriptsDirectory": ".\\Scripts",
     "Timeout": 0
   },
   "RDB": {
     "Struct_AutoLoad": true,
-    "Directory": "/Structures",
+    "Directory": ".\\Structures",
     "Encoding": "Western Europe",
     "LoadDirectory": "",
     "AppendASCII": true,
     "SaveHashed": true,
-    "CSV_Directory": "/CSV",
-    "SQL_Directory": "/SQL"
+    "CSV_Directory": ".\\CSV",
+    "SQL_Directory": ".\\SQL"
   },
   "Data": {
     "LoadDirectory": "C:\\Webzen\\Rappelz US",
@@ -48,19 +50,27 @@
     "Type": 0
   },
   "Log": {
-    "Directory": "/Logs",
+    "Directory": ".\\Logs",
     "DisplayLevel": 0,
     "WriteLevel": 0,
 	  "RefreshInterval": 2,
     "SaveOnExit": true
   },
   "Flag": {
-    "Directory": "/Flags",
+    "Directory": ".\\Flags",
     "Default": "use_flags_81",
     "ClearOnChange": false
   },
+  "DumpUpdater": {
+    "OverwriteExisting": false
+  },
+  "SPR": {
+    "IgnoreSize": true,
+    "ShowWarnings": true,
+    "ShowIgnored": true
+  },
   "Localization": {
-    "Directory": "/Localization",
+    "Directory": ".\\Localization",
     "Locale": "en-US"
   }
 }

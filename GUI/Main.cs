@@ -13,6 +13,8 @@ using Grimoire.Logs.Enums;
 
 namespace Grimoire.GUI
 {
+    // TODO: Update Grimoire to allow using proper relative paths ..\\..\\folder
+
     public partial class Main : Form
     {
         readonly Tabs.Manager tManager;
@@ -238,7 +240,7 @@ namespace Grimoire.GUI
             string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
             string aboutStr = string.Format("Grimoire v{0}\nDataCore v{1}\nDaedalus v{2}\n\nWritten by: iSmokeDrow" + 
                                             "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- InkDevil\n\t- XavierDeFawks\n\t- ThunderNikk\n\t- Exterminator\n\t"+
-                                            "- Medaion\n\t- AziaMafia\n\t- ADRENALINE\n\t- Musta2\n\n" +
+                                            "- Medaion\n\t- AziaMafia\n\t- ADRENALINE\n\t- Musta2\n\t- OceanWisdom\n\t- Sandro\n\t- Smashley\n\n" +
                                             "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
                                             gVersion, dCore_Version, rCore_Version);
             MessageBox.Show(aboutStr, "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -253,6 +255,24 @@ namespace Grimoire.GUI
         private void ts_log_viewer_Click(object sender, EventArgs e)
         {
             lManager.ShowViewer();
+        }
+
+        private void ts_spr_gen_Click(object sender, EventArgs e)
+        {
+            using (SPRGenerator sprGenerator = new SPRGenerator())
+                sprGenerator.ShowDialog(this);
+        }
+
+        private void ts_dump_updater_Click(object sender, EventArgs e)
+        {
+            using (DumpUpdater dumpUpdater = new DumpUpdater())
+                dumpUpdater.ShowDialog(this);
+        }
+
+        private void ts_xor_editor_Click(object sender, EventArgs e)
+        {
+            using (XOREditor xorEditor = new XOREditor())
+                xorEditor.ShowDialog(this);
         }
     }
 }

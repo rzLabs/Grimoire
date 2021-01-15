@@ -49,12 +49,13 @@
             this.ts_struct_list = new System.Windows.Forms.ToolStripComboBox();
             this.ts_struct_status = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.ts_prog = new System.Windows.Forms.ToolStripProgressBar();
             this.ts_save_enc = new System.Windows.Forms.ToolStripButton();
             this.ts_save_w_ascii = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.grid_cs = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.grid_cs_open_flag_editor = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusLb = new System.Windows.Forms.Label();
+            this.ts_prog = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.ts.SuspendLayout();
             this.grid_cs.SuspendLayout();
@@ -73,7 +74,7 @@
             this.grid.MultiSelect = false;
             this.grid.Name = "grid";
             this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.grid.Size = new System.Drawing.Size(780, 428);
+            this.grid.Size = new System.Drawing.Size(780, 390);
             this.grid.TabIndex = 17;
             this.grid.VirtualMode = true;
             this.grid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.grid_CellMouseClick);
@@ -93,7 +94,6 @@
             this.ts_struct_list,
             this.ts_struct_status,
             this.toolStripSeparator3,
-            this.ts_prog,
             this.ts_save_enc,
             this.ts_save_w_ascii,
             this.toolStripSeparator4});
@@ -232,12 +232,6 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
-            // ts_prog
-            // 
-            this.ts_prog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.ts_prog.Name = "ts_prog";
-            this.ts_prog.Size = new System.Drawing.Size(75, 22);
-            // 
             // ts_save_enc
             // 
             this.ts_save_enc.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -277,10 +271,29 @@
             this.grid_cs_open_flag_editor.Text = "Open w/ Flag Editor";
             this.grid_cs_open_flag_editor.Click += new System.EventHandler(this.grid_cs_open_flag_editor_Click);
             // 
+            // statusLb
+            // 
+            this.statusLb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.statusLb.AutoSize = true;
+            this.statusLb.Location = new System.Drawing.Point(3, 430);
+            this.statusLb.Name = "statusLb";
+            this.statusLb.Size = new System.Drawing.Size(0, 13);
+            this.statusLb.TabIndex = 26;
+            // 
+            // ts_prog
+            // 
+            this.ts_prog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ts_prog.Location = new System.Drawing.Point(677, 422);
+            this.ts_prog.Name = "ts_prog";
+            this.ts_prog.Size = new System.Drawing.Size(100, 23);
+            this.ts_prog.TabIndex = 27;
+            // 
             // rdbTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ts_prog);
+            this.Controls.Add(this.statusLb);
             this.Controls.Add(this.ts);
             this.Controls.Add(this.grid);
             this.Name = "rdbTab";
@@ -310,7 +323,6 @@
         private System.Windows.Forms.ToolStripComboBox ts_struct_list;
         private System.Windows.Forms.ToolStripLabel ts_struct_status;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripProgressBar ts_prog;
         private System.Windows.Forms.ToolStripComboBox ts_enc_list;
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.ToolStripButton ts_save_enc;
@@ -321,5 +333,7 @@
         private System.Windows.Forms.ToolStripMenuItem ts_save_file_sql;
         private System.Windows.Forms.ContextMenuStrip grid_cs;
         private System.Windows.Forms.ToolStripMenuItem grid_cs_open_flag_editor;
+        private System.Windows.Forms.Label statusLb;
+        private System.Windows.Forms.ProgressBar ts_prog;
     }
 }
