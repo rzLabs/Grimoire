@@ -22,13 +22,13 @@ namespace Grimoire.GUI
         
         readonly XmlManager xMan;
         public static Main Instance;
-        public readonly ConfigMan ConfigMan;
+        public readonly ConfigManager ConfigMan;
 
         public Main()
         {
             InitializeComponent();
             Instance = this;
-            ConfigMan = new ConfigMan();
+            ConfigMan = new ConfigManager();
             tManager = Tabs.Manager.Instance;
             lManager = Logs.Manager.Instance;
             xMan = XmlManager.Instance;

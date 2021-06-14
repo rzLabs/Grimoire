@@ -325,7 +325,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripComboBox ts_enc_list;
         private System.Windows.Forms.DataGridView grid;
-        private System.Windows.Forms.ToolStripButton ts_save_enc;
         private System.Windows.Forms.ToolStripButton ts_save_w_ascii;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem ts_save_file_rdb;
@@ -335,5 +334,6 @@
         private System.Windows.Forms.ToolStripMenuItem grid_cs_open_flag_editor;
         private System.Windows.Forms.Label statusLb;
         private System.Windows.Forms.ProgressBar ts_prog;
+        private System.Windows.Forms.ToolStripButton ts_save_enc;
     }
 }

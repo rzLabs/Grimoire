@@ -8,6 +8,7 @@ using Grimoire.Logs.Enums;
 
 namespace Grimoire.Tabs
 {
+    //TODO: update tab calls to check for SelectedIndex -1
     public class Manager
     {
         readonly GUI.Main main = null;
@@ -69,6 +70,9 @@ namespace Grimoire.Tabs
                 string key = null;
                 main.Invoke(new MethodInvoker(delegate
                 {
+                    if (tabs.SelectedIndex == -1)
+                        return;
+
                     key = pages[tabs.SelectedIndex].Name;
                 }));
 
@@ -181,13 +185,22 @@ namespace Grimoire.Tabs
                 {
                     main.Invoke(new MethodInvoker(delegate
                     {
-                        ret = (Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0];
+                        if (tabs.SelectedIndex != -1)
+                            ret = (Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0];
                     }));
 
                 }
 
                 return ret;
             }
+        }
+
+        public Styles.rdbTab RDBTabByKey(string key)
+        {
+            if (pages.ContainsKey(key))
+                return (Styles.rdbTab)pages[key].Controls[0];
+
+            return null;
         }
 
         public Styles.Hasher HashTab
@@ -238,10 +251,15 @@ namespace Grimoire.Tabs
                     text = "Item Utility";
                     break;
 
+                case Style.MARKET:
+                    tab.Controls.Add(new Styles.MarketEditor() { Dock = DockStyle.Fill });
+                    text = "Market Utility";
+                    break;
                 //case Style.DROPS:
                 //    tab.Controls.Add(new Styles.DropEditor() { Dock = DockStyle.Fill });
                 //    text = "Drop Utility";
                 //    break;
+
             }
 
             pages.Add(tab);

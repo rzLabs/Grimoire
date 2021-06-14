@@ -7,9 +7,12 @@ using Grimoire.Configuration;
 
 namespace Grimoire.Structures
 {
+    //TODO: Changing output directory needs to update open rdb tabs
+    //TODO: changing save with ascii/encrypted needs to update open rdb tabs
+
     class Settings
     {
-        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
         Tabs.Manager tabMan = Tabs.Manager.Instance;
 
         //[Description("A list of styles that can be choosen from the 'New' drop-down (Delimited by ',')"), Category("Tab Style"), DisplayName("Styles")]
@@ -53,7 +56,19 @@ namespace Grimoire.Structures
         public int ConnTimeout { get => (int)configMan["Timeout", "DB"]; set => configMan["Timeout", "DB"] = value; }
 
         [Description("If defined, this is where any exported/built files will be placed. If not defined Grimoire will use/create the 'Output' folder."), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
-        public string BuildDirectory { get => configMan["BuildDirectory", "Grim"]; set => configMan["BuildDirectory", "Grim"] = value; }
+        public string BuildDirectory 
+        { 
+            get => configMan["BuildDirectory", "Grim"];
+            set
+            {
+                configMan["BuildDirectory", "Grim"] = value;
+
+                string[] keys = tabMan.GetKeysByStyle(Style.RDB) ?? new string[0];
+
+                foreach (string key in keys)
+                    tabMan.RDBTabByKey(key).BuildDirectory = value;
+            }
+        }
 
         // SPR / Dump utilities
 
@@ -66,13 +81,6 @@ namespace Grimoire.Structures
 
         [Description("Determines if Grimoire will use a modified xor encryption key to load/alter client data files"), Category("Data Utility"), DisplayNameAttribute("Use Modified XOR Key")]
         public bool UseModifiedXOR { get => configMan["UseModifiedXOR"]; set => configMan["UseModifiedXOR"] = value; }
-
-        //[Description("If UseModifiedXORKey is true, this key will be used in Data.xxx importing and Data.000 Load/Save operations"), Category("Data Utility"), DisplayName("Modified XOR Key")]
-        //public byte[] ModifiedXORKey //Because JSON must store the key as int array, we must convert it
-        //{
-        //    get => configMan.GetByteArray("ModifiedXORKey"); 
-        //    set => configMan.UpdateByteArray("ModifiedXORKey", value);
-        //}
 
         [Description("Determines if files like data.000-008 will be backed up before any changes are made to them. (RECOMMENDED)"), Category("Data Utility"), DisplayName("Backups")]
         public bool Backups 
@@ -114,13 +122,25 @@ namespace Grimoire.Structures
             get => configMan["AppendASCII"];
             set
             {
-                Tabs.Manager.Instance.RDBTab.UseASCII = value;
+                if (Manager.Instance.RDBTab != null)
+                    Manager.Instance.RDBTab.UseASCII = value;
+
                 configMan["AppendASCII"] = value;
             }
         }
 
         [Description("Determines if newly created .RDB files will be saved in their hash name version"), Category("RDB Utility"), DefaultValue(false), DisplayName("Save Hashed")]
-        public bool SaveHashed { get => configMan["SaveHashed", "RDB"]; set => configMan["SaveHashed", "RDB"] = value; }
+        public bool SaveHashed
+        {
+            get => configMan["SaveHashed", "RDB"];
+            set
+            {
+                if (Manager.Instance.RDBTab != null)
+                    Manager.Instance.RDBTab.SaveEncrypted = value;
+
+                configMan["SaveHashed", "RDB"] = value;
+            }
+        }
 
         [Description("The directory where all .csv will be saved to."), Category("RDB Utility"), DisplayName("CSV Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string CSVDirectory { get => configMan["CSV_Directory"]; set => configMan["CSV_Directory"] = value; }

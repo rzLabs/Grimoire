@@ -102,10 +102,13 @@ namespace Grimoire.GUI
 
         private void ts_def_Click(object sender, EventArgs e) => ts_file_load_def_Click(this, null);
 
-        private void ts_file_save_config_Click(object sender, EventArgs e)
+        private async void ts_file_save_config_Click(object sender, EventArgs e)
         {
             if (provider != null && provider.Length > 0)
+            {
                 Main.Instance.ConfigMan.UpdateByteArray("ModifiedXORKey", provider.Bytes.ToArray());
+                await Main.Instance.ConfigMan.Save();
+            }
         }
 
         private void ts_file_save_key_Click(object sender, EventArgs e)

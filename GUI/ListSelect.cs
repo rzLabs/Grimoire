@@ -12,8 +12,9 @@ namespace Grimoire.GUI
 
         public ListSelect(string title, List<IndexEntry> selections, string selection = null)
         {
-            this.Text = title;
             InitializeComponent();
+
+            this.Text = title;
             populateList(selections);
             localize();
 
@@ -27,6 +28,29 @@ namespace Grimoire.GUI
                         list.SelectedIndex = i;
                 }
             }
+        }
+
+        public ListSelect(string title, string[] items)
+        {
+            InitializeComponent();
+
+            localize();
+
+            this.Text = title;
+           
+            list.Items.AddRange(items);
+
+        }
+
+        public ListSelect(string title, List<string> items)
+        {
+            InitializeComponent();
+
+            localize();
+
+            this.Text = title;
+
+            list.Items.AddRange(items.ToArray());
         }
 
         public string SelectedText

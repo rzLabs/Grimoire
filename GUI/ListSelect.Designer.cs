@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ListSelect));
             this.list = new System.Windows.Forms.ListBox();
             this.okBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -64,9 +63,10 @@
             this.ClientSize = new System.Drawing.Size(327, 338);
             this.Controls.Add(this.okBtn);
             this.Controls.Add(this.list);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            //this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ListSelect";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.ResumeLayout(false);
 

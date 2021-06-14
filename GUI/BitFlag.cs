@@ -43,7 +43,7 @@ namespace Grimoire.GUI
         #region Properties
 
         readonly Logs.Manager lManager;
-        readonly ConfigMan configMan;
+        readonly ConfigManager configMan;
 
         protected bool calculating = false;
         public List<string> lists = new List<string>();

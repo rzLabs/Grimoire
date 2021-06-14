@@ -21,7 +21,7 @@ namespace Grimoire.Tabs.Styles
         Core core;
         readonly Logs.Manager lManager;
         readonly Tabs.Manager tManager;
-        readonly ConfigMan configMan;
+        readonly ConfigManager configMan;
 
         readonly Utilities.Grid gridUtils;
         public List<IndexEntry> FilteredIndex = new List<IndexEntry>();
@@ -206,6 +206,12 @@ namespace Grimoire.Tabs.Styles
             string filePath = Paths.FilePath;
             if (Paths.FileResult != DialogResult.OK)
                 return;
+
+            if (!filePath.EndsWith("000"))
+            {
+                MessageBox.Show("You have selected an invalid file! Please select data.000!", "Invalid Index", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }    
 
             load(filePath);
         }

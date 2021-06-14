@@ -21,7 +21,7 @@ namespace Grimoire.GUI
         {
             InitializeComponent();
             Text = description;
-            this.FormBorderStyle = (resizable) ? FormBorderStyle.SizableToolWindow : FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = (resizable) ? FormBorderStyle.Sizable : FormBorderStyle.FixedDialog;
             input.Multiline = resizable;
             DialogResult = DialogResult.Cancel;
             localize();

@@ -14,7 +14,7 @@ namespace Grimoire.Tabs.Styles
         #region Properties
         Logs.Manager lManager;
         XmlManager xMan = XmlManager.Instance;
-        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
         Tabs.Manager tMan = Tabs.Manager.Instance;
         #endregion
 

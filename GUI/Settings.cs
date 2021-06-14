@@ -6,7 +6,7 @@ namespace Grimoire.GUI
 {
     public partial class Settings : Form
     {
-        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
         object properties;
 
         public Settings()

@@ -16,6 +16,7 @@ using Grimoire.DB.Enums;
 
 namespace Grimoire.Tabs.Styles
 {
+    //TODO: Check RDB tab exception handling (a lot of errors seem to only be directed to the logger!)
     public partial class rdbTab : UserControl
     {
         #region Properties
@@ -23,7 +24,7 @@ namespace Grimoire.Tabs.Styles
         GUI.Main main = GUI.Main.Instance;
         Logs.Manager lManager = Logs.Manager.Instance;
         Manager tManager = Manager.Instance;
-        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
 
         public Core core = new Core();
         DataCore.Core dCore = null;
@@ -35,7 +36,7 @@ namespace Grimoire.Tabs.Styles
         DBHelper db = null;
 
         bool structLoaded { get { return (ts_struct_list.SelectedIndex != -1); } }
-        readonly string buildDir = string.Empty;
+        string buildDir = string.Empty;
 
         public Core Core
         {
@@ -71,6 +72,18 @@ namespace Grimoire.Tabs.Styles
             set { ts_save_w_ascii.Checked = value; }
         }
 
+        public bool SaveEncrypted
+        {
+            get => ts_save_enc.Checked;
+            set => ts_save_enc.Checked = value;
+        }
+
+        public string BuildDirectory
+        {
+            get => buildDir;
+            set => buildDir = value;
+        }
+
         #endregion
 
         #region Constructors
@@ -97,14 +110,7 @@ namespace Grimoire.Tabs.Styles
             loadStructs();
             setChecks();
             configureDB();
-
-            core.ProgressMaxChanged += (o, x) => { ProgressMax = x.Maximum; };
-            core.ProgressValueChanged += (o, x) => { ProgressVal = x.Value; };
-            core.MessageOccured += (o, x) =>
-            {
-                Status = x.Message;
-                lManager.Enter(Sender.RDB, Level.WARNING, x.Message);
-            };
+            configureCore();
 
         }
 
@@ -138,7 +144,22 @@ namespace Grimoire.Tabs.Styles
 
             db.Message += (o, x) => Status = x.Message;
 
-            db.Error += (o, x) => MessageBox.Show(x.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            db.Error += (o, x) =>
+            {
+                MessageBox.Show(x.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lManager.Enter(Sender.RDB, Level.NOTICE, x.Message);
+            };
+        }
+
+        private void configureCore()
+        {
+            core.ProgressMaxChanged += (o, x) => { ProgressMax = x.Maximum; };
+            core.ProgressValueChanged += (o, x) => { ProgressVal = x.Value; };
+            core.MessageOccured += (o, x) =>
+            {
+                Status = x.Message;
+                lManager.Enter(Sender.RDB, Level.WARNING, x.Message);
+            };
         }
 
         private void setChecks()
@@ -180,7 +201,7 @@ namespace Grimoire.Tabs.Styles
                 lManager.Enter(Sender.RDB, Level.ERROR, "Exception Occured:\n\t- {0}", LuaException.Print(sEx.DecoratedMessage, ts_struct_list.Text));
             }
             catch (Exception ex) { lManager.Enter(Sender.RDB, Level.ERROR, ex); }
-            finally
+            finally //TODO: change this shit! (This is bad, if an exception occurs this block will still execute)
             {
                 ts_struct_status.Text = "Loaded";
                 tManager.Text = string.Format("<{0}>", ts_struct_list.Text);
@@ -278,7 +299,7 @@ namespace Grimoire.Tabs.Styles
                 }
             }
 
-            
+            //TODO: but what if they don't provide a name!
             
             await db.WriteTable(tablename, tManager.RDBCore.Rows);
 
@@ -289,10 +310,10 @@ namespace Grimoire.Tabs.Styles
 
         private void ts_save_file_sql_Click(object sender, EventArgs e)
         {
-
+            throw new NotImplementedException(); //TODO: implement me
         }
 
-        private void grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e) 
         {
             Cell cell = core.Rows[0].GetCell(grid.Columns[e.ColumnIndex].Name);
             SortOrder curOrder = grid.Columns[cell.Name].HeaderCell.SortGlyphDirection;
@@ -322,7 +343,7 @@ namespace Grimoire.Tabs.Styles
             Sort(cell, newOrder);
         }
 
-        private async void ts_save_file_csv_Click(object sender, EventArgs e)
+        private async void ts_save_file_csv_Click(object sender, EventArgs e) //TODO: review me for possible unhandled exceptions
         {
             actionSW.Reset();
             actionSW.Start();
@@ -492,6 +513,8 @@ namespace Grimoire.Tabs.Styles
                                 if (input.ShowDialog(this) != DialogResult.OK)
                                     return;
 
+                                //TODO: but what if they didn't enter a valid name?
+
                                 lManager.Enter(Sender.RDB, Level.DEBUG, "User opted to provide Filename for save operation.\n\t- Filename provided: {0}", input.Value);
                                 filename = input.Value;
                             }
@@ -655,6 +678,8 @@ namespace Grimoire.Tabs.Styles
 
             string encStr = configMan["Encoding", "RDB"];
 
+            //TODO: but what if encStr is not valid?
+
             ts_enc_list.SelectedIndex = (encStr != null) ? Encodings.GetIndex(encStr) : 0;
 
             lManager.Enter(Sender.RDB, Level.NOTICE, "{0} Encodings loaded.", Encodings.Count);
@@ -669,7 +694,7 @@ namespace Grimoire.Tabs.Styles
             }
             else
             {
-                string[] structs = Directory.GetFiles(structsDir);
+                string[] structs = Directory.GetFiles(structsDir); //TODO: but what if structsDir is not valid?
                 lManager.Enter(Sender.RDB, Level.NOTICE, "{0} Structure files loaded from:\n\t- {1}", structs.Length, structsDir);
 
                 foreach (string filename in structs)
@@ -718,7 +743,7 @@ namespace Grimoire.Tabs.Styles
 
             dCore.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];
             if (dCore.UseModifiedXOR)
-                dCore.SetXORKey(configMan.GetByteArray("ModifiedXORKey"));
+                dCore.SetXORKey(configMan.GetByteArray("ModifiedXORKey")); //TODO: should there be some checks to verify the XORKey data?
 
             lManager.Enter(Sender.RDB, Level.NOTICE, "RDB Tab: {0} attempting load file selection from index at path:\n\t- {1}", tManager.Text, filePath);
 
@@ -732,6 +757,8 @@ namespace Grimoire.Tabs.Styles
                 dCore.Load(filePath);
                 results = dCore.GetEntriesByExtensions("rdb", "ref");
             });
+
+            //TODO: should be verifying that there are actually results!
 
             lManager.Enter(Sender.RDB, Level.DEBUG, "File list retrived successfully! ({0}ms)\n\t- Selections available: {1}",
                                                                                             actionSW.ElapsedMilliseconds.ToString("D4"),
@@ -765,7 +792,7 @@ namespace Grimoire.Tabs.Styles
             grid.VirtualMode = true;
             grid.CellValueNeeded += gridUtil.Grid_CellValueNeeded;
             grid.CellValuePushed += gridUtil.Grid_CellPushed;
-            grid.RowCount = tManager.RDBCore.RowCount + 1; //core.Data.Count + 1;
+            grid.RowCount = tManager.RDBCore.RowCount + 1;
         }
 
         string generateCSV()

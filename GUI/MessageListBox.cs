@@ -16,12 +16,12 @@ namespace Grimoire.GUI
     {
         XmlManager xMan = XmlManager.Instance;
 
-        public MessageListBox(string title, string msg, string[] filePaths)
+        public MessageListBox(string title, string msg, string[] items)
         {
             InitializeComponent();
             Text = title;
             this.msg.Text = msg;
-            populateList(filePaths);
+            populateList(items);
             //localize();
         }
 

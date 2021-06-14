@@ -29,7 +29,7 @@ namespace Grimoire.GUI
 
         List<string> ignored = new List<string>();
 
-        ConfigMan configMgr = Main.Instance.ConfigMan;
+        ConfigManager configMgr = Main.Instance.ConfigMan;
 
         public SPRGenerator()
         {

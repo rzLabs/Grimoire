@@ -16,7 +16,7 @@ namespace Grimoire.Utilities
     public class XmlManager
     {
         Logs.Manager lManager = Logs.Manager.Instance;
-        Configuration.ConfigMan ConfigMan = GUI.Main.Instance.ConfigMan;
+        Configuration.ConfigManager ConfigMan = GUI.Main.Instance.ConfigMan;
 
         List<Locale> locales = new List<Locale>();
         Locale locale

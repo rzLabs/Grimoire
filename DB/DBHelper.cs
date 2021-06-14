@@ -23,7 +23,7 @@ namespace Grimoire.DB
     public class DBHelper : IDisposable
     {
         Tabs.Manager TabMan = Tabs.Manager.Instance;
-        ConfigMan configMan = GUI.Main.Instance.ConfigMan;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
 
         DbConType connType = DbConType.MsSQL;
 
@@ -93,7 +93,7 @@ namespace Grimoire.DB
         /// </summary>
         /// <param name="configManager"></param>
         /// <param name="type"></param>
-        public DBHelper(ConfigMan configManager, DbConType type = DbConType.MsSQL)
+        public DBHelper(ConfigManager configManager, DbConType type = DbConType.MsSQL)
         {
             configMan = configManager;
 
@@ -149,12 +149,10 @@ namespace Grimoire.DB
             
         }
 
-        public async Task<dynamic> Execute(string text, DbParameter parameters, DbCmdType type = DbCmdType.NonQuery)
+        public async Task<dynamic> Execute(DbCmdType type = DbCmdType.NonQuery)
         {
             try
             {
-                NewCommand(text, parameters);
-
                 return await execute(type);
             }
             catch (Exception ex)
@@ -257,6 +255,7 @@ namespace Grimoire.DB
                 {
                     OnProgressMaxSet(new DBProgressMax(rowCnt));
 
+                    int prevIdx = 0;
                     int rowIdx = 0;
 
                     if (dbRdr != null)
@@ -313,6 +312,9 @@ namespace Grimoire.DB
                                                 break;
 
                                             case CellType.TYPE_LONG:
+                                                goto case CellType.TYPE_INT_64;
+
+                                            case CellType.TYPE_INT_64:
                                                 row[i] = (long)iRow[sqlIdx];
                                                 break;
 
@@ -332,7 +334,7 @@ namespace Grimoire.DB
                                                         string valStr = iRow[sqlIdx].ToString();
 
                                                         //Got to account for galas fuckery -_-
-                                                        if (string.IsNullOrEmpty(valStr) || valStr == " " || valStr == "False")
+                                                        if (string.IsNullOrEmpty(valStr) || valStr == " " || valStr == "False" || valStr == "-")
                                                             valStr = "0";
                                                         else if (valStr == "True")
                                                             valStr = "1";
@@ -369,6 +371,10 @@ namespace Grimoire.DB
 
                                             case CellType.TYPE_DOUBLE:
                                                 row[i] = Convert.ToDouble(iRow[sqlIdx]);
+                                                break;
+
+                                            case CellType.TYPE_SID:
+                                                row[i] = ++prevIdx;
                                                 break;
 
                                             case CellType.TYPE_STRING:
@@ -440,7 +446,7 @@ namespace Grimoire.DB
                 }
                 finally
                 {
-                    CloseConnection(true);
+                    CloseConnection();
                     OnProgressReset();
 
                     actionSW.Stop();
@@ -612,24 +618,26 @@ namespace Grimoire.DB
             }
         }
 
-        void NewCommand(string text) => NewCommand(text, null);
-
-        public void NewCommand(string text, params DbParameter[] parameters)
+        public void NewCommand(string text)
         {
             switch (connType)
             {
                 case DbConType.MsSQL:
                     msSQL_cmd.Connection = msSQL_conn;
                     msSQL_cmd.CommandText = text;
-                    if (parameters != null)
-                        msSQL_cmd.Parameters.AddRange(parameters);
+
+                    if (msSQL_cmd.Parameters.Count > 0)
+                        msSQL_cmd.Parameters.Clear();
+
                     break;
 
                 case DbConType.MySQL:
                     mySQL_cmd.Connection = mySQL_conn;
                     mySQL_cmd.CommandText = text;
-                    if (parameters != null)
-                        mySQL_cmd.Parameters.AddRange(parameters);
+
+                    if (mySQL_cmd.Parameters.Count > 0)
+                        mySQL_cmd.Parameters.Clear();
+
                     break;
             }
         }
@@ -647,6 +655,46 @@ namespace Grimoire.DB
                     mySQL_cmd = dbCmd as MySqlCommand;
                     mySQL_cmd.Connection = mySQL_conn;
                     break;
+            }
+        }
+
+        public void ClearParameters()
+        {
+            switch (connType)
+            {
+                case DbConType.MsSQL:
+                    msSQL_cmd.Parameters.Clear();
+                    break;
+
+                case DbConType.MySQL:
+                    mySQL_cmd.Parameters.Clear();
+                    break;
+            }
+        }
+
+        public void AddParameter(string name, object value, SqlDbType type)
+        {
+            if (msSQL_cmd != null)
+            {
+                SqlParameter sqlParam = msSQL_cmd.CreateParameter();
+                sqlParam.ParameterName = name;
+                sqlParam.Value = value;
+                sqlParam.SqlDbType = type;
+
+                msSQL_cmd.Parameters.Add(sqlParam);
+            }
+        }
+
+        public void AddParameter(string name, object value, MySqlDbType type)
+        {
+            if (mySQL_cmd != null)
+            {
+                MySqlParameter mySQLParam = mySQL_cmd.CreateParameter();
+                mySQLParam.ParameterName = name;
+                mySQLParam.Value = value;
+                mySQLParam.MySqlDbType = type;
+
+                mySQL_cmd.Parameters.Add(mySQLParam);
             }
         }
 
@@ -678,11 +726,11 @@ namespace Grimoire.DB
             if (configMan["Engine", "DB"] == 0) // This feature depends on MsSQL SMO and cannot be used on MySQL/MariaDB!
             {
                 if (configMan["Backup", "DB"])
-                    await Task.Run(() => { scriptTable(table, true); });
+                    await Task.Run(() => { ScriptTable(table, true); });
 
                 if (configMan["DropOnExport", "DB"])
                 {
-                    scriptTable(table, false);
+                    ScriptTable(table, false);
 
                     await Execute($"drop table {table}");
 
@@ -696,7 +744,7 @@ namespace Grimoire.DB
                 await Execute($"truncate table {table}");
         }
 
-        void scriptTable(string tableName, bool scriptData)
+        public void ScriptTable(string tableName, bool scriptData)
         {
             Microsoft.Data.SqlClient.SqlConnection sqlCon = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
             ServerConnection svConn = new ServerConnection(sqlCon);
@@ -753,14 +801,34 @@ namespace Grimoire.DB
                         }
                         catch (Exception ex)
                         {
-                           OnError(new DBError($"An exception occured during script execution!\nMessage: {ex.Message}\n\nCall-Stack: {ex.StackTrace}"));                          
-                       }
+                            OnError(new DBError($"An exception occured during script execution!\nMessage: {ex.Message}\n\nCall-Stack: {ex.StackTrace}"));
+                        }
                     else
                         OnError(new DBError("Database object is null!"));
                 }
             }
 
             return -1;
+        }
+
+        public override string ToString()
+        {
+            switch (connType)
+            {
+                case DbConType.MsSQL:
+                    {
+                        if (msSQL_cmd != null && !string.IsNullOrEmpty(msSQL_cmd.CommandText))
+                        {
+
+                        }
+                    }
+                    break;
+
+                case DbConType.MySQL:
+                    throw new NotImplementedException();
+            }
+
+            return null;
         }
 
         object getDefault(Type type)

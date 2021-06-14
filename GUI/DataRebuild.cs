@@ -23,7 +23,7 @@ namespace Grimoire.GUI
         Logs.Manager lManager = Logs.Manager.Instance;
         Core core = null;
         XmlManager xMan = XmlManager.Instance;
-        ConfigMan configMan;
+        ConfigManager configMan;
         public DataRebuild()
         {
             InitializeComponent();

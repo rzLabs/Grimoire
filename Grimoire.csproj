@@ -266,6 +266,9 @@
     <Compile Include="Localization\Structures\Locale.cs" />
     <Compile Include="Localization\Structures\Text.cs" />
     <Compile Include="Structures\Log.cs" />
+    <Compile Include="Structures\MarketEntry.cs" />
+    <Compile Include="Structures\MarketEntryKey.cs" />
+    <Compile Include="Structures\MarketSearchResult.cs" />
     <Compile Include="Structures\Settings.cs" />
     <Compile Include="Structures\SprInfo.cs" />
     <Compile Include="Tabs\Enums\ItemBase.cs" />
@@ -295,6 +298,12 @@
     </Compile>
     <Compile Include="Tabs\Styles\Item.Designer.cs">
       <DependentUpon>Item.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tabs\Styles\MarketEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tabs\Styles\MarketEditor.Designer.cs">
+      <DependentUpon>MarketEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Tabs\Utilities\Enums.cs" />
     <Compile Include="Tabs\Utilities\Grid.cs" />
@@ -394,6 +403,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\Item.resx">
       <DependentUpon>Item.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tabs\Styles\MarketEditor.resx">
+      <DependentUpon>MarketEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\RDB.resx">
       <DependentUpon>RDB.cs</DependentUpon>

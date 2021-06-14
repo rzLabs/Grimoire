@@ -9,10 +9,12 @@ using System;
 
 namespace Grimoire.Configuration
 {
+    //TODO: implement setting call with default value!
+
     /// <summary>
     /// Provides configuration storage and real time manipulation
     /// </summary>
-    public class ConfigMan
+    public class ConfigManager
     {
         /// <summary>
         /// List of Configuration descriptions
@@ -60,14 +62,14 @@ namespace Grimoire.Configuration
         /// <summary>
         /// Default constructor which will use default path variables
         /// </summary>
-        public ConfigMan() => parse();
+        public ConfigManager() => parse();
 
         /// <summary>
         /// Constructor for initializing with a directory and file name.
         /// </summary>
         /// <param name="Directory">Directory holding the configuration .json</param>
         /// <param name="FileName">Name of the configuration .json</param>
-        public ConfigMan(string Directory, string FileName)
+        public ConfigManager(string Directory, string FileName)
         {
             confDir = Directory;
             confName = FileName;
@@ -79,7 +81,7 @@ namespace Grimoire.Configuration
         /// Constructor for initializing with a fully qualified file path to the config .json
         /// </summary>
         /// <param name="FilePath"></param>
-        public ConfigMan(string FilePath) => confPath = FilePath;
+        public ConfigManager(string FilePath) => confPath = FilePath;
 
         public dynamic this[int index] => Options?[index];
 

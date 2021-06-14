@@ -8,7 +8,8 @@
     "Styles": [
       "RDB",
       "DATA",
-      "HASHER"
+      "HASHER",
+      "MARKET"
     ],
     "DefaultStyle": "NONE"
   },
@@ -48,6 +49,10 @@
     "AutoClear": true,
     "AutoConvert": true,
     "Type": 0
+  },
+  "Market": {
+    "UseArenaPoint": false,
+    "SaveToScript":  true,
   },
   "Log": {
     "Directory": ".\\Logs",

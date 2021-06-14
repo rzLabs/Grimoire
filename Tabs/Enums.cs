@@ -7,6 +7,7 @@
         DATA = 2,
         //DROPS = 3,
         ITEM = 4,
+        MARKET = 5,
         NONE = 99
     }
 

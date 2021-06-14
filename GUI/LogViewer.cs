@@ -18,7 +18,7 @@ namespace Grimoire.GUI
 
         List<Log> filteredEntries = new List<Log>();
 
-        ConfigMan configMan;
+        ConfigManager configMan;
         Level displayLevel
         {
             get
