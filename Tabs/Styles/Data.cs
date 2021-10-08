@@ -8,8 +8,9 @@ using System.Windows.Forms;
 using DataCore;
 using DataCore.Structures;
 using Grimoire.Utilities;
-using Grimoire.Logs.Enums;
 using Grimoire.Configuration;
+
+using Serilog;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -19,21 +20,23 @@ namespace Grimoire.Tabs.Styles
 
         string key;
         Core core;
-        readonly Logs.Manager lManager;
+
         readonly Tabs.Manager tManager;
         readonly ConfigManager configMan;
 
         readonly Utilities.Grid gridUtils;
         public List<IndexEntry> FilteredIndex = new List<IndexEntry>();
-        public bool Filtered
-        {
-            get { return FilteredIndex.Count > 0; }
-        }
-        public int FilterCount { get { return FilteredIndex.Count; } }
+
+        public bool Filtered => FilteredIndex.Count > 0;
+
+        public int FilterCount => FilteredIndex.Count;
         public List<IndexEntry> SearchIndex = new List<IndexEntry>();
-        public bool Searching { get { return SearchIndex.Count > 0; } }
-        public int SearchCount { get { return SearchIndex.Count; } }
-        public bool IndexLoaded { get { return Core.Index.Count > 0; } }
+
+        public bool Searching => SearchIndex.Count > 0;
+
+        public int SearchCount => SearchIndex.Count;
+
+        public bool IndexLoaded => Core.Index.Count > 0;
 
         readonly Stopwatch actionSW = new Stopwatch();
 
@@ -56,7 +59,9 @@ namespace Grimoire.Tabs.Styles
         {
             get
             {
-                if (core == null) { throw new Exception("DataCore is null!"); }
+                if (core == null) 
+                    throw new Exception("DataCore is null!");
+
                 return core;
             }
         }
@@ -67,25 +72,22 @@ namespace Grimoire.Tabs.Styles
             {
                 if (grid.SelectedRows.Count > 1)
                     return !grid_cs.Items[0].Enabled && grid_cs.Items[1].Enabled && grid_cs.Items[2].Enabled;
-                else
-                    return false;
+
+                return false;
             }
-            set
-            {
-                grid_cs.Enabled = value;
-            }
+            set => grid_cs.Enabled = value;
         }
 
         private bool extensions_cs_enabled
         {
-            get { return extensions_cs.Items[0].Enabled; }
-            set { extensions_cs.Items[0].Enabled = value; }
+            get => extensions_cs.Items[0].Enabled;
+            set => extensions_cs.Items[0].Enabled = value;
         }
 
         private bool search_enabled
         {
-            get { return searchInput.Enabled; }
-            set { searchInput.Enabled = value; }
+            get => searchInput.Enabled;
+            set => searchInput.Enabled = value;
         }
 
         private bool tab_disabled
@@ -93,6 +95,7 @@ namespace Grimoire.Tabs.Styles
             set
             {
                 bool flipVal = (value) ? false : true;
+
                 grid_cs_enabled = flipVal;
                 extensions_cs_enabled = flipVal;
                 search_enabled = flipVal;
@@ -108,13 +111,16 @@ namespace Grimoire.Tabs.Styles
         public Data(string key)
         {
             InitializeComponent();
+
             this.key = key;
-            lManager = Logs.Manager.Instance;
+
             tManager = Tabs.Manager.Instance;
             configMan = GUI.Main.Instance.ConfigMan;
 
             initializeCore();
+
             gridUtils = new Utilities.Grid();
+
             localize();
         }
 
@@ -124,26 +130,33 @@ namespace Grimoire.Tabs.Styles
 
         private void Core_MessageOccured(object sender, MessageArgs e)
         {
-            Invoke(new MethodInvoker(delegate { ts_status.Text = e.Message; }));
-            lManager.Enter(Sender.DATA, Level.NOTICE, e.Message);
+            Invoke(new MethodInvoker(delegate { 
+                ts_status.Text = e.Message;
+            }));
+
+            Log.Information(e.Message);
         }
 
         private void Core_CurrentMaxDetermined(object sender, CurrentMaxArgs e)
         {
-            Invoke(new MethodInvoker(delegate { ts_progress.Maximum = (int)e.Maximum; }));
+            Invoke(new MethodInvoker(delegate { 
+                ts_progress.Maximum = (int)e.Maximum;
+            }));
         }
 
         private void Core_CurrentProgressChanged(object sender, CurrentChangedArgs e)
         {
-            Invoke(new MethodInvoker(delegate { ts_progress.Value = (int)e.Value; }));
+            Invoke(new MethodInvoker(delegate { 
+                ts_progress.Value = (int)e.Value;
+            }));
         }
 
         private void Core_CurrentProgressReset(object sender, CurrentResetArgs e)
         {
-            Invoke(new MethodInvoker(delegate
-            {
+            Invoke(new MethodInvoker(delegate {
                 ts_progress.Maximum = 100;
                 ts_progress.Value = 0;
+                ts_status.Text = string.Empty;
             }));
         }
 
@@ -158,26 +171,31 @@ namespace Grimoire.Tabs.Styles
 
             if (!await check_locations(dumpDirectory).ConfigureAwait(true))
             {
-                lManager.Enter(Sender.DATA, Level.ERROR, "There are unresolved issues with your dump structure! Please verify that files are in their proper extension folder (e.g. .nfe in /nfe/ folder!)");
+                Log.Error("There are issues with your dump structure! Please verify that files are in their proper extension folder (e.g. .nfe in /nfe/ folder!)");
+
                 return;
             }
 
-            lManager.Enter(Sender.DATA, Level.NOTICE, "Building new client to:\n\t-{0}", buildDirectory);
+            Log.Information($"Building new client at:\n\t-{buildDirectory}");
 
             tab_disabled = true;
 
             try
             {
+                if (core.Index.Count > 0)
+                    core.Clear(); //TODO: Need to add missing applicable resets to the core beyond just clearing the List<IndexEntry>
+
                 core.Backups = false;
-                await Task.Run(() =>
-                {
+                await Task.Run(() => {
                     core.BuildDataFiles(dumpDirectory, buildDirectory);
                 });
 
                 string msg = "Client build completed!";
-                MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                lManager.Enter(Sender.DATA, Level.NOTICE, msg);
 
+                Log.Information(msg);
+
+                MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
                 if (configMan["ClearOnCreate", "Data"])
                     core.Clear();
                 else
@@ -187,8 +205,10 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
+                Log.Error($"An exception occured while building!\nMessage:\n\t{ex.Message}\n\nStack-Trace:{ex.StackTrace}");
+
                 MessageBox.Show(ex.Message, "Build Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Sender.DATA, Level.ERROR, ex);
+
                 return;
             }
          
@@ -229,9 +249,10 @@ namespace Grimoire.Tabs.Styles
         private void extensions_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             long extSize = tManager.DataCore.GetExtensionSize(e.Node.Text);
-            string formattedSize = StringExt.FormatToSize(extSize);
+            string formattedSize = StringExt.SizeToString(extSize);
+
             if (e.Node.Text != "all")
-                extensions.Nodes[e.Node.Text].Nodes[1].Text = "Size: " + formattedSize;
+                extensions.Nodes[e.Node.Text].Nodes[1].Text = $"Size: {formattedSize}";
         }
 
         private void extensions_AfterSelect(object sender, TreeViewEventArgs e)
@@ -273,7 +294,9 @@ namespace Grimoire.Tabs.Styles
                 if (grid.SelectedRows[0].Cells[0].Value != null)
                 {
                     IndexEntry entry = tManager.DataCore.GetEntry(grid.SelectedRows[0].Cells[0].Value.ToString());
+
                     populate_selection_info(entry);
+
                     grid_cs.Items[0].Enabled = true;
                     grid_cs.Items[1].Enabled = true;
                     grid_cs.Items[2].Text = "Export";
@@ -281,10 +304,30 @@ namespace Grimoire.Tabs.Styles
             }
             else
             {
-
                 populate_selection_info();
+
                 grid_cs.Items[0].Enabled = grid_cs.Items[3].Enabled = false;
                 grid_cs.Items[2].Text = string.Format("Export {0}", rowCount);
+            }
+        }
+
+        private async void grid_cs_delete_Click(object sender, EventArgs e)
+        {
+            string filename = grid.SelectedRows[0].Cells[0].Value.ToString();
+
+            if (!string.IsNullOrEmpty(filename))
+            {
+                IndexEntry entry = core.GetEntry(filename);
+
+                if (entry != null)
+                {
+                    if (MessageBox.Show($"You are about to delete\n\n{filename}!!!\n\nYou should be absolutely sure you want to do this!\n\nDo you want to continue?", "Input Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        await Task.Run(() => {
+                            core.DeleteFileEntry(entry.DataID, (int)entry.Offset, entry.Length);
+                        });
+                    }
+                }
             }
         }
 
@@ -301,19 +344,19 @@ namespace Grimoire.Tabs.Styles
 
                 ts_status.Text = string.Format("Exporting: {0}...", entry.Name);
 
-                lManager.Enter(Sender.DATA, Level.NOTICE, "Exporting: {0} to directory:\n\t- {1}\n\t- Size: {2}", entry.Name, buildDir, entry.Length);
+                Log.Information($"Exporting: {entry.Name} to:\n\t- {buildDir}\n\t- Size: {StringExt.SizeToString(entry.Length)}");
 
                 try
                 {
-                    await Task.Run(() =>
-                    {
+                    await Task.Run(() => {
                         core.ExportFileEntry(buildDir, entry);
                     });
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Export Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lManager.Enter(Sender.DATA, Level.ERROR, ex);
+                    Log.Error($"An exception occured during export!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t-{ex.StackTrace}");
+
+                    MessageBox.Show(ex.Message, "Export Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);                 
                 }
 
                 ts_status.Text = string.Empty;
@@ -329,7 +372,7 @@ namespace Grimoire.Tabs.Styles
             {
                 List<IndexEntry> entries = core.GetEntriesByExtension(ext);
 
-                ts_status.Text = string.Format("Exporting: {0}...", ext);
+                ts_status.Text = $"Exporting: {ext}...";
 
                 tab_disabled = true;
 
@@ -341,7 +384,7 @@ namespace Grimoire.Tabs.Styles
                             core.ExportAllEntries(buildDirectory);
                         else
                         {
-                            buildDirectory += string.Format(@"\{0}\", ext);
+                            buildDirectory += $@"\{ext}\";
 
                             if (!Directory.Exists(buildDirectory))
                                 Directory.CreateDirectory(buildDirectory);
@@ -349,15 +392,14 @@ namespace Grimoire.Tabs.Styles
                             core.ExportExtEntries(buildDirectory, ext);
                         }
                     });
+
+                    Log.Information($"Exported {entries.Count} rows from {tManager.Text}");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Extension Export Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    lManager.Enter(Sender.DATA, Level.ERROR, ex);
-                }
-                finally
-                {
-                    lManager.Enter(Sender.DATA, Level.NOTICE, "Exported {0} Rows from Tab: {1}", entries.Count, tManager.Text);
+                    Log.Error($"An exception occured during export!\nMessage:\n\t{ex.Message}\n\nStack-Trace\n\t{ex.StackTrace}");
+
+                    MessageBox.Show(ex.Message, "Extension Export Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);                    
                 }
 
                 ts_status.Text = string.Empty;
@@ -366,6 +408,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
+        // TODO: Needs to consider rdb files being compared and ignore the first 128 bytes 
         private void grid_cs_compare_Click(object sender, EventArgs e)
         {
             string compareFile = Paths.FilePath;
@@ -375,23 +418,27 @@ namespace Grimoire.Tabs.Styles
 
             if (Paths.FileResult != DialogResult.OK)
                 return;
+
             try
             {
                 externalHash = DataCore.Functions.Hash.GetSHA512Hash(compareFile);
+
                 byte[] buffer = core.GetFileBytes(filename);
+
                 internalHash = DataCore.Functions.Hash.GetSHA512Hash(buffer, buffer.Length);
+
+                string result = (externalHash == internalHash) ? "MATCH" : "MISMATCHED";
+
+                Log.Information($"File Comparison:\nFilename: {filename}\nResult: {result}");
+
+                MessageBox.Show($"Compared file: {filename}", "Comparison Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
             }
             catch (Exception ex)
             {
+                Log.Error($"An exception occured during the comparison!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}");
+
                 MessageBox.Show(ex.Message, "Compare Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Sender.DATA, Level.ERROR, ex);
-            }
-            finally
-            {
-                string result = (externalHash == internalHash) ? "MATCH" : "MISMATCHED";
-                string msg = string.Format("Compared files: {0}", result);
-                MessageBox.Show(msg, "Comparison Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                lManager.Enter(Sender.DATA, Level.NOTICE, "File Comparison:\n\tFilename: {0}\n\tResult: {1}", filename, result);
             }
         }
 
@@ -409,9 +456,7 @@ namespace Grimoire.Tabs.Styles
             if (searchInput.Text.Length > 2)
             {
                 if (Filtered)
-                    SearchIndex = FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text));
-                else
-                    SearchIndex = core.GetEntriesByPartialName(searchInput.Text);
+                    SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text)) :  core.GetEntriesByPartialName(searchInput.Text);                    
 
                 grid.Rows.Clear();
                 grid.RowCount = SearchIndex.Count;
@@ -471,19 +516,19 @@ namespace Grimoire.Tabs.Styles
             ts_file_new.Enabled = true;
         }
 
-        public void Hook_Core_Events() { hook_core_events(); }
+        public void Hook_Core_Events() => hook_core_events();
 
-        new public void Load(string path) { load(path); }
+        new public void Load(string path) => load(path);
 
-        public void Insert(string[] filePaths) { insert_files(filePaths); }
+        public void Insert(string[] filePaths) => insert_files(filePaths);
 
-        public void Localize() { localize(); }
+        public void Localize() => localize();
 
         #endregion
 
         #region Methods (private)
 
-        private void initializeCore()
+        void initializeCore()
         {
             bool backup = configMan["Backup", "Data"];
             int codepage = (int)configMan["Encoding", "Data"];
@@ -491,13 +536,40 @@ namespace Grimoire.Tabs.Styles
             core = new Core(backup, encoding);
             
             core.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];
+
             if (core.UseModifiedXOR)
-                Core.SetXORKey(configMan.GetByteArray("ModifiedXORKey"));
-            
+            {
+                byte[] modifiedKey = configMan.GetByteArray("ModifiedXORKey");
+
+                if (modifiedKey == null || modifiedKey.Length != 256)
+                {
+                    Log.Fatal("Invalid XOR Key!");
+                    return;
+                }
+
+                core.SetXORKey(modifiedKey);
+
+                if (!core.ValidXOR)
+                {
+                    string msg = "The provided ModifiedXORKey is invalid!";
+
+                    Log.Error(msg);
+
+                    MessageBox.Show(msg, "XOR Key Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                Log.Information($"Using modified xor key:\n");
+
+                if (GUI.Main.Instance.LogLevel.MinimumLevel >= Serilog.Events.LogEventLevel.Debug)
+                    Log.Debug($"\n{StringExt.ByteArrayToString(modifiedKey)}");
+            }
+
             hook_core_events();
         }
 
-        private void hook_core_events()
+        void hook_core_events()
         {
             core.CurrentMaxDetermined += Core_CurrentMaxDetermined;
             core.CurrentProgressChanged += Core_CurrentProgressChanged;
@@ -505,7 +577,7 @@ namespace Grimoire.Tabs.Styles
             core.MessageOccured += Core_MessageOccured;
         }
 
-        private void unhook_core_events()
+        void unhook_core_events()
         {
             core.CurrentMaxDetermined -= Core_CurrentMaxDetermined;
             core.CurrentProgressChanged -= Core_CurrentProgressChanged;
@@ -513,7 +585,7 @@ namespace Grimoire.Tabs.Styles
             core.MessageOccured -= Core_MessageOccured;
         }
 
-        private void populate_selection_info()
+        void populate_selection_info()
         {
             dataId.ResetText();
             offset.ResetText();
@@ -522,12 +594,14 @@ namespace Grimoire.Tabs.Styles
             extension.ResetText();
         }
 
-        private void populate_selection_info(IndexEntry entry)
-        {            Invoke(new MethodInvoker(delegate {
+        void populate_selection_info(IndexEntry entry)
+        {
+            Invoke(new MethodInvoker(delegate {
                 string ext = entry.Extension;
+
                 dataId.Text = entry.DataID.ToString();
                 offset.Text = entry.Offset.ToString();
-                size.Text = StringExt.FormatToSize(entry.Length);
+                size.Text = StringExt.SizeToString(entry.Length);
                 encrypted.Text = tManager.DataCore.ExtensionEncrypted(ext).ToString();
                 extension.Text = ext;
                 uploadPath.Text = entry.DataPath;
@@ -535,7 +609,7 @@ namespace Grimoire.Tabs.Styles
 
         }
 
-        private async void load(string path)
+        async void load(string path)
         {
             tab_disabled = true;
 
@@ -550,12 +624,7 @@ namespace Grimoire.Tabs.Styles
                 ts_file_load.Enabled = false;
                 ts_file_new.Enabled = false;
 
-                lManager.Enter(Sender.DATA, Level.NOTICE,
-                "{0} entries loaded from data.000 to tab: {1} in {2}ms from path:\n\t- {3}",
-                core.RowCount,
-                tManager.Text,
-                actionSW.ElapsedMilliseconds.ToString("D4"),
-                path);
+                Log.Information($"{core.RowCount} entries loaded from data.000 to {tManager.Text} in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)} from path:\n\t- {path}");
 
                 display_data();
 
@@ -565,11 +634,11 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                lManager.Enter(Sender.DATA, Level.ERROR, ex, "Exception occured while attempting to load file at: {0}", path);
+                Log.Error($"An exceeption occured during load!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}");
             }
         }
 
-        private async void display_data()
+        async void display_data()
         {
             grid.RowCount = core.RowCount;
             grid.VirtualMode = true;
@@ -586,8 +655,7 @@ namespace Grimoire.Tabs.Styles
             await Task.Run(() => {
                 foreach (ExtensionInfo extInfo in Core.ExtensionList)
                 {
-                    this.Invoke(new MethodInvoker(delegate
-                    {
+                    this.Invoke(new MethodInvoker(delegate {
                         extensions.Nodes.Add(extInfo.Type, extInfo.Type);
                         extensions.Nodes[extInfo.Type].Nodes.Add(string.Format("Count: {0}", extInfo.Count));
                         extensions.Nodes[extInfo.Type].Nodes.Add("Size: ");
@@ -672,21 +740,29 @@ namespace Grimoire.Tabs.Styles
                 {
                     string path = filePaths[0];
                     string msg = $"Importing: {Path.GetFileName(path)}";
-                    ts_status.Text = msg;
-                    lManager.Enter(Sender.DATA, Level.NOTICE, msg);
 
-                    await Task.Run(() => { core.ImportFileEntry(path); });
+                    ts_status.Text = msg;
+
+                    Log.Information(msg);
+
+                    await Task.Run(() => {
+                        core.ImportFileEntry(path);
+                    });
                 }
                 else if (filePaths.Length > 1)
-                    await Task.Run(() => { core.ImportFileEntries(filePaths); });
+                    await Task.Run(() => {
+                        core.ImportFileEntries(filePaths);
+                    });
 
                 core.Save();
             }
             catch (Exception ex)
             {
                 Core_CurrentProgressReset(null, new CurrentResetArgs(false));
-                MessageBox.Show(ex.Message, "Import Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Sender.DATA, Level.ERROR, ex);
+
+                Log.Error($"An exception occured during import!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}");
+                
+                MessageBox.Show(ex.Message, "Import Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);                
             }
             finally
             {
@@ -695,32 +771,9 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private void localize()
-        {
-            xMan.Localize(this, Localization.Enums.SenderType.Tab);
-        }
+        private void localize() => xMan.Localize(this, Localization.Enums.SenderType.Tab);
+
         #endregion
 
-        private async void grid_cs_delete_Click(object sender, EventArgs e)
-        {
-            string filename = grid.SelectedRows[0].Cells[0].Value.ToString();
-
-            if (!string.IsNullOrEmpty(filename))
-            {
-                IndexEntry entry = core.GetEntry(filename);
-
-                if (entry != null)
-                {
-                    if (MessageBox.Show(string.Format("You are about to delete\n\n{0}!!!\n\nYou should be absolutely sure you want to do this!\n\nDo you want to continue?", filename),
-                                                      "Input Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        await Task.Run(() => {
-                            core.DeleteFileEntry(entry.DataID, (int)entry.Offset, entry.Length);
-                        });
-                    }
-                }
-                    
-            }
-        }
     }
 }

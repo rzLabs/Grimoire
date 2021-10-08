@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using DataCore.Structures;
 using System.Linq;
 
+using Daedalus.Structures;
+
 namespace Grimoire.Tabs.Utilities
 {
     public class Grid
@@ -58,11 +60,15 @@ namespace Grimoire.Tabs.Utilities
                 case Style.RDB:
                     {
                         int rowCount = tManager.RDBCore.RowCount;
-                        if (e.RowIndex >= rowCount) { return; }
+
+                        if (e.RowIndex >= rowCount)
+                            return;
+
                         if (tManager.RDBCore.RowCount > 0)
                             e.Value = tManager.RDBCore.Rows[e.RowIndex][e.ColumnIndex];
                         else
                             e.Value = "NULL";
+
                     }
                     break;
 

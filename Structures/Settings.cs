@@ -5,23 +5,19 @@ using System.ComponentModel;
 using Grimoire.Tabs;
 using Grimoire.Configuration;
 
+using Serilog.Events;
+
 namespace Grimoire.Structures
 {
-    //TODO: Changing output directory needs to update open rdb tabs
-    //TODO: changing save with ascii/encrypted needs to update open rdb tabs
-
     class Settings
     {
         ConfigManager configMan = GUI.Main.Instance.ConfigMan;
         Tabs.Manager tabMan = Tabs.Manager.Instance;
 
-        //[Description("A list of styles that can be choosen from the 'New' drop-down (Delimited by ',')"), Category("Tab Style"), DisplayName("Styles")]
-        //public string Styles { get => configMan["Styles"]; set => configMan["Styles"] = value; }
-
         [Description("Default Tab Style to be loaded when starting Grimoire (if any)"), Category("Tab Style"), DisplayName("Default Style"), DefaultValue(Tabs.Style.NONE)]
         public Tabs.Style DefaultStyle
         {
-            get => (Tabs.Style)Enum.Parse(typeof(Style), configMan["DefaultStyle", "Tab"]);
+            get => (Style)Enum.Parse(typeof(Style), configMan["DefaultStyle", "Tab"]);
             set => configMan["DefaultStyle", "Tab"] = value.ToString();
         }
 
@@ -153,8 +149,12 @@ namespace Grimoire.Structures
         public bool AutoConvert { get => configMan["AutoConvert", "Hash"]; set => configMan["AutoConvert", "Hash"] = value; }
 
         // logger
-        //[Description("Determines the level'(s) of messages to be displayed/written by the logging system"), Category("Logger"), DisplayName("Logging Level")]
-        //public int LogLevel { get { return OPT.GetInt("log.level"); } set { OPT.UpdateSetting("log.evel", value.ToString()); } }
+        [Description("Determines the minimum level of logs to be recorded"), Category("Logging"), DisplayName("Log Level"), DefaultValue(LogEventLevel.Information)]
+        public LogEventLevel LogLevel
+        {
+            get => (LogEventLevel)Enum.Parse(typeof(LogEventLevel), configMan["Level", "Log"].ToString());
+            set => configMan["Level", "Log"] = (int)value;
+        }
 
         // use flag
         [Description("Directory where flag files are stored"), DisplayName("Flag Files Directory"), Category("Flag Editor"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]

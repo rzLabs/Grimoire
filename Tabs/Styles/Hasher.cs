@@ -3,16 +3,16 @@ using System.IO;
 using System.Windows.Forms;
 using DataCore.Functions;
 using Grimoire.Utilities;
-using Grimoire.Logs.Enums;
 using Grimoire.Configuration;
 using System.Threading.Tasks;
+
+using Serilog;
 
 namespace Grimoire.Tabs.Styles
 {
     public partial class Hasher : UserControl
     {
         #region Properties
-        Logs.Manager lManager;
         XmlManager xMan = XmlManager.Instance;
         ConfigManager configMan = GUI.Main.Instance.ConfigMan;
         Tabs.Manager tMan = Tabs.Manager.Instance;
@@ -22,9 +22,11 @@ namespace Grimoire.Tabs.Styles
         public Hasher()
         {
             InitializeComponent();
-            lManager = Logs.Manager.Instance;
-            lManager.Enter(Sender.HASHER, Level.NOTICE, "Hasher Utility Started.");
+
+            Log.Information("Hasher Utility started!");
+            
             set_checks();
+            
             localize();
         }
         #endregion
@@ -45,8 +47,6 @@ namespace Grimoire.Tabs.Styles
         {
             if (output.Text.Length > 3)
                 input.Text = output.Text;
-
-            lManager.Enter(Sender.HASHER, Level.NOTICE, "User flipped input/output");
         }
 
         private void cMenu_add_file_Click(object sender, EventArgs e)
@@ -94,21 +94,17 @@ namespace Grimoire.Tabs.Styles
         public void Add_Dropped_Files(string[] paths)
         {
             if (paths.Length == 1)
-            {
                 if (File.GetAttributes(paths[0]).HasFlag(FileAttributes.Directory))
                     paths = Directory.GetFiles(paths[0]);
-            }
 
             foreach (string path in paths)
-            {
                 add_file_to_grid(path);
-            }
 
             if (autoConvert_chk.Checked)
                 convertAllEntries();
         }
 
-        public void Localize() { localize(); }
+        public void Localize() => localize();
 
         #endregion
 
@@ -170,12 +166,9 @@ namespace Grimoire.Tabs.Styles
             if (File.Exists(convertedPath))
             {
                 if (MessageBox.Show("The conversion of this file: {0} will result in overwriting a file with the same converted name.\nDo you wish to continue?", "File Already Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Hand) == DialogResult.No)
-                {
-                    lManager.Enter(Sender.HASHER, Level.NOTICE, "User opted to cancel conversion of {0}", (string)row.Cells[0].Value);
                     return false;
-                }
 
-                lManager.Enter(Sender.HASHER, Level.NOTICE, "Converted Path already exists, deleting file at path: {0}", convertedPath);
+                Log.Information($"Converted path already exists, deleting file at:\n\t- {convertedPath}");
 
                 File.Delete(convertedPath);                
             }
@@ -183,16 +176,19 @@ namespace Grimoire.Tabs.Styles
             if (File.Exists(originalPath))
             {
                 File.Move(originalPath, convertedPath);
+                
                 fileGrid.Rows[rowIndex].Cells[3].Value = "Complete";
-                lManager.Enter(Sender.HASHER, Level.NOTICE, "File at path: {0} converted to path: {1}", originalPath, convertedPath);
 
+                Log.Information($"Filename: {(string)row.Cells[0]?.Value} converted to: {(string)row.Cells[1]?.Value}");
+                
                 return true;
             }
             else
             {
                 string msg = $"Cannot find the original file: {originalPath}!";
 
-                lManager.Enter(Sender.HASHER, Level.ERROR, msg);
+                Log.Error(msg);
+                
                 MessageBox.Show(msg, "Hasher Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return false;
@@ -229,10 +225,8 @@ namespace Grimoire.Tabs.Styles
 
         internal void Clear() => fileGrid.Rows.Clear();
 
-        private void localize()
-        {
+        private void localize() =>
             xMan.Localize(this, Localization.Enums.SenderType.Tab);
-        }
 
         #endregion
     }

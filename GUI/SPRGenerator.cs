@@ -76,7 +76,7 @@ namespace Grimoire.GUI
                 sqlCmd = $"{sqlQuery}{table}{condition}";
 
                 if (!await dbHelper.OpenConnection())
-                    MessageBox.Show("Failed to connect to the Database!", "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error); //TODO: review me?
+                    MessageBox.Show("Failed to connect to the Database!", "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 int rowCount = await dbHelper.Execute($"SELECT COUNT(icon_file_name) FROM dbo.{table}", DB.Enums.DbCmdType.Scalar);
                 DbDataReader dbRdr = await dbHelper.Execute(sqlCmd, DB.Enums.DbCmdType.Reader);
@@ -95,10 +95,8 @@ namespace Grimoire.GUI
                     if (string.IsNullOrEmpty(name))
                         MessageBox.Show($"icon_file_name cannot be blank!", "Load Warning!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     else
-                    {
                         if (sprEntries.FindIndex(s => s.Name == name) == -1)
                             sprEntries.Add(new SprInfo(name));
-                    }
 
                     if ((idx * 100 / rowCount) != ((idx - 1) * 100 / rowCount))
                         prgBar.Value = idx;

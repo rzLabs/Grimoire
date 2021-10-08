@@ -12,18 +12,19 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Forms;
 using DataCore;
 using Grimoire.Utilities;
-using Grimoire.Logs.Enums;
 using Grimoire.Configuration;
+
+using Serilog;
 
 namespace Grimoire.GUI
 {
     public partial class DataRebuild : Form
     {
         Tabs.Manager tManager = Tabs.Manager.Instance;
-        Logs.Manager lManager = Logs.Manager.Instance;
         Core core = null;
         XmlManager xMan = XmlManager.Instance;
         ConfigManager configMan;
+
         public DataRebuild()
         {
             InitializeComponent();
@@ -45,24 +46,30 @@ namespace Grimoire.GUI
 
         private void Core_MessageOccured(object sender, MessageArgs e)
         {
-            Invoke(new MethodInvoker(delegate { status.Text = e.Message; }));
-            lManager.Enter(Sender.DATA, Level.NOTICE, e.Message);
+            Invoke(new MethodInvoker(delegate {
+                status.Text = e.Message;
+            }));
+
+            Log.Information(e.Message);
         }
 
         private void Core_CurrentMaxDetermined(object sender, CurrentMaxArgs e)
         {
-            Invoke(new MethodInvoker(delegate { currentProgress.Maximum = (int)e.Maximum; }));
+            Invoke(new MethodInvoker(delegate {
+                currentProgress.Maximum = (int)e.Maximum;
+            }));
         }
 
         private void Core_CurrentProgressChanged(object sender, CurrentChangedArgs e)
         {
-            Invoke(new MethodInvoker(delegate { currentProgress.Value = (int)e.Value; }));
+            Invoke(new MethodInvoker(delegate {
+                currentProgress.Value = (int)e.Value;
+            }));
         }
 
         private void Core_CurrentProgressReset(object sender, CurrentResetArgs e)
         {
-            Invoke(new MethodInvoker(delegate
-            {
+            Invoke(new MethodInvoker(delegate {
                 currentProgress.Maximum = 100;
                 currentProgress.Value = 0;
             }));
@@ -88,13 +95,13 @@ namespace Grimoire.GUI
 
             if (dataList.Items[dataId].SubItems.Count == 4)
             {
-                dataList.Items[dataId].SubItems[1].Text = Utilities.StringExt.FormatToSize(physicalSize);
+                dataList.Items[dataId].SubItems[1].Text = StringExt.SizeToString(physicalSize);
                 dataList.Items[dataId].SubItems[2].Text = core.GetFileCount(dataId).ToString();
                 dataList.Items[dataId].SubItems[3].Text = fragPercent.ToString("0.0%");
             }
             else
             {
-                dataList.Items[dataId].SubItems.Add(Utilities.StringExt.FormatToSize(physicalSize));
+                dataList.Items[dataId].SubItems.Add(StringExt.SizeToString(physicalSize));
                 dataList.Items[dataId].SubItems.Add(core.GetFileCount(dataId).ToString());
                 dataList.Items[dataId].SubItems.Add(fragPercent.ToString("0.0%"));
             }            
@@ -127,13 +134,16 @@ namespace Grimoire.GUI
         {
             string warningMsg = string.Format("You are about to rebuild your client data storage files!\n\n Backups are currently: {0}\n\nAre you sure you want to continue?",
                 (configMan["Backup", "Data"] ? "ON" : "OFF"));
+
             if (MessageBox.Show(warningMsg, "Input Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
             string statusMsg = "Rebuilding Data Files...";
+            
             status.Text = statusMsg;
-            lManager.Enter(Sender.DATA, Level.NOTICE, statusMsg);
 
+            Log.Information(statusMsg);
+            
             try
             {
                 dataList.Items[0].SubItems[1].Text = string.Empty;
@@ -155,17 +165,20 @@ namespace Grimoire.GUI
             }
             catch (Exception ex)
             {
+                Log.Error($"An exception occured during the rebuild!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}");
+
                 MessageBox.Show(ex.Message, "Rebuild Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                lManager.Enter(Sender.DATA, Level.ERROR, ex);
-            }
-            finally
-            {
-                statusMsg = "Rebuild complete!";
-                MessageBox.Show(statusMsg, "Rebuild Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                lManager.Enter(Sender.DATA, Level.NOTICE, statusMsg);
-                status.ResetText();
+
+                return;
             }
 
+            statusMsg = "Rebuild complete!";
+
+            Log.Information(statusMsg);
+
+            MessageBox.Show(statusMsg, "Rebuild Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            status.ResetText();
         }
 
         private void cleanup(int dataId)
@@ -183,14 +196,11 @@ namespace Grimoire.GUI
                 File.Delete(path);
                 File.Move(newPath, path);
 
-                lManager.Enter(Sender.DATA, Level.NOTICE, "Backup cleaning completed!\n\tFile Deleted: {0}\n\tFile Moved\n\t\tFrom:{1}\n\t\tTo:{2}", path, newPath, path);
+                Log.Information($"Backup cleaning completed!\n\tFile Deleted: {path}\n\tFile Moved\n\t\tFrom: {newPath}\n\t\t{path}");
             }
-
         }
 
-        public void localize()
-        {
+        public void localize() =>
             xMan.Localize(this, Localization.Enums.SenderType.GUI);
-        }
     }
 }

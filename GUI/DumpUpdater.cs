@@ -138,8 +138,8 @@ namespace Grimoire.GUI
                         FileInfo srcInfo = new FileInfo(source);
                         FileInfo destInfo = new FileInfo(destination);
 
-                        string srcSize = StringExt.FormatToSize(srcInfo.Length);
-                        string destSize = StringExt.FormatToSize(destInfo.Length);
+                        string srcSize = StringExt.SizeToString(srcInfo.Length);
+                        string destSize = StringExt.SizeToString(destInfo.Length);
 
                         string srcDate = srcInfo.CreationTime.ToString("yyyy-MM-dd");
                         string destDate = destInfo.CreationTime.ToString("yyyy-MM-dd");

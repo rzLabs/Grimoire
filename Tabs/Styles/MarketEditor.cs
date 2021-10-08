@@ -11,9 +11,10 @@ using System.Windows.Forms;
 using Grimoire.Configuration;
 using Grimoire.DB;
 using Grimoire.DB.Enums;
-using Grimoire.Logs.Enums;
 using Grimoire.Structures;
 using Grimoire.GUI;
+
+using Log = Serilog.Log;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -69,7 +70,6 @@ namespace Grimoire.Tabs.Styles
         };
 
         ConfigManager confMgr = GUI.Main.Instance.ConfigMan;
-        Logs.Manager logMgr = Logs.Manager.Instance;
         DBHelper db = null;
 
         bool useArena = false;
@@ -598,8 +598,9 @@ namespace Grimoire.Tabs.Styles
 
             db.Error += (o, x) =>
             {
+                Log.Information(x.Message);
+
                 MessageBox.Show(x.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                logMgr.Enter(Sender.RDB, Level.NOTICE, x.Message);
             };
         }
 
@@ -863,8 +864,6 @@ namespace Grimoire.Tabs.Styles
                 marketList.Items[marketList.Items.Count - 1].Selected = true;
             //TODO: else we should ask if the user wants to delete this market name
         }
-
-        //TODO: process_* should return false if they encounter error so execution does not continue
 
         async void process_inserts()
         {

@@ -2,7 +2,7 @@
 
 namespace Grimoire.Utilities
 {
-    public class LuaException
+    public class LuaException // TODO: returning at outputMessage, unhandled exception. Needs to be fixed
     {
         public static string Print(string decoratedMessage, string structureName)
         {

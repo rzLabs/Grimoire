@@ -160,6 +160,7 @@
             // 
             // ts_log_viewer
             // 
+            this.ts_log_viewer.Enabled = false;
             this.ts_log_viewer.Name = "ts_log_viewer";
             this.ts_log_viewer.Size = new System.Drawing.Size(180, 22);
             this.ts_log_viewer.Text = "Log Viewer";

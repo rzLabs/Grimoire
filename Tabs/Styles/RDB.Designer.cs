@@ -56,6 +56,7 @@
             this.grid_cs_open_flag_editor = new System.Windows.Forms.ToolStripMenuItem();
             this.statusLb = new System.Windows.Forms.Label();
             this.ts_prog = new System.Windows.Forms.ProgressBar();
+            this.grid_cs_open_enum_editor = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.ts.SuspendLayout();
             this.grid_cs.SuspendLayout();
@@ -260,14 +261,15 @@
             // grid_cs
             // 
             this.grid_cs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.grid_cs_open_flag_editor});
+            this.grid_cs_open_flag_editor,
+            this.grid_cs_open_enum_editor});
             this.grid_cs.Name = "grid_cs";
-            this.grid_cs.Size = new System.Drawing.Size(180, 26);
+            this.grid_cs.Size = new System.Drawing.Size(189, 70);
             // 
             // grid_cs_open_flag_editor
             // 
             this.grid_cs_open_flag_editor.Name = "grid_cs_open_flag_editor";
-            this.grid_cs_open_flag_editor.Size = new System.Drawing.Size(179, 22);
+            this.grid_cs_open_flag_editor.Size = new System.Drawing.Size(188, 22);
             this.grid_cs_open_flag_editor.Text = "Open w/ Flag Editor";
             this.grid_cs_open_flag_editor.Click += new System.EventHandler(this.grid_cs_open_flag_editor_Click);
             // 
@@ -287,6 +289,13 @@
             this.ts_prog.Name = "ts_prog";
             this.ts_prog.Size = new System.Drawing.Size(100, 23);
             this.ts_prog.TabIndex = 27;
+            // 
+            // grid_cs_open_enum_editor
+            // 
+            this.grid_cs_open_enum_editor.Name = "grid_cs_open_enum_editor";
+            this.grid_cs_open_enum_editor.Size = new System.Drawing.Size(188, 22);
+            this.grid_cs_open_enum_editor.Text = "Open w/ Enum Editor";
+            this.grid_cs_open_enum_editor.Click += new System.EventHandler(this.grid_cs_open_enum_editor_Click);
             // 
             // rdbTab
             // 
@@ -335,5 +344,6 @@
         private System.Windows.Forms.Label statusLb;
         private System.Windows.Forms.ProgressBar ts_prog;
         private System.Windows.Forms.ToolStripButton ts_save_enc;
+        private System.Windows.Forms.ToolStripMenuItem grid_cs_open_enum_editor;
     }
 }

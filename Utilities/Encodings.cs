@@ -14,19 +14,24 @@ namespace Grimoire.Utilities
             new EncodingInfo() { Name = "Central Europe", Value = 1250 }
         };
 
-        public static int Count { get { return encodings.Count; } }
+        public static int Count =>
+            encodings.Count;
 
         public static string[] Names { get
             {
                 string[] names = new string[encodings.Count];
-                for (int i = 0; i < names.Length; i++) { names[i] = encodings[i].Name; }
+
+                for (int i = 0; i < names.Length; i++)
+                    names[i] = encodings[i].Name;
+
                 return names;
             } }
 
         public static int GetIndex(string name) =>
             encodings.FindIndex(e => e.Name == name);
 
-        public static Encoding GetByName(string name) { return Encoding.GetEncoding(encodings.Find(e => e.Name == name).Value); }
+        public static Encoding GetByName(string name) =>
+            Encoding.GetEncoding(encodings.Find(e => e.Name == name).Value);
     }
 
     public class EncodingInfo

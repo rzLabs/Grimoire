@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Grimoire.Logs.Enums;
+
+using Serilog;
 
 namespace Grimoire.Tabs
 {
-    //TODO: update tab calls to check for SelectedIndex -1
     public class Manager
     {
         readonly GUI.Main main = null;
-        readonly Logs.Manager lManager = Logs.Manager.Instance;
         readonly TabControl tabs = null;
         readonly TabControl.TabPageCollection pages = null;
         static Manager instance;
+
         public static Manager Instance
         {
             get
@@ -34,7 +31,8 @@ namespace Grimoire.Tabs
             main = GUI.Main.Instance;
             tabs = main.TabControl;
             pages = tabs.TabPages;
-            lManager.Enter(Sender.MANAGER, Level.NOTICE, "Tab Manager Initialized.");
+
+            Log.Information("Tab Manager initialized!");
         }
 
         public string Text
@@ -42,36 +40,34 @@ namespace Grimoire.Tabs
             get
             {
                 string ret = null;
-                main.Invoke(new MethodInvoker(delegate
-                {
+                main.Invoke(new MethodInvoker(delegate {
                     ret = pages[tabs.SelectedIndex].Text;
                 }));
 
                 return ret;
             }
             set {
-                main.Invoke(new MethodInvoker(delegate
-                {
-                    lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab: {0} name updated to {1}", pages[tabs.SelectedIndex].Text, value);
+                main.Invoke(new MethodInvoker(delegate {
+                    Log.Information($"Tab {pages[tabs.SelectedIndex]?.Text} text set to: {value}");
+
                     pages[tabs.SelectedIndex].Text = value;
                 }));
             }
         }
 
-        public TabPage Page
-        {
-            get { return pages[tabs.SelectedIndex]; }
-        }
+        public TabPage Page => pages?[tabs.SelectedIndex];
 
         public Style Style
         {
             get
             {
                 string key = null;
-                main.Invoke(new MethodInvoker(delegate
-                {
+                main.Invoke(new MethodInvoker(delegate {
                     if (tabs.SelectedIndex == -1)
+                    {
+                        Log.Error("Selected tab index is out of range!");
                         return;
+                    }
 
                     key = pages[tabs.SelectedIndex].Name;
                 }));
@@ -105,7 +101,11 @@ namespace Grimoire.Tabs
                 if (Style == Style.DATA)
                 {
                     DataCore.Core ret = null;
-                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.Data)pages[tabs.SelectedIndex].Controls[0]).Core; }));
+
+                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate {
+                        ret = ((Styles.Data)pages?[tabs.SelectedIndex].Controls[0]).Core;
+                    }));
+
                     return ret;
                 }
 
@@ -134,7 +134,11 @@ namespace Grimoire.Tabs
                 if (Style == Style.RDB)
                 {
                     Daedalus.Core ret = null;
-                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0]).Core; }));
+
+                    GUI.Main.Instance.Invoke(new MethodInvoker(delegate {
+                        ret = ((Styles.rdbTab)pages?[tabs.SelectedIndex].Controls[0]).Core;
+                    }));
+
                     return ret;
                 }
 
@@ -151,7 +155,10 @@ namespace Grimoire.Tabs
                 return null;
 
             Daedalus.Core ret = null;
-            GUI.Main.Instance.Invoke(new MethodInvoker(delegate { ret = ((Styles.rdbTab)pages[key].Controls[0]).Core; }));
+
+            GUI.Main.Instance.Invoke(new MethodInvoker(delegate { 
+                ret = ((Styles.rdbTab)pages[key].Controls[0]).Core;
+            }));
 
             return ret;
         }
@@ -164,9 +171,8 @@ namespace Grimoire.Tabs
 
                 if (Style == Style.DATA)
                 {
-                    main.Invoke(new MethodInvoker(delegate
-                    {
-                        ret = (Styles.Data)pages[tabs.SelectedIndex].Controls[0];
+                    main.Invoke(new MethodInvoker(delegate {
+                        ret = (Styles.Data)pages?[tabs.SelectedIndex].Controls[0];
                     }));
 
                 }
@@ -183,8 +189,7 @@ namespace Grimoire.Tabs
 
                 if (Style == Style.RDB)
                 {
-                    main.Invoke(new MethodInvoker(delegate
-                    {
+                    main.Invoke(new MethodInvoker(delegate {
                         if (tabs.SelectedIndex != -1)
                             ret = (Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0];
                     }));
@@ -198,7 +203,7 @@ namespace Grimoire.Tabs
         public Styles.rdbTab RDBTabByKey(string key)
         {
             if (pages.ContainsKey(key))
-                return (Styles.rdbTab)pages[key].Controls[0];
+                return (Styles.rdbTab)pages?[key].Controls[0];
 
             return null;
         }
@@ -210,19 +215,34 @@ namespace Grimoire.Tabs
                 Styles.Hasher ret = null;
 
                 if (Style == Style.HASHER)
-                {
-                    
-                    main.Invoke(new MethodInvoker(delegate 
-                    {
+                {                   
+                    main.Invoke(new MethodInvoker(delegate {
                         ret = (Styles.Hasher)pages[tabs.SelectedIndex].Controls[0];
                     }));
-
                 }
 
                 return ret;
             }
         }
 
+        public Styles.Item ItemTab
+        {
+            get
+            {
+                Styles.Item ret = null;
+
+                if (Style == Style.ITEM)
+                {
+                    main.Invoke(new MethodInvoker(delegate {
+                        ret = (Styles.Item)pages?[tabs.SelectedIndex]?.Controls[0];
+                    }));
+                }
+
+                return ret;
+            }
+        }
+
+        //TODO: Tabs should not generate two like tabs with the same name. (duplicate tab should be like item (2), item (3) with unique keys
         public void Create(Style style)
         {
             string key = string.Format("{0}_{1}", pages.Count, (int)style);
@@ -255,6 +275,7 @@ namespace Grimoire.Tabs
                     tab.Controls.Add(new Styles.MarketEditor() { Dock = DockStyle.Fill });
                     text = "Market Utility";
                     break;
+
                 //case Style.DROPS:
                 //    tab.Controls.Add(new Styles.DropEditor() { Dock = DockStyle.Fill });
                 //    text = "Drop Utility";
@@ -265,7 +286,8 @@ namespace Grimoire.Tabs
             pages.Add(tab);
             SetText(key, text);
             tabs.SelectedTab = pages[key];
-            lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab created with name: {0} and style: {1}", text, ((Style)style).ToString());
+
+            Log.Information($"New {((Style)style).ToString()} tab named {text} created!");
         }
 
         public void Clear()
@@ -285,16 +307,21 @@ namespace Grimoire.Tabs
                 case Style.HASHER:
                     HashTab.Clear();
                     break;
+
+                case Style.ITEM:
+                    ItemTab.Clear();
+                    break;
             }
 
-            lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab: {0} contents have been cleared.", Page.Text);
+            Log.Information($"{Text} has been cleared!");
         }
 
         public void Destroy()
-        {
-            lManager.Enter(Sender.MANAGER, Level.NOTICE,"Tab: {0} has been closed.", Page.Text);
+        {            
             pages.RemoveAt(RightClick_TabIdx);
-            tabs.SelectedIndex = pages.Count - 1;          
+            tabs.SelectedIndex = pages.Count - 1;
+
+            Log.Information($"{Text} has been closed!");
         }
 
         public void SetText(string key, string text)
@@ -302,7 +329,7 @@ namespace Grimoire.Tabs
             if (pages.ContainsKey(key))
                 pages[key].Text = text;
             else
-                lManager.Enter(Sender.MANAGER, Level.ERROR, "Tab Manager could not SetText because tab with key: {0} does not exist!", key);
+                Log.Error($"Could not set text because tab {key} does not exist!");
         }
 
         private Style getStyle(string key)
@@ -314,7 +341,8 @@ namespace Grimoire.Tabs
 
             if (keyBlocks.Length != 2)
             {
-                lManager.Enter(Sender.MANAGER, Level.ERROR, $"Failed to get tab style for provided key: {key}");
+                Log.Error($"Failed to get tab style for {key}");
+
                 return Style.NONE;
             }
 

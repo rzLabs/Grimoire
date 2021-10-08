@@ -9,37 +9,96 @@ using System.Globalization;
 using System.Threading;
 using Grimoire.Utilities;
 using Grimoire.Configuration;
-using Grimoire.Logs.Enums;
+
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
+using Serilog.Sinks;
 
 namespace Grimoire.GUI
 {
-    // TODO: Update Grimoire to allow using proper relative paths ..\\..\\folder
-
     public partial class Main : Form
     {
         readonly Tabs.Manager tManager;
-        readonly Logs.Manager lManager;
         
         readonly XmlManager xMan;
+
+        public LoggingLevelSwitch LogLevel = new LoggingLevelSwitch(LogEventLevel.Verbose);
+
         public static Main Instance;
-        public readonly ConfigManager ConfigMan;
+        public readonly ConfigManager ConfigMan;  
 
         public Main()
         {
             InitializeComponent();
+
+            configLogger();
+
+            Log.Information("Starting Grimoire...");
+
             Instance = this;
+
             ConfigMan = new ConfigManager();
             tManager = Tabs.Manager.Instance;
-            lManager = Logs.Manager.Instance;
             xMan = XmlManager.Instance;
+
+            setLogLevel();
+
             check_first_start();
+            
             generate_new_list();
+            
             localize();
+        }
+
+        void configLogger()
+        {
+            Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.ControlledBy(LogLevel)
+                    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {Message:lj}{NewLine}{Exception}")
+                    .WriteTo.File(".\\Logs\\Grimoire-Log-.txt", rollingInterval: RollingInterval.Day, outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {Message:lj}{NewLine}{Exception}")
+                    .CreateLogger();
+        }
+
+        void setLogLevel()
+        {
+            int logLv = ConfigMan.GetOption<int>("Level", "Log");
+
+            switch (logLv)
+            {
+                case 0: //verboose
+                    LogLevel.MinimumLevel = LogEventLevel.Verbose;
+                    break;
+
+                case 1: //debug
+                    LogLevel.MinimumLevel = LogEventLevel.Debug;
+                    break;
+
+                case 2: //information
+                    LogLevel.MinimumLevel = LogEventLevel.Information;
+                    break;
+
+                case 3: //warning
+                    LogLevel.MinimumLevel = LogEventLevel.Error;
+                    break;
+
+                case 4: //error
+                    LogLevel.MinimumLevel = LogEventLevel.Error;
+                    break;
+
+                case 5: //fatal
+                    LogLevel.MinimumLevel = LogEventLevel.Fatal;
+                    break;
+
+                default:
+                    LogLevel.MinimumLevel = LogEventLevel.Information;
+                    break;
+            }
         }
 
         private void localize() => xMan.Localize(this, Localization.Enums.SenderType.GUI);
 
-        private void check_first_start()
+        private void check_first_start() //TODO: this should finally be finalized bruh
         {
             //if (Properties.Settings.Default.FirstStart)
             //{
@@ -57,12 +116,18 @@ namespace Grimoire.GUI
             if (styles.Count == 0)
             {
                 string msg = "Setting: tab.styles is missing or empty, please add at-least one tab style!";
+
+                Log.Error(msg);
+                
                 MessageBox.Show(msg);
-                lManager.Enter(Sender.MAIN, Level.ERROR, msg);
+
+                return;
             }
 
             new_list.Items.Clear();
-            foreach (string style in styles) { new_list.Items.Add(style); }
+
+            foreach (string style in styles) 
+                new_list.Items.Add(style); 
         }
 
         private void set_default_tab()
@@ -71,15 +136,15 @@ namespace Grimoire.GUI
             bool useDefault = (styleName != null && styleName != "NONE");
             if (useDefault)
             {
-                lManager.Enter(Sender.MAIN, Level.NOTICE, "Automatically loading default style.");
+                Log.Information($"Starting selected default {styleName} tab.");
 
                 tManager.Create((Style)Enum.Parse(typeof(Style), styleName));
             }
         }
 
-        public TabControl TabControl { get { return tabs; } }
+        public TabControl TabControl => tabs;
 
-        bool hasTabs { get { return tabs.TabPages.Count > 0; } }
+        bool hasTabs => tabs.TabPages.Count > 0;
 
         private void new_list_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -141,8 +206,7 @@ namespace Grimoire.GUI
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            lManager.Enter(Sender.MAIN, Level.DEBUG, "Closing down...");
-            lManager.Save();
+            Log.Information("Grimoire shutting down...");
         }
 
         private void tabs_MouseClick(object sender, MouseEventArgs e)
@@ -186,7 +250,7 @@ namespace Grimoire.GUI
                             tManager.RDBTab.Search(input.Field, input.Term);
                 }
                 else
-                    lManager.Enter(Sender.MAIN, Level.NOTICE, "Cannot activate ListInput without loaded data!");
+                    Log.Information("Cannot activate ListInput without loaded data!");
             }
             else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
             {
@@ -238,9 +302,10 @@ namespace Grimoire.GUI
             string gVersion = System.Windows.Forms.Application.ProductVersion;
             string dCore_Version = FileVersionInfo.GetVersionInfo("DataCore.dll").FileVersion;
             string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
-            string aboutStr = string.Format("Grimoire v{0}\nDataCore v{1}\nDaedalus v{2}\n\nWritten by: iSmokeDrow" + 
+            string aboutStr = string.Format("Grimoire v{0}\nDataCore v{1}\nDaedalus v{2}\n\nWritten by: iSmokeDrow\n\n" + 
+                                            "Third-Party Software:\n\t-Newtonsoft.JSON\n\t-SeriLog\n\t-MoonSharp\n\t-Be.HexBox\n" +
                                             "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- InkDevil\n\t- XavierDeFawks\n\t- ThunderNikk\n\t- Exterminator\n\t"+
-                                            "- Medaion\n\t- AziaMafia\n\t- ADRENALINE\n\t- Musta2\n\t- OceanWisdom\n\t- Sandro\n\t- Smashley\n\n" +
+                                            "- Medaion\n\t- AziaMafia\n\t- ADRENALINE\n\t- Musta2\n\t- OceanWisdom\n\t- Sandro\n\t- Smashley\n\t- Bernyy\n\n" +
                                             "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
                                             gVersion, dCore_Version, rCore_Version);
             MessageBox.Show(aboutStr, "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -254,7 +319,7 @@ namespace Grimoire.GUI
 
         private void ts_log_viewer_Click(object sender, EventArgs e)
         {
-            lManager.ShowViewer();
+            // TODO: log viewer must be completely rewritten to use Serilog
         }
 
         private void ts_spr_gen_Click(object sender, EventArgs e)

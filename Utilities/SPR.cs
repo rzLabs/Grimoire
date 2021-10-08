@@ -11,22 +11,36 @@ namespace Grimoire.Utilities
     public class SPR
     {
         Tabs.Manager tManager = Tabs.Manager.Instance;
-        DataCore.Core dCore = null;
+        DataCore.Core core = null;
         Dictionary<string, string> icons = new Dictionary<string, string>();
-        
-        public void LoadAll()
-        {
-            dCore = tManager.DataCore;
-            readSPR("01_equip(ascii).spr");
-            readSPR("02_item(ascii).spr");
+
+        public int Count => icons.Count;
+
+        public SPR(DataCore.Core core) {
+            this.core = core;
         }
 
-        void readSPR(string name)
+        public void LoadFromData(string name) //TODO: you should be sure data core is actually loaded/ready
         {
-            IndexEntry entry = dCore.GetEntry(name);
-            byte[] sprBuffer = dCore.GetFileBytes(entry);
+            IndexEntry entry = core.GetEntry(name);
+            byte[] sprBuffer = core.GetFileBytes(entry);
 
-            using (MemoryStream ms = new MemoryStream(sprBuffer))
+            readSPR(sprBuffer);
+        }
+
+        public void LoadFromFile(string filename)
+        {
+            if (!File.Exists(filename))
+                return;
+
+            byte[] sprBytes = File.ReadAllBytes(filename);
+
+            readSPR(sprBytes);
+        }
+
+        void readSPR(byte[] sprBytes)
+        {          
+            using (MemoryStream ms = new MemoryStream(sprBytes))
             {
                 using (TextReader tr = new StreamReader(ms))
                 {
@@ -62,9 +76,7 @@ namespace Grimoire.Utilities
             }
         }
 
-        public string GetFileName(string key)
-        {
-            return (icons.ContainsKey(key)) ? icons[key] : null;
-        }
+        public string GetFileName(string key) =>
+            (icons.ContainsKey(key)) ? icons[key] : null;
     }
 }

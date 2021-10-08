@@ -4,16 +4,17 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using Grimoire.DB.Enums;
 using Grimoire.Configuration;
-using Grimoire.Logs.Enums;
+using Grimoire.Utilities;
 using Daedalus.Enums;
 using Daedalus.Structures;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
+
+using Serilog;
 
 namespace Grimoire.DB
 {
@@ -145,8 +146,7 @@ namespace Grimoire.DB
                 }
 
                 return null;
-            }
-            
+            }       
         }
 
         public async Task<dynamic> Execute(DbCmdType type = DbCmdType.NonQuery)
@@ -230,6 +230,22 @@ namespace Grimoire.DB
             return null;
         }
 
+        public DataTable GetDataTable(string selectStatement)
+        {
+            actionSW = new Stopwatch();
+            actionSW.Start();
+
+            DataTable data = new DataTable();
+            DbDataAdapter adapter = new SqlDataAdapter(selectStatement, ConnectionString);
+
+            adapter.Fill(data);
+            adapter.Dispose();
+
+            actionSW.Stop();
+
+            return data;
+        }
+
         public async Task<dynamic> ReadTable(string table)
         {
             actionSW = new Stopwatch();
@@ -259,7 +275,9 @@ namespace Grimoire.DB
                     int rowIdx = 0;
 
                     if (dbRdr != null)
+                    {
                         if (dbRdr.HasRows)
+                        {
                             foreach (IDataRecord iRow in dbRdr)
                             {
                                 Row row = new Row((Cell[])fieldList.Clone());
@@ -279,22 +297,16 @@ namespace Grimoire.DB
                                         switch (field.Type)
                                         {
                                             case CellType.TYPE_SHORT:
-                                                goto case CellType.TYPE_INT_16;
-
                                             case CellType.TYPE_INT_16:
                                                 row[i] = Convert.ToInt16(iRow[sqlIdx]);
                                                 break;
 
                                             case CellType.TYPE_USHORT:
-                                                goto case CellType.TYPE_UINT_16;
-
                                             case CellType.TYPE_UINT_16:
                                                 row[i] = (ushort)iRow[sqlIdx];
                                                 break;
 
                                             case CellType.TYPE_INT:
-                                                goto case CellType.TYPE_INT_32;
-
                                             case CellType.TYPE_INT_32:
                                                 {
                                                     if (iRow.IsDBNull(sqlIdx))
@@ -305,15 +317,11 @@ namespace Grimoire.DB
                                                 break;
 
                                             case CellType.TYPE_UINT:
-                                                goto case CellType.TYPE_UINT_32;
-
                                             case CellType.TYPE_UINT_32:
                                                 row[i] = (uint)iRow[sqlIdx];
                                                 break;
 
                                             case CellType.TYPE_LONG:
-                                                goto case CellType.TYPE_INT_64;
-
                                             case CellType.TYPE_INT_64:
                                                 row[i] = (long)iRow[sqlIdx];
                                                 break;
@@ -345,7 +353,7 @@ namespace Grimoire.DB
                                                         fieldVal = Convert.ToByte(value);
                                                     }
 
-                                                    row[sqlIdx] = fieldVal;
+                                                    row[i] = fieldVal;
                                                 }
 
                                                 break;
@@ -396,38 +404,9 @@ namespace Grimoire.DB
 
                                         sqlIdx++;
                                     }
-                                    else //TODO: Fields defaults should be set by attempting to call Cell.Value when no value is present!
-                                    {
-                                        switch (field.Type)
-                                        {
-                                            case CellType.TYPE_BIT_VECTOR:
-                                                row[i] = new BitVector32(0);
-                                                break;
-
-                                            case CellType.TYPE_BYTE:
-                                                row[i] = Convert.ToByte(field.Default);
-                                                break;
-
-                                            case CellType.TYPE_SHORT:
-                                            case CellType.TYPE_INT_16:
-                                                row[i] = Convert.ToInt16(field.Default);
-                                                break;
-
-                                            case CellType.TYPE_INT:
-                                            case CellType.TYPE_INT_32:
-                                                row[i] = row.KeyIsDuplicate(field.Name) ? row.GetShownValue(field.Name) : field.Default;
-                                                break;
-
-                                            case CellType.TYPE_LONG:
-                                            case CellType.TYPE_INT_64:
-                                                row[i] = Convert.ToInt64(field.Default);
-                                                break;
-
-                                            case CellType.TYPE_STRING:
-                                                row[i] = field.Default.ToString();
-                                                break;
-                                        }
-                                    }
+                                    else // exception for 7.2 item_use_flag
+                                        if (row.KeyIsDuplicate(field.Name))
+                                            row[i] = row.GetShownValue(field.Name);
                                 }
 
                                 data[rowIdx++] = row;
@@ -435,10 +414,11 @@ namespace Grimoire.DB
                                 if ((rowIdx * 100 / rowCnt) != ((rowIdx - 1) * 100 / rowCnt))
                                     OnProgressValueSet(new DBProgressValue(rowIdx));
                             }
-                        else
-                            OnError(new DBError("dbRdr has no rows!"));
-                    else
-                        OnError(new DBError("dbRdr is null!"));
+                        }
+                    }
+
+                    OnMessage(new DBMessage($"{table} successfully loaded in {actionSW.ElapsedMilliseconds}ms"));
+
                 }
                 catch (Exception ex)
                 {
@@ -450,8 +430,6 @@ namespace Grimoire.DB
                     OnProgressReset();
 
                     actionSW.Stop();
-
-                    OnMessage(new DBMessage($"{table} successfully loaded in {actionSW.ElapsedMilliseconds}ms"));
                 }
 
                 return data;
@@ -499,10 +477,12 @@ namespace Grimoire.DB
 
                     executeBulk(dataTbl);
 
+                    Log.Information($"{table} exported in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)}");
+
                     return true;
                 }
-                else
-                    OnError(new DBError("Failed to connect to the Database!"));
+
+                OnError(new DBError("Failed to connect to the Database!"));
             }
             catch (Exception ex)
             {
@@ -514,7 +494,6 @@ namespace Grimoire.DB
                 OnProgressReset();
 
                 actionSW.Stop();
-                Logs.Manager.Instance.Enter(Sender.DATABASE, Level.DEBUG, $"{table} exported loaded in {actionSW.ElapsedMilliseconds}ms");
             }
 
             return false;

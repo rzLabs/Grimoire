@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.IO;
 using Newtonsoft.Json;
 using Grimoire.Configuration.Structures;
+using Grimoire.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using System;
+
+using Serilog;
 
 namespace Grimoire.Configuration
 {
@@ -24,6 +28,8 @@ namespace Grimoire.Configuration
         string confDir = Directory.GetCurrentDirectory();
         string confName = Defaults.ConfigName;
         string _confPath = string.Empty;
+
+        Stopwatch actionSW = new Stopwatch();
 
         string confPath
         {
@@ -90,10 +96,14 @@ namespace Grimoire.Configuration
             get
             {
                 int index = Options.FindIndex(o => o.Name == key);
-                if (index >= 0)
-                    return Options[index].Value;
-                else
-                    throw new IndexOutOfRangeException();
+
+                if (index == -1)
+                {
+                    Log.Error($"No config option w/ key: {key}");
+                    return null;
+                }
+
+                return Options[index].Value;
             }
             set
             {
@@ -133,15 +143,35 @@ namespace Grimoire.Configuration
 
         public dynamic GetOption(string key, string parent) => Options.Find(o => o.Name == key && o.Parent == parent);
 
+        public T GetOption<T>(string key, string parent)
+        {
+            int index = -1;
+
+            if ((index = Options.FindIndex(o => o.Name == key && o.Parent == parent)) != -1)
+                return Convert.ChangeType(Options[index].Value, typeof(T));
+
+            // TODO: Failure to get the option should result in a log at-least
+
+            return default(T);
+        }
+
         // WARNING! Must be called on an option with a value of int[] type!
+        /// <summary>
+        /// Get byte array that has been stored as an int array
+        /// </summary>
+        /// <param name="key">Option key</param>
+        /// <returns>Populated byte array</returns>
         public byte[] GetByteArray(string key)
         {
-            int idx = Options.FindIndex(o => o.Name == key);
+            int optIdx = Options.FindIndex(o => o.Name == key);
 
-            if (idx == -1)
-                throw new KeyNotFoundException();
+            if (optIdx == -1)
+            {
+                Log.Error($"No config option w/ key: {key}");
+                return null;
+            }
 
-            int[] val = Options[idx].Value;
+            int[] val = Options[optIdx].Value;
             byte[] ret = new byte[val.Length];
 
             for (int i = 0; i < ret.Length; i++)
@@ -183,21 +213,43 @@ namespace Grimoire.Configuration
 
         void parse()
         {
+            int optCnt = 0;
+
             if (File.Exists(confPath))
                 confText = File.ReadAllText(confPath);
             else
-                throw new FileNotFoundException("File not found");
+                throw new FileNotFoundException("File not found"); // TODO: this should be handled better dude
+
+            actionSW.Start();
 
             JObject grandParent = JObject.Parse(confText);
 
-            if (grandParent.Count > 0) //Gets root of json as JObject
+            if (grandParent.Count > 0)
             {
                 Options.Clear();
 
-                foreach (JToken parent in grandParent.Children())
-                    foreach (JToken child in parent.Children())
-                        foreach (JToken grandChild in child.Children())
+                List<JToken> parents = new List<JToken>(grandParent.Children());
+
+                Log.Verbose($"{parents.Count} configuration types available.");
+
+                for (int p = 0; p < parents.Count; p++)
+                {
+                    JToken parent = parents[p];
+
+                    List<JToken> children = new List<JToken>(parent.Children());
+
+                    Log.Verbose($"{children.Count} configurations loaded for: {parent.Path}");
+
+                    for (int c = 0; c < children.Count; c++)
+                    {
+                        JToken child = children[c];
+
+                        List<JToken> grandChildren = new List<JToken>(child.Children());
+
+                        for (int gc = 0; gc < grandChildren.Count; gc++)
                         {
+                            JToken grandChild = grandChildren[gc];
+
                             var val = grandChild.Value<dynamic>();
                             dynamic value;
 
@@ -235,7 +287,15 @@ namespace Grimoire.Configuration
                                 Value = value,
                                 Comments = new List<string>()
                             });
+
+                            optCnt++;
                         }
+                    }
+                }
+
+                actionSW.Stop();
+
+                Log.Information($"{optCnt} configurations loaded from Config in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)}");
             }
             else
                 throw new JsonException();
@@ -251,12 +311,8 @@ namespace Grimoire.Configuration
                     p[i] = Options[i].Parent;
 
                 return p;
-            }
-            
-            
+            }        
         }
-
-        Option[] getChildren(string parent) => Options.FindAll(o => o.Parent == parent).ToArray();
 
         public async Task Save()
         {

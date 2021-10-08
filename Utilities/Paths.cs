@@ -8,6 +8,7 @@ namespace Grimoire.Utilities
         public static string DefaultDirectory;
         public static string DefaultFileName = string.Empty;
         static string title;
+
         public static string Title
         {
             set

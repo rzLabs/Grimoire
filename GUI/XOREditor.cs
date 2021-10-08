@@ -79,14 +79,14 @@ namespace Grimoire.GUI
         {
             xorKey = Main.Instance.ConfigMan.GetByteArray("ModifiedXORKey");
 
-            if (xorKey != null && xorKey.Length > 0)
+            if (xorKey != null && xorKey.Length >= 0)
             {
                 provider = new DynamicByteProvider(xorKey);
 
                 if (provider != null)
                     set_provider();
             }
-            else
+            else //TODO: BAD MESSAGE!
                 MessageBox.Show("No XOR key has been defined in the Config.json! Please load from key file or default.", "Nothing Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
@@ -155,7 +155,6 @@ namespace Grimoire.GUI
         void generate_unKey()
         {
             int colCount = 0;
-            string colStr = null;
             int byteCount = 0; //3 per round
             string uintStr = null;
             string outStr = null;
@@ -178,7 +177,7 @@ namespace Grimoire.GUI
                     char[] uintArray = uintStr.ToCharArray();
                     Array.Reverse(uintArray);
 
-                    colStr = string.Format("0x{0}, ", new string(uintArray));
+                    string colStr = string.Format("0x{0}, ", new string(uintArray));
 
                     if (colCount++ == 3)
                     {

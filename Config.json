@@ -9,7 +9,8 @@
       "RDB",
       "DATA",
       "HASHER",
-      "MARKET"
+      "MARKET",
+      "ITEM"
     ],
     "DefaultStyle": "NONE"
   },
@@ -37,12 +38,11 @@
     "SQL_Directory": ".\\SQL"
   },
   "Data": {
-    "LoadDirectory": "C:\\Webzen\\Rappelz US",
+    "LoadDirectory": "",
     "Encoding": 1252,
     "Backup": true,
     "UseModifiedXOR": false,
-    "ModifiedXORKey": [
-    ],
+    "ModifiedXORKey": [],
     "ClearOnCreate": false
   },
   "Hash": {
@@ -51,20 +51,41 @@
     "Type": 0
   },
   "Market": {
-    "UseArenaPoint": false,
-    "SaveToScript":  true,
+    "UseArenaPoint": false
   },
   "Log": {
     "Directory": ".\\Logs",
-    "DisplayLevel": 0,
-    "WriteLevel": 0,
-	  "RefreshInterval": 2,
-    "SaveOnExit": true
+    "Level": 0
   },
   "Flag": {
     "Directory": ".\\Flags",
-    "Default": "use_flags_81",
+    "Default": "use_flags_under_81",
     "ClearOnChange": false
+  },
+  "Item": {
+    "SaveToDB": true,
+    "SaveToData": false,
+    "UseASCII": false,
+    "DataDirectory": "",
+    "StringStruct": "StringResource",
+    "StringTable": "StringResource",
+    "ItemStruct": "ItemResource72",
+    "ItemTable": "ItemResource",
+    "ItemUseFlagList": "use_flags_under_81",
+    "ItemModelTypeList": "item-model_type",
+    "SprDirectory": ".\\SPR",
+    "use_flag_enum": "item_use_flag_72",
+    "type_enum": "item_type",
+    "group_enum": "item_group",
+    "class_enum": "item_class",
+    "wear_type_enum": "item_wear_type",
+    "base_opt_type_enum": "",
+    "decrease_type_enum": "item_decrease_type",
+    "enchant_type": 0,
+    "UseArenaPoint": false
+  },
+  "Enums": {
+    "Directory": ".\\Enums"
   },
   "DumpUpdater": {
     "OverwriteExisting": false
