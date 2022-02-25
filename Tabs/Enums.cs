@@ -8,13 +8,8 @@
         //DROPS = 3,
         ITEM = 4,
         MARKET = 5,
+        LAUNCHER = 6,
+        RDB2 = 98,
         NONE = 99
-    }
-
-    public enum HashType
-    {
-        NORMAL = 0,
-        ASCII = 1,
-        NON_ASCII = 2
     }
 }

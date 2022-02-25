@@ -2,31 +2,44 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using Grimoire.Configuration;
+using Grimoire.GUI;
+using Grimoire.Structures;
+
 using Serilog;
 
 namespace Grimoire.Tabs
 {
-    public class Manager
+    public class TabManager
     {
         #region Properties
 
-        readonly GUI.Main main = null;
+        readonly Main main = null;
+        readonly ConfigManager configMgr = Main.Instance.ConfigMgr;
         readonly TabControl tabs = null;
         readonly TabControl.TabPageCollection pages = null;
-        static Manager instance;
+        static TabManager instance;
 
-        public static Manager Instance
+        public static TabManager Instance
         {
             get
             {
                 if (instance == null)
-                    instance = new Manager();
+                    instance = new TabManager();
 
                 return instance;
             }
         }
 
         public int RightClick_TabIdx = 0;
+
+        public int SelectedIndex
+        {
+            get => tabs.SelectedIndex;
+            set => tabs.SelectedIndex = value;
+        }
+
+        public int Count => tabs.TabCount;
 
         public string Text
         {
@@ -50,6 +63,8 @@ namespace Grimoire.Tabs
         }
 
         public TabPage Page => pages?[tabs.SelectedIndex];
+
+        public TabPage this[string key] => pages?[key];
 
         public Style Style
         {
@@ -103,16 +118,16 @@ namespace Grimoire.Tabs
             return ret;
         }
 
-        public Daedalus.Core RDBCore
+        public StructureObject ArcInstance
         {
             get
             {
-                if (Style == Style.RDB)
+                if (Style == Style.RDB2)
                 {
-                    Daedalus.Core ret = null;
+                    StructureObject ret = null;
 
                     GUI.Main.Instance.Invoke(new MethodInvoker(delegate {
-                        ret = ((Styles.rdbTab)pages?[tabs.SelectedIndex].Controls[0]).Core;
+                        ret = ((Styles.RDB2)pages?[tabs.SelectedIndex].Controls[0]).StructObject;
                     }));
 
                     return ret;
@@ -122,7 +137,7 @@ namespace Grimoire.Tabs
             }
         }
 
-        public Daedalus.Core RDBCoreByKey(string key)
+        public StructureObject ArcInstanceByKey(string key)
         {
             if (pages == null || pages.Count == 0)
                 return null;
@@ -130,10 +145,10 @@ namespace Grimoire.Tabs
             if (!pages.ContainsKey(key))
                 return null;
 
-            Daedalus.Core ret = null;
+            StructureObject ret = null;
 
             GUI.Main.Instance.Invoke(new MethodInvoker(delegate {
-                ret = ((Styles.rdbTab)pages[key].Controls[0]).Core;
+                ret = ((Styles.RDB2)pages[key].Controls[0]).StructObject;
             }));
 
             return ret;
@@ -157,17 +172,25 @@ namespace Grimoire.Tabs
             }
         }
 
-        public Styles.rdbTab RDBTab
+        public Styles.Data DataTabByKey(string key)
+        {
+            if (pages.ContainsKey(key))
+                return (Styles.Data)pages?[key].Controls[0];
+
+            return null;
+        }
+
+        public Styles.RDB2 RDBTab
         {
             get
             {
-                Styles.rdbTab ret = null;
+                Styles.RDB2 ret = null;
 
-                if (Style == Style.RDB)
+                if (Style == Style.RDB2)
                 {
                     main.Invoke(new MethodInvoker(delegate {
                         if (tabs.SelectedIndex != -1)
-                            ret = (Styles.rdbTab)pages[tabs.SelectedIndex].Controls[0];
+                            ret = (Styles.RDB2)pages[tabs.SelectedIndex].Controls[0];
                     }));
 
                 }
@@ -176,10 +199,10 @@ namespace Grimoire.Tabs
             }
         }
 
-        public Styles.rdbTab RDBTabByKey(string key)
+        public Styles.RDB2 RDBTabByKey(string key)
         {
             if (pages.ContainsKey(key))
-                return (Styles.rdbTab)pages?[key].Controls[0];
+                return (Styles.RDB2)pages?[key].Controls[0];
 
             return null;
         }
@@ -201,6 +224,14 @@ namespace Grimoire.Tabs
             }
         }
 
+        public Styles.Hasher HashTabByKey(string key)
+        {
+            if (pages.ContainsKey(key))
+                return (Styles.Hasher)pages?[key].Controls[0];
+
+            return null;
+        }
+
         public Styles.Item ItemTab
         {
             get
@@ -220,7 +251,7 @@ namespace Grimoire.Tabs
 
         #endregion
 
-        public Manager()
+        public TabManager()
         {
             main = GUI.Main.Instance;
             tabs = main.TabControl;
@@ -249,7 +280,7 @@ namespace Grimoire.Tabs
             return keys.ToArray();
         }
 
-        public void Create(Style style)
+        public string Create(Style style)
         {
             string key = string.Format("{0}_{1}", pages.Count, (int)style);
             string text = string.Empty;
@@ -258,13 +289,13 @@ namespace Grimoire.Tabs
 
             switch (style)
             {
-                case Style.RDB:
-                    tab.Controls.Add(new Styles.rdbTab(key) { Dock = DockStyle.Fill });
-                    text = "RDB Utility";
-                    break;
+                //case Style.RDB:
+                //    tab.Controls.Add(new Styles.rdbTab(key) { Dock = DockStyle.Fill });
+                //    text = "RDB Utility";
+                //    break;
 
                 case Style.DATA:
-                    tab.Controls.Add(new Styles.Data(key) { Dock = DockStyle.Fill });
+                    tab.Controls.Add(new Styles.Data(key, true) { Dock = DockStyle.Fill });
                     text = "Data Utility";
                     break;
 
@@ -282,6 +313,16 @@ namespace Grimoire.Tabs
                     tab.Controls.Add(new Styles.MarketEditor() { Dock = DockStyle.Fill });
                     text = "Market Utility";
                     break;
+
+                case Style.LAUNCHER:
+                    tab.Controls.Add(new Styles.Launcher() { Dock = DockStyle.Fill });
+                    text = "Launcher";
+                    break;
+
+                case Style.RDB2:
+                    tab.Controls.Add(new Styles.RDB2() { Dock = DockStyle.Fill });
+                    text = "RDB2 Utility";
+                    break;
             }
 
             int styleCnt = 0;
@@ -294,9 +335,13 @@ namespace Grimoire.Tabs
 
             pages.Add(tab);
             SetText(key, text);
-            tabs.SelectedTab = pages[key];
 
-            Log.Information($"New {((Style)style).ToString()} tab named {text} created!");
+            Log.Verbose($"New {((Style)style).ToString()} tab named {text} created!");
+
+            if (configMgr.Get<bool>("FocusNewTabs", "Tab", true))
+                tabs.SelectedTab = pages[key];
+
+            return key;
         }
 
         public void Clear()
@@ -305,7 +350,7 @@ namespace Grimoire.Tabs
             {
                 case Style.RDB:
                     RDBTab.Clear();
-                    RDBCore.ClearData();
+                    ArcInstance.Rows.Clear();
                     break;
 
                 case Style.DATA:
@@ -322,15 +367,15 @@ namespace Grimoire.Tabs
                     break;
             }
 
-            Log.Information($"{Text} has been cleared!");
+            Log.Verbose($"{Text} has been cleared!");
         }
 
         public void Destroy()
         {
-            Log.Information($"{Text} has been closed!");
-
             pages.RemoveAt(RightClick_TabIdx);
-            tabs.SelectedIndex = pages.Count - 1;
+            tabs.SelectedIndex = Math.Max(pages.Count - 1, 0);
+
+            Log.Information($"{Text} has been closed!");
         }
 
         public void SetText(string key, string text)

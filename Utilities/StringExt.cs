@@ -40,11 +40,28 @@ namespace Grimoire.Utilities
             string timeStr = null;
 
             if (miliseconds > 1000)
-                timeStr = string.Format("{0:D2}s {1:D3}ms", t.Seconds, t.Milliseconds);
+                timeStr = string.Format("{0:D3} seconds {1:D4}ms", t.Seconds, t.Milliseconds);
+            else if (miliseconds > 60000)
+                timeStr = string.Format("{0:D3} minutes {1:D3} seconds {2:D4}ms", t.Minutes, t.Seconds, t.Milliseconds);
             else
-                timeStr = string.Format("{0:D3}ms", t.Milliseconds);
+                timeStr = string.Format("{0:D4}ms", t.Milliseconds);
 
             return timeStr;
+        }
+
+        /// <summary>
+        /// Convert provided decorated string into user friendly view 
+        /// </summary>
+        /// <seealso cref="MoonSharp.Interpreter.InterpreterException"/>
+        /// <param name="decoatedMessage">Decorated Moonsharp exception message</param>
+        /// <returns>String containing relevant information to the exception</returns>
+        public static string LuaExceptionToString(string decoatedMessage)
+        {
+            string[] exChunks = decoatedMessage.Split(new char[] { ':' }, 3);
+            string[] lineVals = exChunks[1].Split(new char[] { ',' }, 2);
+            string exception = exChunks[2];
+
+            return $"Details: {exception}\n\tLine: {lineVals[0].Remove(0, 1)}\n\tOffset: {lineVals[1].Remove(lineVals[1].Length - 1)}";
         }
 
         /// <summary>
@@ -58,14 +75,8 @@ namespace Grimoire.Utilities
             string curRowStr = null;
             int curCol = 0;
 
-            for (int i = 0; i <= buffer.Length; i++)
+            for (int i = 0; i < buffer.Length; i++)
             {
-                if (i == buffer.Length)
-                {
-                    outStr = outStr.Remove(outStr.Length - 2, 1);
-                    break;
-                }
-
                 string byteStr = $"0x{buffer[i].ToString("x2")}";
                 curRowStr += $"{byteStr},";
                 curCol++;
@@ -77,6 +88,8 @@ namespace Grimoire.Utilities
                     curCol = 0;
                 }
             }
+
+            outStr = outStr.Remove(outStr.Length - 2, 1);
 
             return outStr;
         }

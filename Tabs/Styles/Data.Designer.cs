@@ -172,13 +172,13 @@
             this.extensions_cs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extensions_cs_export});
             this.extensions_cs.Name = "extensions_cs";
-            this.extensions_cs.Size = new System.Drawing.Size(108, 26);
+            this.extensions_cs.Size = new System.Drawing.Size(109, 26);
             // 
             // extensions_cs_export
             // 
             this.extensions_cs_export.Enabled = false;
             this.extensions_cs_export.Name = "extensions_cs_export";
-            this.extensions_cs_export.Size = new System.Drawing.Size(107, 22);
+            this.extensions_cs_export.Size = new System.Drawing.Size(108, 22);
             this.extensions_cs_export.Text = "Export";
             this.extensions_cs_export.Click += new System.EventHandler(this.extensions_cs_export_Click);
             // 
@@ -449,7 +449,9 @@
             this.searchInput.Size = new System.Drawing.Size(402, 20);
             this.searchInput.TabIndex = 0;
             this.searchInput.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.searchInput.Click += new System.EventHandler(this.searchInput_Click);
             this.searchInput.TextChanged += new System.EventHandler(this.searchInput_TextChanged);
+            this.searchInput.Leave += new System.EventHandler(this.searchInput_Leave);
             // 
             // Data
             // 
@@ -502,7 +504,6 @@
         private System.Windows.Forms.TextBox dataId;
         private System.Windows.Forms.Label dataId_lbl;
         private System.Windows.Forms.ContextMenuStrip grid_cs;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.Label extStatus;
         private System.Windows.Forms.ToolStripMenuItem grid_cs_export;
         private System.Windows.Forms.ToolStripMenuItem grid_cs_compare;

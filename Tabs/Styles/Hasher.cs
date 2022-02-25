@@ -14,8 +14,8 @@ namespace Grimoire.Tabs.Styles
     {
         #region Properties
         XmlManager xMan = XmlManager.Instance;
-        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
-        Tabs.Manager tMan = Tabs.Manager.Instance;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMgr;
+        Tabs.TabManager tMan = Tabs.TabManager.Instance;
         #endregion
 
         #region Constructors
@@ -59,10 +59,10 @@ namespace Grimoire.Tabs.Styles
             add_file_to_grid(path);
         }
 
-        private async void cMenu_convert_Click(object sender, EventArgs e)
+        private void cMenu_convert_Click(object sender, EventArgs e)
         {
             if (fileGrid.SelectedRows.Count > 0)
-                await convertEntry(fileGrid.SelectedRows[0].Index);
+                convertEntry(fileGrid.SelectedRows[0].Index);
 
             if (autoClear_chk.Checked)
                 fileGrid.Rows.Remove(fileGrid.SelectedRows[0]);
@@ -131,7 +131,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        private async void convertAllEntries()
+        private void convertAllEntries()
         {
             prgBar.Maximum = fileGrid.Rows.Count;
 
@@ -139,7 +139,7 @@ namespace Grimoire.Tabs.Styles
             {
                 DataGridViewRow row = fileGrid.Rows[i];
 
-                if (!await convertEntry(i).ConfigureAwait(true))
+                if (!convertEntry(i))
                     return;
 
                 prgBar.Value = i;
@@ -152,7 +152,7 @@ namespace Grimoire.Tabs.Styles
                 cMenu_clear_Click(null, EventArgs.Empty);
         }
 
-        private async Task<bool> convertEntry(int rowIndex)
+        private bool convertEntry(int rowIndex)
         {
             DataGridViewRow row = fileGrid.Rows[rowIndex];
             // [0] - Original Name

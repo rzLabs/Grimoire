@@ -17,7 +17,7 @@ namespace Grimoire.GUI
         public BitFlag()
         {
             InitializeComponent();
-            configMan = GUI.Main.Instance.ConfigMan;
+            configMan = GUI.Main.Instance.ConfigMgr;
 
             localize();
         }
@@ -25,7 +25,7 @@ namespace Grimoire.GUI
         public BitFlag(int vector)
         {
             InitializeComponent();
-            configMan = GUI.Main.Instance.ConfigMan;
+            configMan = GUI.Main.Instance.ConfigMgr;
 
             defaultFlag = vector;
             localize();
@@ -34,7 +34,7 @@ namespace Grimoire.GUI
         public BitFlag(int vector, string listName)
         {
             InitializeComponent();
-            configMan = GUI.Main.Instance.ConfigMan;
+            configMan = GUI.Main.Instance.ConfigMgr;
 
             localize();
 

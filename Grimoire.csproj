@@ -49,82 +49,8 @@
     <Reference Include="Be.Windows.Forms.HexBox, Version=1.6.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Be.Windows.Forms.HexBox.1.6.1\lib\net40\Be.Windows.Forms.HexBox.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.SqlClient, Version=2.0.20168.4, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Data.SqlClient.2.0.0\lib\net46\Microsoft.Data.SqlClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Tools.Sql.BatchParser, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.Data.Tools.Sql.BatchParser.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Identity.Client, Version=4.14.0.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Identity.Client.4.14.0\lib\net45\Microsoft.Identity.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.IdentityModel.JsonWebTokens.6.5.1\lib\net461\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.IdentityModel.Logging.6.5.1\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocols, Version=6.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.IdentityModel.Protocols.6.5.1\lib\net461\Microsoft.IdentityModel.Protocols.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=6.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.6.5.1\lib\net461\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.IdentityModel.Tokens.6.5.1\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.BatchParser, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rd Party\Microsoft.SqlServer.BatchParser.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.BatchParserClient, Version=14.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rd Party\Microsoft.SqlServer.BatchParserClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Dmf, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.Dmf.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Dmf.Common, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.Dmf.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Common">
-      <HintPath>..\3rd Party\Microsoft.SqlServer.Management.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.RegisteredServers, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.Management.RegisteredServers.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.PolicyEnum, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.PolicyEnum.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.RegSvrEnum, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.RegSvrEnum.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.ServiceBrokerEnum, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.ServiceBrokerEnum.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.Smo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SmoExtended, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.SmoExtended.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SqlClrProvider, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.SqlClrProvider.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.SqlServer.SqlManagementObjects.161.46041.41\lib\net461\Microsoft.SqlServer.SqlEnum.dll</HintPath>
-    </Reference>
     <Reference Include="MoonSharp.Interpreter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=921e73ce94aa17f8, processorArchitecture=MSIL">
       <HintPath>packages\MoonSharp.2.0.0.0\lib\net40-client\MoonSharp.Interpreter.dll</HintPath>
-    </Reference>
-    <Reference Include="MySqlConnector, Version=0.64.2.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
-      <HintPath>packages\MySqlConnector.0.64.2\lib\net461\MySqlConnector.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -142,33 +68,10 @@
       <HintPath>packages\Serilog.Sinks.File.5.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Common, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Data.Common.4.3.0\lib\net451\System.Data.Common.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.5.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\System.IdentityModel.Tokens.Jwt.6.5.1\lib\net461\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
@@ -186,11 +89,6 @@
     <Compile Include="Configuration\ConfigDefaults.cs" />
     <Compile Include="Configuration\ConfigMan.cs" />
     <Compile Include="Configuration\Enums\ConfigType.cs" />
-    <Compile Include="DB\DbCmdType.cs" />
-    <Compile Include="DB\DbConType.cs" />
-    <Compile Include="DB\DBEvents.cs" />
-    <Compile Include="DB\DBHelper.cs" />
-    <Compile Include="DB\EngineType.cs" />
     <Compile Include="GUI\BitFlag.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -263,6 +161,12 @@
     <Compile Include="GUI\StructureEditor.Designer.cs">
       <DependentUpon>StructureEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\StructureSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\StructureSelect.Designer.cs">
+      <DependentUpon>StructureSelect.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\XOREditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -277,9 +181,11 @@
     <Compile Include="Structures\MarketEntry.cs" />
     <Compile Include="Structures\MarketEntryKey.cs" />
     <Compile Include="Structures\MarketSearchResult.cs" />
+    <Compile Include="Structures\RdbStruct.cs" />
     <Compile Include="Structures\Settings.cs" />
     <Compile Include="Structures\SprInfo.cs" />
-    <Compile Include="Tabs\Enums\SortDirection.cs" />
+    <Compile Include="Structures\StructLink.cs" />
+    <Compile Include="Structures\StructureManager.cs" />
     <Compile Include="Tabs\Structures\ItemInfo.cs" />
     <Compile Include="Tabs\Styles\Data.cs">
       <SubType>UserControl</SubType>
@@ -305,14 +211,27 @@
     <Compile Include="Tabs\Styles\Item.Designer.cs">
       <DependentUpon>Item.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tabs\Styles\Launcher.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tabs\Styles\Launcher.Designer.cs">
+      <DependentUpon>Launcher.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tabs\Styles\MarketEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Tabs\Styles\MarketEditor.Designer.cs">
       <DependentUpon>MarketEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tabs\Utilities\Grid.cs" />
+    <Compile Include="Tabs\Styles\RDB2.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tabs\Styles\RDB2.Designer.cs">
+      <DependentUpon>RDB2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\ByteConverterExt.cs" />
+    <Compile Include="Utilities\DatabaseUtility.cs" />
+    <Compile Include="Utilities\DialogUtility.cs" />
     <Compile Include="Utilities\Encodings.cs" />
     <Compile Include="GUI\Main.cs">
       <SubType>Form</SubType>
@@ -323,20 +242,21 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tabs\Enums.cs" />
-    <Compile Include="Tabs\Manager.cs" />
-    <Compile Include="Tabs\Styles\RDB.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Tabs\Styles\RDB.Designer.cs">
-      <DependentUpon>RDB.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Utilities\LuaException.cs" />
+    <Compile Include="Tabs\TabManager.cs" />
+    <Compile Include="Utilities\LogUtility.cs" />
     <Compile Include="Utilities\Paths.cs" />
     <Compile Include="Utilities\SPR.cs" />
     <Compile Include="Utilities\StringExt.cs" />
+    <Compile Include="Utilities\StructLinkUtility.cs" />
     <Compile Include="Utilities\XmlManager.cs" />
     <EmbeddedResource Include="GUI\BitFlag.resx">
       <DependentUpon>BitFlag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\StructureSelect.resx">
+      <DependentUpon>StructureSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tabs\Styles\RDB2.resx">
+      <DependentUpon>RDB2.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -403,11 +323,11 @@
     <EmbeddedResource Include="Tabs\Styles\Item.resx">
       <DependentUpon>Item.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tabs\Styles\Launcher.resx">
+      <DependentUpon>Launcher.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\Styles\MarketEditor.resx">
       <DependentUpon>MarketEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tabs\Styles\RDB.resx">
-      <DependentUpon>RDB.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -419,15 +339,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="StructLinks.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Daedalus\Daedalus.csproj">
-      <Project>{8591ef8a-cd35-494d-9cba-0efe0df646fe}</Project>
-      <Name>Daedalus</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DataCore\DataCore\DataCore.csproj">
       <Project>{f234efe9-3104-45fc-a5be-fdc3d0cd888e}</Project>
       <Name>DataCore</Name>
@@ -449,12 +368,5 @@
     <ItemGroup>
       <ReferenceCopyLocalPaths Remove="@(ReferenceSatellitePaths)" />
     </ItemGroup>
-  </Target>
-  <Import Project="packages\Microsoft.Data.SqlClient.SNI.2.0.0\build\net46\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('packages\Microsoft.Data.SqlClient.SNI.2.0.0\build\net46\Microsoft.Data.SqlClient.SNI.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\Microsoft.Data.SqlClient.SNI.2.0.0\build\net46\Microsoft.Data.SqlClient.SNI.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Data.SqlClient.SNI.2.0.0\build\net46\Microsoft.Data.SqlClient.SNI.targets'))" />
   </Target>
 </Project>

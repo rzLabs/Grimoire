@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Grimoire.Tabs.Enums
+namespace Grimoire.Structures
 {
-    public enum SortDirection
+    public class StructLink
     {
-        None = 0,
-        Ascending = 1,
-        Descending = 2
+        public string FileName;
+        public string StructureName;
     }
 }

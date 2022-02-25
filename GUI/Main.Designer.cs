@@ -45,6 +45,7 @@
             this.ts_dump_updater = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_spr_gen = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_xor_editor = new System.Windows.Forms.ToolStripMenuItem();
+            this.ts_test_btn = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs_cMenu.SuspendLayout();
             this.ms.SuspendLayout();
             this.SuspendLayout();
@@ -88,12 +89,13 @@
             // newLbl
             // 
             this.newLbl.AutoSize = true;
-            this.newLbl.Location = new System.Drawing.Point(9, 10);
+            this.newLbl.Location = new System.Drawing.Point(356, 10);
             this.newLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.newLbl.Name = "newLbl";
             this.newLbl.Size = new System.Drawing.Size(32, 13);
             this.newLbl.TabIndex = 2;
             this.newLbl.Text = "New:";
+            this.newLbl.Visible = false;
             // 
             // new_list
             // 
@@ -102,11 +104,12 @@
             this.new_list.Items.AddRange(new object[] {
             "RDB",
             "HASHER"});
-            this.new_list.Location = new System.Drawing.Point(43, 7);
+            this.new_list.Location = new System.Drawing.Point(390, 7);
             this.new_list.Margin = new System.Windows.Forms.Padding(2);
             this.new_list.Name = "new_list";
             this.new_list.Size = new System.Drawing.Size(92, 21);
             this.new_list.TabIndex = 3;
+            this.new_list.Visible = false;
             this.new_list.SelectedIndexChanged += new System.EventHandler(this.new_list_SelectedIndexChanged);
             // 
             // settingsBtn
@@ -139,10 +142,11 @@
             // 
             this.ms.Dock = System.Windows.Forms.DockStyle.None;
             this.ms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ts_utilities});
-            this.ms.Location = new System.Drawing.Point(141, 5);
+            this.ts_utilities,
+            this.ts_test_btn});
+            this.ms.Location = new System.Drawing.Point(9, 4);
             this.ms.Name = "ms";
-            this.ms.Size = new System.Drawing.Size(186, 24);
+            this.ms.Size = new System.Drawing.Size(225, 24);
             this.ms.TabIndex = 6;
             this.ms.Text = "menuStrip1";
             // 
@@ -162,37 +166,45 @@
             // 
             this.ts_log_viewer.Enabled = false;
             this.ts_log_viewer.Name = "ts_log_viewer";
-            this.ts_log_viewer.Size = new System.Drawing.Size(180, 22);
+            this.ts_log_viewer.Size = new System.Drawing.Size(152, 22);
             this.ts_log_viewer.Text = "Log Viewer";
             this.ts_log_viewer.Click += new System.EventHandler(this.ts_log_viewer_Click);
             // 
             // ts_bitflag_editor
             // 
             this.ts_bitflag_editor.Name = "ts_bitflag_editor";
-            this.ts_bitflag_editor.Size = new System.Drawing.Size(180, 22);
+            this.ts_bitflag_editor.Size = new System.Drawing.Size(152, 22);
             this.ts_bitflag_editor.Text = "BitFlag Editor";
             this.ts_bitflag_editor.Click += new System.EventHandler(this.ts_bitflag_editor_Click);
             // 
             // ts_dump_updater
             // 
             this.ts_dump_updater.Name = "ts_dump_updater";
-            this.ts_dump_updater.Size = new System.Drawing.Size(180, 22);
+            this.ts_dump_updater.Size = new System.Drawing.Size(152, 22);
             this.ts_dump_updater.Text = "Dump Updater";
             this.ts_dump_updater.Click += new System.EventHandler(this.ts_dump_updater_Click);
             // 
             // ts_spr_gen
             // 
             this.ts_spr_gen.Name = "ts_spr_gen";
-            this.ts_spr_gen.Size = new System.Drawing.Size(180, 22);
+            this.ts_spr_gen.Size = new System.Drawing.Size(152, 22);
             this.ts_spr_gen.Text = "SPR Generator";
             this.ts_spr_gen.Click += new System.EventHandler(this.ts_spr_gen_Click);
             // 
             // ts_xor_editor
             // 
             this.ts_xor_editor.Name = "ts_xor_editor";
-            this.ts_xor_editor.Size = new System.Drawing.Size(180, 22);
+            this.ts_xor_editor.Size = new System.Drawing.Size(152, 22);
             this.ts_xor_editor.Text = "XOR Editor";
             this.ts_xor_editor.Click += new System.EventHandler(this.ts_xor_editor_Click);
+            // 
+            // ts_test_btn
+            // 
+            this.ts_test_btn.Name = "ts_test_btn";
+            this.ts_test_btn.Size = new System.Drawing.Size(39, 20);
+            this.ts_test_btn.Text = "Test";
+            this.ts_test_btn.Visible = false;
+            this.ts_test_btn.Click += new System.EventHandler(this.ts_test_btn_Click);
             // 
             // Main
             // 
@@ -242,6 +254,7 @@
         private System.Windows.Forms.ToolStripMenuItem ts_spr_gen;
         private System.Windows.Forms.ToolStripMenuItem ts_dump_updater;
         private System.Windows.Forms.ToolStripMenuItem ts_xor_editor;
+        private System.Windows.Forms.ToolStripMenuItem ts_test_btn;
     }
 }
 

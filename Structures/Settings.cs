@@ -11,15 +11,19 @@ namespace Grimoire.Structures
 {
     class Settings
     {
-        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
-        Tabs.Manager tabMan = Tabs.Manager.Instance;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMgr;
+        Tabs.TabManager tabMan = Tabs.TabManager.Instance;
 
-        [Description("Default Tab Style to be loaded when starting Grimoire (if any)"), Category("Tab Style"), DisplayName("Default Style"), DefaultValue(Tabs.Style.NONE)]
-        public Tabs.Style DefaultStyle
+        // Tabs
+
+        [Description("If true, newly created tabs will automatically be focused."), Category("Tabs"), DisplayName("Focus New Tabs")]
+        public bool FocusNewTab
         {
-            get => (Style)Enum.Parse(typeof(Style), configMan["DefaultStyle", "Tab"]);
-            set => configMan["DefaultStyle", "Tab"] = value.ToString();
+            get => configMan.Get<bool>("FocusNewTabs", "Tab", true);
+            set => configMan["FocusNewTabs", "Tab"] = value;
         }
+
+        // Database
 
         [Description("The IP at which your database can be connected to"), Category("Database")]
         public string IP { get => configMan["IP"]; set => configMan["IP"] = value; }
@@ -111,32 +115,6 @@ namespace Grimoire.Structures
 
         [Description("The default directory displayed when opening local files in the RDB Utility"), Category("RDB Utility"), DisplayName("Default Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string RDBLoadDirectory { get => configMan["LoadDirectory", "RDB"]; set => configMan["LoadDirectory", "RDB"] = value; }
-
-        [Description("Determines if (ascii) is appended to file names being loaded or saved"), Category("RDB Utility"), DefaultValue(false), DisplayName("Use ASCII")]
-        public bool UseASCII
-        {
-            get => configMan["AppendASCII"];
-            set
-            {
-                if (Manager.Instance.RDBTab != null)
-                    Manager.Instance.RDBTab.UseASCII = value;
-
-                configMan["AppendASCII"] = value;
-            }
-        }
-
-        [Description("Determines if newly created .RDB files will be saved in their hash name version"), Category("RDB Utility"), DefaultValue(false), DisplayName("Save Hashed")]
-        public bool SaveHashed
-        {
-            get => configMan["SaveHashed", "RDB"];
-            set
-            {
-                if (Manager.Instance.RDBTab != null)
-                    Manager.Instance.RDBTab.SaveEncrypted = value;
-
-                configMan["SaveHashed", "RDB"] = value;
-            }
-        }
 
         [Description("The directory where all .csv will be saved to."), Category("RDB Utility"), DisplayName("CSV Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string CSVDirectory { get => configMan["CSV_Directory"]; set => configMan["CSV_Directory"] = value; }

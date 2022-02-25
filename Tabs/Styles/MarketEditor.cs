@@ -8,13 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
 using System.Windows.Forms;
+
 using Grimoire.Configuration;
-using Grimoire.DB;
-using Grimoire.DB.Enums;
 using Grimoire.Structures;
 using Grimoire.GUI;
+using Grimoire.Utilities;
 
 using Log = Serilog.Log;
+using Serilog.Events;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -26,7 +27,6 @@ namespace Grimoire.Tabs.Styles
             InitializeComponent();
 
             configureOptions();
-            configureDB();
         }
 
         #region Fields
@@ -69,8 +69,7 @@ namespace Grimoire.Tabs.Styles
             "update dbo.ItemResource set price = @price, huntaholic_point = @huntaholic_point, arena_point = @arena_point where id = @id"
         };
 
-        ConfigManager confMgr = GUI.Main.Instance.ConfigMan;
-        DBHelper db = null;
+        ConfigManager configMgr = GUI.Main.Instance.ConfigMgr;
 
         bool useArena = false;
 
@@ -172,6 +171,8 @@ namespace Grimoire.Tabs.Styles
 
         private async void ts_load_btn_Click(object sender, EventArgs e)
         {
+            DatabaseObject dbObj = new DatabaseObject(DatabaseUtility.ConnectionString);
+
             if (((ToolStripButton)sender).Text == "Reload")
             {
                 ts_market_list.SelectedIndex = -1;
@@ -181,13 +182,15 @@ namespace Grimoire.Tabs.Styles
 
             ts_load_btn.Enabled = false;
 
-            if (!await db.OpenConnection())
+            dbObj.CommandText = "select count(*) from dbo.MarketResource";
+
+            if (!await dbObj.Connect())
             {
                 MessageBox.Show("Failed to connect to the Database!", "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            int count = await db.Execute("select count(*) from dbo.MarketResource", DB.Enums.DbCmdType.Scalar) ?? -1;
+            int count = await dbObj.ExecuteScalar<int>();
 
             if (count <= 0)
                 MessageBox.Show("No results can be loaded from the MarketResource table!", "Load Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -199,7 +202,9 @@ namespace Grimoire.Tabs.Styles
 
                 string cmd = (!useArena) ? loadSelect[0] : loadSelect[1];
 
-                using (DbDataReader dbRdr = await db.Execute(cmd, DB.Enums.DbCmdType.Reader))
+                dbObj.CommandText = cmd;
+
+                using (DbDataReader dbRdr = await dbObj.ExecuteReader())
                 {
                     int idx = 0;
 
@@ -236,7 +241,7 @@ namespace Grimoire.Tabs.Styles
                 }
             }
 
-            db.CloseConnection();
+            dbObj.Disconnect();
 
             if (entries == null || entries.Count == 0)
             {
@@ -557,51 +562,13 @@ namespace Grimoire.Tabs.Styles
 
         void configureOptions()
         {
-            useArena = confMgr["UseArenaPoint", "Market"];
+            useArena = configMgr["UseArenaPoint", "Market"];
 
             if (useArena)
             {
                 arenaPoint.Enabled = true;
                 arenaRatio.Enabled = true;
             }
-        }
-
-        void configureDB()
-        {
-            DbConType sqlEngine = (DbConType)confMgr["Engine", "DB"];
-            db = new DBHelper(confMgr, sqlEngine);
-
-            db.ProgressMaxSet += (o, x) =>
-            {
-                progressBar.Maximum = x.Maximum;
-
-                //if (x.Message != null)
-                //s_status_lb.Text = x.Message;
-            };
-
-            db.ProgressValueSet += (o, x) =>
-            {
-                progressBar.Value = x.Value;
-
-                //if (x.Message != null)
-                //ts_status_lb.Text = x.Message;
-            };
-
-            db.ProgressReset += (o, x) =>
-            {
-                progressBar.Maximum = 100;
-                progressBar.Value = 0;
-                //ts_status_lb.Text = string.Empty;
-            };
-
-            db.Message += (o, x) => progressBar.Text = x.Message;
-
-            db.Error += (o, x) =>
-            {
-                Log.Information(x.Message);
-
-                MessageBox.Show(x.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            };
         }
 
         async Task<SearchResult> query_item_by_name()
@@ -725,36 +692,67 @@ namespace Grimoire.Tabs.Styles
         {
             string selectCmd = (!useArena) ? infoSelect[0] : infoSelect[1];
 
-            db.ClearParameters();
-            db.NewCommand(selectCmd);
-            db.AddParameter("@id", id, SqlDbType.Int);
+            DatabaseObject dbObj = new DatabaseObject(DatabaseUtility.ConnectionString, selectCmd);
 
-            if (!await db.OpenConnection())
-                MessageBox.Show("Failed to open a connection to the database!", "SQL Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            else
+            dbObj.Parameters.Clear();
+            dbObj.Parameters.Add("@id", SqlDbType.Int).Value = id;
+
+            if (!await dbObj.Connect())
             {
-                using (DbDataReader dbRdr = await db.Execute(DbCmdType.Reader))
-                {
-                    if (dbRdr.HasRows)
-                    {
-                        while (dbRdr.Read())
-                        {
-                            SearchResult result = new SearchResult();
-                            result.ID = id;
-                            result.Name = dbRdr.GetString(0);
-                            result.Price = dbRdr.GetInt32(1);
-                            result.HuntaholicPoint = dbRdr.GetInt32(2);
+                LogUtility.MessageBoxAndLog("Failed to connect to the database!", "Item Query Failed", LogEventLevel.Error);
 
-                            if (useArena)
-                                result.ArenaPoint = dbRdr.GetInt32(3);
-
-                            return result;
-                        }
-                    }
-                }
-
-                db.CloseConnection();
+                return null;
             }
+
+            using (DbDataReader dbRdr = await dbObj.ExecuteReader())
+            {
+                while (dbRdr.Read())
+                {
+                    SearchResult result = new SearchResult();
+                    result.ID = id;
+                    result.Name = dbRdr.GetString(0);
+                    result.Price = dbRdr.GetInt32(1);
+                    result.HuntaholicPoint = dbRdr.GetInt32(2);
+
+                    if (useArena)
+                        result.ArenaPoint = dbRdr.GetInt32(3);
+
+                    return result;
+                }
+            }
+
+            dbObj.Disconnect();
+
+            //db.ClearParameters();
+            //db.NewCommand(selectCmd);
+            //dbObj.Parameters.Add("@id", id, SqlDbType.Int);
+
+            //if (!await db.OpenConnection())
+            //    MessageBox.Show("Failed to open a connection to the database!", "SQL Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //else
+            //{
+            //    using (DbDataReader dbRdr = await db.Execute(DbCmdType.Reader))
+            //    {
+            //        if (dbRdr.HasRows)
+            //        {
+            //            while (dbRdr.Read())
+            //            {
+            //                SearchResult result = new SearchResult();
+            //                result.ID = id;
+            //                result.Name = dbRdr.GetString(0);
+            //                result.Price = dbRdr.GetInt32(1);
+            //                result.HuntaholicPoint = dbRdr.GetInt32(2);
+
+            //                if (useArena)
+            //                    result.ArenaPoint = dbRdr.GetInt32(3);
+
+            //                return result;
+            //            }
+            //        }
+            //    }
+
+            //    db.CloseConnection();
+            //}
 
             return null;
         }
@@ -765,37 +763,73 @@ namespace Grimoire.Tabs.Styles
 
             string selectCmd = (!useArena) ? searchSelect[0] : searchSelect[1];
 
-            db.NewCommand(selectCmd);
-            db.AddParameter("@item_name", $"%{item_name}%", SqlDbType.VarChar);
+            DatabaseObject dbObj = new DatabaseObject(DatabaseUtility.ConnectionString);
 
-            if (!await db.OpenConnection())
-                MessageBox.Show("Failed to open a connection to the database!", "SQL Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            else
+            dbObj.CommandText = selectCmd;
+            dbObj.Parameters.Add("@item_name", SqlDbType.NVarChar).Value = $"%{item_name}%";
+
+            if (!await dbObj.Connect())
             {
-                using (DbDataReader dbRdr = await db.Execute(DbCmdType.Reader))
+                LogUtility.MessageBoxAndLog("Failed to connect to the database!", "Item Query Failed", LogEventLevel.Error);
+
+                return null;
+            }
+
+            using (DbDataReader dbRdr = await dbObj.ExecuteReader())
+            {
+                if (dbRdr.HasRows)
                 {
-                    if (dbRdr.HasRows)
+                    while (dbRdr.Read())
                     {
-                        while (dbRdr.Read())
+                        SearchResult result = new SearchResult()
                         {
-                            SearchResult result = new SearchResult()
-                            {
-                                ID = dbRdr.GetInt32(0),
-                                Name = dbRdr.GetString(1),
-                                Price = dbRdr.GetInt32(2),
-                                HuntaholicPoint = dbRdr.GetInt32(3)
-                            };
+                            ID = dbRdr.GetInt32(0),
+                            Name = dbRdr.GetString(1),
+                            Price = dbRdr.GetInt32(2),
+                            HuntaholicPoint = dbRdr.GetInt32(3)
+                        };
 
-                            if (useArena)
-                                result.ArenaPoint = dbRdr.GetInt32(4);
+                        if (useArena)
+                            result.ArenaPoint = dbRdr.GetInt32(4);
 
-                            results.Add(result);
-                        }
+                        results.Add(result);
                     }
                 }
-
-                db.CloseConnection();
             }
+
+            dbObj.Disconnect();
+
+            //db.NewCommand(selectCmd);
+            //dbObj.Parameters.Add("@item_name", $"%{item_name}%", SqlDbType.VarChar);
+
+            //if (!await db.OpenConnection())
+            //    MessageBox.Show("Failed to open a connection to the database!", "SQL Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //else
+            //{
+            //    using (DbDataReader dbRdr = await db.Execute(DbCmdType.Reader))
+            //    {
+            //        if (dbRdr.HasRows)
+            //        {
+            //            while (dbRdr.Read())
+            //            {
+            //                SearchResult result = new SearchResult()
+            //                {
+            //                    ID = dbRdr.GetInt32(0),
+            //                    Name = dbRdr.GetString(1),
+            //                    Price = dbRdr.GetInt32(2),
+            //                    HuntaholicPoint = dbRdr.GetInt32(3)
+            //                };
+
+            //                if (useArena)
+            //                    result.ArenaPoint = dbRdr.GetInt32(4);
+
+            //                results.Add(result);
+            //            }
+            //        }
+            //    }
+
+            //    db.CloseConnection();
+            //}
 
             return results;
         }
@@ -804,8 +838,7 @@ namespace Grimoire.Tabs.Styles
         {
             if (selectedEntry != null)
                 if (sortID.Value != selectedEntry.SortID || marketName.Text != selectedEntry.MarketName || itemCode.Text != selectedEntry.Code.ToString() || price.Value != selectedEntry.Price || priceRatio.Value != selectedEntry.PriceRatio ||
-                    huntaholicPoint.Value != selectedEntry.HuntaholicPoint || huntaholicRatio.Value != selectedEntry.HuntaholicRatio || useArena && arenaPoint.Value != selectedEntry.ArenaPoint || useArena && arenaRatio.Value != selectedEntry.ArenaRatio)
-                {
+                    huntaholicPoint.Value != selectedEntry.HuntaholicPoint || huntaholicRatio.Value != selectedEntry.HuntaholicRatio || useArena && arenaPoint.Value != selectedEntry.ArenaPoint || useArena && arenaRatio.Value != selectedEntry.ArenaRatio) {
                     return true;
                 }
 
@@ -814,7 +847,7 @@ namespace Grimoire.Tabs.Styles
 
         void set_edit_state(bool state)
         {
-            if (selectedEntry != null && !newEntry) //We don't want to enabled the edited state for a new entry
+            if (selectedEntry != null && !newEntry) //We don't want to enable the edited state for a new entry
             {
                 editedEntry = state;
 
@@ -867,7 +900,9 @@ namespace Grimoire.Tabs.Styles
 
         async void process_inserts()
         {
-            if (!await db.OpenConnection())
+            DatabaseObject dbObj = new DatabaseObject(DatabaseUtility.ConnectionString);
+
+            if (!await dbObj.Connect())
             {
                 MessageBox.Show("Failed to open a connection to the database!", "SQL Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -890,29 +925,35 @@ namespace Grimoire.Tabs.Styles
                     {
                         string cmd = (!useArena) ? marketInsert[0] : marketInsert[1];
 
-                        db.NewCommand(cmd);
-                        db.AddParameter("@sort_id", entry.SortID, SqlDbType.Int);
-                        db.AddParameter("@name", entry.MarketName, SqlDbType.VarChar);
-                        db.AddParameter("@code", entry.Code, SqlDbType.Int);
-                        db.AddParameter("@price_ratio", entry.PriceRatio, SqlDbType.Decimal);
-                        db.AddParameter("@huntaholic_ratio", entry.HuntaholicRatio, SqlDbType.Decimal);
+                        dbObj.CommandText = cmd;
+                        dbObj.Parameters.Add("@sort_id", SqlDbType.Int).Value = entry.SortID;
+                        dbObj.Parameters.Add("@name", SqlDbType.VarChar).Value = entry.MarketName;
+                        dbObj.Parameters.Add("@code", SqlDbType.Int).Value = entry.Code;
+                        dbObj.Parameters.Add("@price_ratio", SqlDbType.Decimal).Value = entry.PriceRatio;
+                        dbObj.Parameters.Add("@huntaholic_ratio", SqlDbType.Decimal).Value = entry.HuntaholicRatio;
 
                         if (useArena)
-                            db.AddParameter("@arena_ratio", entry.ArenaRatio, SqlDbType.Decimal);
+                            dbObj.Parameters.Add("@arena_ratio", SqlDbType.Decimal).Value = entry.ArenaRatio;
 
-                        await db.Execute();
+                        if (await dbObj.ExecuteNonQuery() == -99) 
+                        {
+                            LogUtility.MessageBoxAndLog($"Insert for {entry.MarketName} - {entry.Code} failed!", "Process Insert Exception", LogEventLevel.Error);
+
+                            return;
+                        }
 
                         cmd = (!useArena) ? itemUpdate[0] : itemUpdate[1];
 
-                        db.NewCommand(cmd);
-                        db.AddParameter("@price", entry.Price, SqlDbType.Int);
-                        db.AddParameter("@huntaholic_point", entry.HuntaholicPoint, SqlDbType.Int);
-                        db.AddParameter("@id", entry.Code, SqlDbType.Int);
+                        dbObj.Parameters.Clear();
+                        dbObj.CommandText = cmd;
+                        dbObj.Parameters.Add("@price", SqlDbType.Int).Value = entry.Price;
+                        dbObj.Parameters.Add("@huntaholic_point", SqlDbType.Int).Value = entry.HuntaholicPoint;
+                        dbObj.Parameters.Add("@id", SqlDbType.Int).Value = entry.Code;
 
                         if (useArena)
-                            db.AddParameter("@arena_point", entry.ArenaPoint, SqlDbType.Int);
+                            dbObj.Parameters.Add("@arena_point", SqlDbType.Int).Value = entry.ArenaPoint;
 
-                        await db.Execute();
+                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
                     }
                 }
 
@@ -924,14 +965,16 @@ namespace Grimoire.Tabs.Styles
                     progressBar.Value = progress;
             }
 
-            db.CloseConnection();
+            dbObj.Disconnect();
 
             reset_progress();
         }
 
         async void process_updates()
         {
-            if (!await db.OpenConnection())
+            DatabaseObject dbObj = new DatabaseObject(DatabaseUtility.ConnectionString);
+
+            if (!await dbObj.Connect())
             {
                 MessageBox.Show("Failed to open a connection to the database!", "SQL Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -954,29 +997,30 @@ namespace Grimoire.Tabs.Styles
                     {
                         string cmd = (!useArena) ? marketUpdate[0] : marketUpdate[1];
 
-                        db.NewCommand(cmd);
-                        db.AddParameter("@sort_id", entry.SortID, SqlDbType.Int);
-                        db.AddParameter("@name", entry.MarketName, SqlDbType.VarChar);
-                        db.AddParameter("@code", entry.Code, SqlDbType.Int);
-                        db.AddParameter("@price_ratio", entry.PriceRatio, SqlDbType.Decimal);
-                        db.AddParameter("@huntaholic_ratio", entry.HuntaholicRatio, SqlDbType.Decimal);
+                        dbObj.CommandText = cmd;
+                        dbObj.Parameters.Add("@sort_id", SqlDbType.Int).Value = entry.SortID;
+                        dbObj.Parameters.Add("@name", SqlDbType.VarChar).Value = entry.MarketName;
+                        dbObj.Parameters.Add("@code", SqlDbType.Int).Value = entry.Code;
+                        dbObj.Parameters.Add("@price_ratio", SqlDbType.Decimal).Value = entry.PriceRatio;
+                        dbObj.Parameters.Add("@huntaholic_ratio", SqlDbType.Decimal).Value = entry.HuntaholicRatio;
 
                         if (useArena)
-                            db.AddParameter("@arena_ratio", entry.ArenaRatio, SqlDbType.Decimal);
+                            dbObj.Parameters.Add("@arena_ratio", SqlDbType.Decimal).Value = entry.ArenaRatio;
 
-                        await db.Execute();
+                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
 
                         cmd = (!useArena) ? itemUpdate[0] : itemUpdate[1];
 
-                        db.NewCommand(cmd);
-                        db.AddParameter("@price", entry.Price, SqlDbType.Int);
-                        db.AddParameter("@huntaholic_point", entry.HuntaholicPoint, SqlDbType.Int);
-                        db.AddParameter("@id", entry.Code, SqlDbType.Int);
+                        dbObj.Parameters.Clear();
+                        dbObj.CommandText = cmd;
+                        dbObj.Parameters.Add("@price", SqlDbType.Int).Value = entry.Price;
+                        dbObj.Parameters.Add("@huntaholic_point", SqlDbType.Int).Value = entry.HuntaholicPoint;
+                        dbObj.Parameters.Add("@id", SqlDbType.Int).Value = entry.Code;
 
                         if (useArena)
-                            db.AddParameter("@arena_point", entry.ArenaPoint, SqlDbType.Int);
+                            dbObj.Parameters.Add("@arena_point", SqlDbType.Int).Value = entry.ArenaPoint;
 
-                        await db.Execute();
+                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
                     }
 
                     updates.RemoveAt(i);
@@ -988,14 +1032,16 @@ namespace Grimoire.Tabs.Styles
                 }
             }
 
-            db.CloseConnection();
+            dbObj.Disconnect();
 
             reset_progress();
         }
 
         async void process_deletes()
         {
-            if (!await db.OpenConnection())
+            DatabaseObject dbObj = new DatabaseObject(DatabaseUtility.ConnectionString);
+
+            if (!await dbObj.Connect())
             {
                 MessageBox.Show("Failed to open a connection to the database!", "SQL Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1018,11 +1064,11 @@ namespace Grimoire.Tabs.Styles
                     {
                         string cmd = marketDelete;
 
-                        db.NewCommand(cmd);
-                        db.AddParameter("@sort_id", entry.SortID, SqlDbType.Int);
-                        db.AddParameter("@name", entry.MarketName, SqlDbType.VarChar);
+                        dbObj.CommandText = cmd;
+                        dbObj.Parameters.Add("@sort_id", SqlDbType.Int).Value = entry.SortID;
+                        dbObj.Parameters.Add("@name", SqlDbType.VarChar).Value = entry.MarketName;
 
-                        await db.Execute();
+                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
                     }
                 }
 
@@ -1034,7 +1080,7 @@ namespace Grimoire.Tabs.Styles
                     progressBar.Value = progress;
             }
 
-            db.CloseConnection();
+            dbObj.Disconnect();
 
             reset_progress();
         }

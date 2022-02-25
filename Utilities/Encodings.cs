@@ -27,11 +27,13 @@ namespace Grimoire.Utilities
                 return names;
             } }
 
-        public static int GetIndex(string name) =>
-            encodings.FindIndex(e => e.Name == name);
+        public static int GetIndex(string name) => encodings.FindIndex(e => e.Name == name);
 
-        public static Encoding GetByName(string name) =>
-            Encoding.GetEncoding(encodings.Find(e => e.Name == name).Value);
+        public static int GetIndex(int value) => encodings.FindIndex(e => e.Value == value);
+
+        public static Encoding GetByName(string name) => Encoding.GetEncoding(encodings.Find(e => e.Name == name).Value);
+
+        public static Encoding GetByCodePage(int codepage) => Encoding.GetEncoding(encodings.Find(e=>e.Value == codepage).Value);
     }
 
     public class EncodingInfo

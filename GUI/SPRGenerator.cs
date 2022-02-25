@@ -10,9 +10,13 @@ using System.Data.SqlClient;
 using System.Data.Common;
 using System.IO;
 using System.Windows.Forms;
+
 using Grimoire.Structures;
 using Grimoire.Configuration;
-using Grimoire.DB;
+using Grimoire.Utilities;
+
+using Serilog;
+using Serilog.Events;
 
 namespace Grimoire.GUI
 {
@@ -29,7 +33,7 @@ namespace Grimoire.GUI
 
         List<string> ignored = new List<string>();
 
-        ConfigManager configMgr = Main.Instance.ConfigMan;
+        ConfigManager configMgr = Main.Instance.ConfigMgr;
 
         public SPRGenerator()
         {
@@ -66,7 +70,8 @@ namespace Grimoire.GUI
 
         async void loadEntries()
         {
-            DBHelper dbHelper = new DBHelper(configMgr);
+            DatabaseObject dbObj = new DatabaseObject(DatabaseUtility.ConnectionString);
+
             string sqlCmd = null;
 
             foreach (string table in tableName)
@@ -75,14 +80,27 @@ namespace Grimoire.GUI
 
                 sqlCmd = $"{sqlQuery}{table}{condition}";
 
-                if (!await dbHelper.OpenConnection())
-                    MessageBox.Show("Failed to connect to the Database!", "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (!await dbObj.Connect())
+                {
+                    LogUtility.MessageBoxAndLog("Failed to connect to the database!", "Load Entries Exception", LogEventLevel.Error);
 
-                int rowCount = await dbHelper.Execute($"SELECT COUNT(icon_file_name) FROM dbo.{table}", DB.Enums.DbCmdType.Scalar);
-                DbDataReader dbRdr = await dbHelper.Execute(sqlCmd, DB.Enums.DbCmdType.Reader);
+                    return;
+                }
+
+                dbObj.CommandText = $"SELECT COUNT(icon_file_name) FROM dbo.{table}";
+
+                int rowCount = await dbObj.ExecuteScalar<int>();
+
+                dbObj.CommandText = sqlCmd;
+
+                DbDataReader dbRdr = await dbObj.ExecuteReader();
 
                 if (dbRdr == null || !dbRdr.HasRows || rowCount <= 0)
-                    MessageBox.Show($"Failed to load icons from {table}!", "Load Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                {
+                    LogUtility.MessageBoxAndLog($"Failed to load icons from {table}!", "Load Entries Exception", LogEventLevel.Error);
+
+                    return;
+                }
 
                 prgBar.Maximum = rowCount;
 
@@ -104,7 +122,7 @@ namespace Grimoire.GUI
                     idx++;
                 }
 
-                dbHelper.CloseConnection();
+                dbObj.Disconnect();
 
                 statusLb.Text = $"{sprEntries.Count} icons loaded!";
 

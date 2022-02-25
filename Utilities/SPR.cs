@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using System.IO;
 using DataCore.Structures;
 
+using Serilog;
+
 namespace Grimoire.Utilities
 {
     public class SPR
     {
-        Tabs.Manager tManager = Tabs.Manager.Instance;
+        Tabs.TabManager tManager = Tabs.TabManager.Instance;
         DataCore.Core core = null;
         Dictionary<string, string> icons = new Dictionary<string, string>();
 
@@ -20,8 +22,15 @@ namespace Grimoire.Utilities
             this.core = core;
         }
 
-        public void LoadFromData(string name) //TODO: you should be sure data core is actually loaded/ready
+        public void LoadFromData(string name) 
         {
+            if (core == null || core.RowCount == 0)
+            {              
+                Log.Error($"Failed to load {name} from data!");
+
+                return;
+            }
+
             IndexEntry entry = core.GetEntry(name);
             byte[] sprBuffer = core.GetFileBytes(entry);
 

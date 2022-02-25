@@ -20,7 +20,7 @@ namespace Grimoire.GUI
 {
     public partial class DataRebuild : Form
     {
-        Tabs.Manager tManager = Tabs.Manager.Instance;
+        Tabs.TabManager tManager = Tabs.TabManager.Instance;
         Core core = null;
         XmlManager xMan = XmlManager.Instance;
         ConfigManager configMan;
@@ -32,7 +32,7 @@ namespace Grimoire.GUI
             hook_core_events();
             dataChart.Series.Add(new Series() { Name = "All Data", ChartType = SeriesChartType.Pie });
             dataList.Items[0].Selected = true;
-            configMan = GUI.Main.Instance.ConfigMan;
+            configMan = GUI.Main.Instance.ConfigMgr;
             localize();
         }
 

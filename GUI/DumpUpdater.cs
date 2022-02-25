@@ -15,7 +15,7 @@ namespace Grimoire.GUI
 {
     public partial class DumpUpdater : Form
     {
-        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMgr;
 
         string dumpDir; 
 

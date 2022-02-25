@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Daedalus.Structures;
 using Grimoire.Utilities;
 
 namespace Grimoire.GUI
@@ -16,23 +15,9 @@ namespace Grimoire.GUI
     {
         XmlManager xMan = XmlManager.Instance;
 
-        Cell[] cells = null;
-
         public ListInput()
         {
             InitializeComponent();
-            localize();
-        }
-
-        public ListInput(string description, Cell[] cells)
-        {
-            InitializeComponent();
-
-            Text = description;
-            this.cells = cells;
-
-            populateList();
-
             localize();
         }
 
@@ -42,18 +27,6 @@ namespace Grimoire.GUI
 
             Text = description;
             list.Items.AddRange(selections);
-        }
-
-        void populateList()
-        {
-            if (cells == null)
-                throw new NullReferenceException("cells is null!");
-
-            if (cells.Length == 0)
-                throw new ArgumentNullException("cells does not contain any cells!");
-
-            foreach (Cell cell in cells)
-                list.Items.Add(cell.Name);
         }
 
         private void ok_btn_Click(object sender, EventArgs e)

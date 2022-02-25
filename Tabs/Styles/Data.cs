@@ -11,6 +11,7 @@ using Grimoire.Utilities;
 using Grimoire.Configuration;
 
 using Serilog;
+using System.Linq;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -21,10 +22,10 @@ namespace Grimoire.Tabs.Styles
         string key;
         Core core;
 
-        readonly Tabs.Manager tManager;
+        readonly Tabs.TabManager tManager;
         readonly ConfigManager configMan;
+        readonly Stopwatch actionSW = new Stopwatch();
 
-        readonly Utilities.Grid gridUtils;
         public List<IndexEntry> FilteredIndex = new List<IndexEntry>();
 
         public bool Filtered => FilteredIndex.Count > 0;
@@ -37,8 +38,6 @@ namespace Grimoire.Tabs.Styles
         public int SearchCount => SearchIndex.Count;
 
         public bool IndexLoaded => Core.Index.Count > 0;
-
-        readonly Stopwatch actionSW = new Stopwatch();
 
         public int RowCount
         {
@@ -55,6 +54,7 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
+        // TODO: this can be handled better and without throwing
         public DataCore.Core Core
         {
             get
@@ -104,24 +104,29 @@ namespace Grimoire.Tabs.Styles
 
         XmlManager xMan = XmlManager.Instance;
 
+        readonly bool docked = false;
+
         #endregion
 
         #region Constructors
 
-        public Data(string key)
+        public Data(string key, bool docked = true)
         {
             InitializeComponent();
 
             this.key = key;
 
-            tManager = Tabs.Manager.Instance;
-            configMan = GUI.Main.Instance.ConfigMan;
+            tManager = Tabs.TabManager.Instance;
+            configMan = GUI.Main.Instance.ConfigMgr;
 
             initializeCore();
 
-            gridUtils = new Utilities.Grid();
+            this.docked = docked;
 
-            localize();
+            if (this.docked)
+            {
+                localize();
+            }
         }
 
         #endregion
@@ -164,39 +169,48 @@ namespace Grimoire.Tabs.Styles
         {
             Paths.Description = "Please select a Dump Directory";
             string dumpDirectory = Paths.FolderPath;
+
             if (Paths.FolderResult != DialogResult.OK)
                 return;
 
             string buildDirectory = configMan.GetDirectory("BuildDirectory", "Grim");
+            string msg = null;
 
-            if (!await check_locations(dumpDirectory).ConfigureAwait(true))
+            if (!await Paths.VerifyDump(dumpDirectory))
             {
-                Log.Error("There are issues with your dump structure! Please verify that files are in their proper extension folder (e.g. .nfe in /nfe/ folder!)");
+                msg = "There are issues with your dump structure! Please verify that files are in their proper extension folder (e.g. .nfe in /nfe/ folder!)";
 
-                return;
+                Log.Error(msg);
+
+                MessageBox.Show(msg, "Create Client Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            Log.Information($"Building new client at:\n\t-{buildDirectory}");
+            msg = $"Building new client at:\n\t-{buildDirectory}";
+
+            Log.Information(msg);
+
+            ts_status.Text = msg;
 
             tab_disabled = true;
 
             try
             {
                 if (core.Index.Count > 0)
-                    core.Clear(); //TODO: Need to add missing applicable resets to the core beyond just clearing the List<IndexEntry>
+                    core.Clear();
 
                 core.Backups = false;
+
                 await Task.Run(() => {
                     core.BuildDataFiles(dumpDirectory, buildDirectory);
                 });
 
-                string msg = "Client build completed!";
+                msg = "Client build completed!";
 
                 Log.Information(msg);
 
                 MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
-                if (configMan["ClearOnCreate", "Data"])
+                if (configMan.Get<bool>("ClearOnCreate", "Data", true)) // bool is weird with index accessor, use .Get<T> to ensure type compatibility.
                     core.Clear();
                 else
                     display_data();
@@ -212,7 +226,6 @@ namespace Grimoire.Tabs.Styles
                 return;
             }
          
-
             ts_status.Text = string.Empty;
 
             tab_disabled = false;
@@ -224,6 +237,7 @@ namespace Grimoire.Tabs.Styles
             Paths.DefaultFileName = "data.000";
 
             string filePath = Paths.FilePath;
+
             if (Paths.FileResult != DialogResult.OK)
                 return;
 
@@ -366,8 +380,8 @@ namespace Grimoire.Tabs.Styles
         private async void extensions_cs_export_Click(object sender, EventArgs e)
         {
             string buildDirectory = configMan.GetDirectory("BuildDirectory", "Grim");
-
             string ext = extensions.SelectedNode.Text;
+            
             if (ext.Length >= 2)
             {
                 List<IndexEntry> entries = core.GetEntriesByExtension(ext);
@@ -408,31 +422,40 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
-        // TODO: Needs to consider rdb files being compared and ignore the first 128 bytes 
         private void grid_cs_compare_Click(object sender, EventArgs e)
         {
             string compareFile = Paths.FilePath;
             string filename = grid.SelectedRows[0].Cells[0].Value.ToString();
             string externalHash = null;
             string internalHash = null;
+            byte[] internalBuffer = null;
+            byte[] externalBuffer = null;
 
             if (Paths.FileResult != DialogResult.OK)
                 return;
 
             try
             {
-                externalHash = DataCore.Functions.Hash.GetSHA512Hash(compareFile);
+                IndexEntry storedEntry = core.GetEntry(filename);
 
-                byte[] buffer = core.GetFileBytes(filename);
+                bool isRDB = storedEntry.Extension == "rdb";
 
-                internalHash = DataCore.Functions.Hash.GetSHA512Hash(buffer, buffer.Length);
+                internalBuffer = (isRDB) ? core.GetFileBytes(storedEntry, 128) : core.GetFileBytes(storedEntry);
+                externalBuffer = (isRDB) ? File.ReadAllBytes(compareFile).Skip(128).ToArray() : File.ReadAllBytes(compareFile);
 
-                string result = (externalHash == internalHash) ? "MATCH" : "MISMATCHED";
+                // This shit takes forever! remember its 408 thousand bytes for fieldpropresource, imagine item
+                //Log.Verbose($"Internal buffer:\n{StringExt.ByteArrayToString(internalBuffer)}");
+                //Log.Verbose($"External buffer:\n{StringExt.ByteArrayToString(externalBuffer)}");
 
-                Log.Information($"File Comparison:\nFilename: {filename}\nResult: {result}");
+                internalHash = DataCore.Functions.Hash.GetSHA512Hash(internalBuffer, internalBuffer.Length);
+                externalHash = DataCore.Functions.Hash.GetSHA512Hash(externalBuffer, externalBuffer.Length);
 
-                MessageBox.Show($"Compared file: {filename}", "Comparison Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
+                string result = (externalHash == internalHash) ? "MATCH" : "MISMATCH";
+                string msg = $"Internal Filename:\n\n{filename}\n\nExternal File:\n\n{compareFile}\n\nResult: {result}\n";
+
+                Log.Information(msg);
+
+                MessageBox.Show(msg, "Comparison Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -453,15 +476,38 @@ namespace Grimoire.Tabs.Styles
 
         private void searchInput_TextChanged(object sender, EventArgs e)
         {
+            if (searchInput.Text == "Search")
+                return;
+
             if (searchInput.Text.Length > 2)
             {
-                if (Filtered)
-                    SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text)) :  core.GetEntriesByPartialName(searchInput.Text);                    
+                SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text)) : core.GetEntriesByPartialName(searchInput.Text);
 
                 grid.Rows.Clear();
                 grid.RowCount = SearchIndex.Count;
             }
-            else
+            else if (searchInput.Text.Length == 8) // data.001
+            {
+                string input = searchInput.Text;
+
+                if (input.StartsWith("data"))
+                {
+                    int dataId = 0;
+
+                    if (!int.TryParse(searchInput.Text.Substring(searchInput.Text.Length - 3, 3), out dataId))
+                    {
+                        Log.Error("Failed to get valid substring value from input!");
+
+                        return;
+                    }
+
+                    SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.DataID == dataId).OrderBy(i => i.Offset).ToList() : core.GetEntriesByDataId(dataId);
+
+                    grid.Rows.Clear();
+                    grid.RowCount = SearchIndex.Count;
+                }
+            }
+            else if (searchInput.Text.Length == 0)
             {
                 SearchIndex.Clear();
                 grid.Rows.Clear();
@@ -504,6 +550,18 @@ namespace Grimoire.Tabs.Styles
             }
         }
 
+        private void searchInput_Click(object sender, EventArgs e)
+        {
+            if (searchInput.Text == "Search")
+                searchInput.Text = string.Empty;
+        }
+
+        private void searchInput_Leave(object sender, EventArgs e)
+        {
+            if (searchInput.Text.Length == 0)
+                searchInput.Text = "Search";
+        }
+
         #endregion
 
         #region Methods (Public)
@@ -518,7 +576,15 @@ namespace Grimoire.Tabs.Styles
 
         public void Hook_Core_Events() => hook_core_events();
 
+        public void Unhook_Core_Events() => unhook_core_events();
+
         new public void Load(string path) => load(path);
+
+        new public void Load(DataCore.Core core)
+        {
+            this.core = core;
+            display_data();
+        }
 
         public void Insert(string[] filePaths) => insert_files(filePaths);
 
@@ -531,7 +597,7 @@ namespace Grimoire.Tabs.Styles
         void initializeCore()
         {
             bool backup = configMan["Backup", "Data"];
-            int codepage = (int)configMan["Encoding", "Data"];
+            int codepage = configMan.Get<int>("Codepage", "Grim");
             Encoding encoding = Encoding.GetEncoding(codepage);
             core = new Core(backup, encoding);
             
@@ -626,24 +692,38 @@ namespace Grimoire.Tabs.Styles
 
                 Log.Information($"{core.RowCount} entries loaded from data.000 to {tManager.Text} in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)} from path:\n\t- {path}");
 
-                display_data();
+                if (docked)
+                {
+                    display_data();
 
-                tab_disabled = false;
-                ts_file_new.Visible = false;
-                ts_file_rebuild.Visible = true;
+                    ts_file_new.Visible = false;
+                    ts_file_rebuild.Visible = true;
+                }
             }
             catch (Exception ex)
             {
                 Log.Error($"An exceeption occured during load!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}");
             }
+
+            tab_disabled = false;
         }
 
         async void display_data()
         {
             grid.RowCount = core.RowCount;
             grid.VirtualMode = true;
-            grid.CellValueNeeded += gridUtils.Grid_CellValueNeeded;
-            grid.CellValuePushed += gridUtils.Grid_CellPushed;
+            grid.CellValueNeeded += (o, e) =>
+            {
+                if (tManager.DataTab.Filtered && tManager.DataTab.Searching || !tManager.DataTab.Filtered && tManager.DataTab.Searching)
+                    e.Value = tManager.DataTab.SearchIndex[e.RowIndex].Name;
+                else if (tManager.DataTab.Filtered && !tManager.DataTab.Searching)
+                {
+                    if (e.RowIndex < tManager.DataTab.FilterCount)
+                        e.Value = tManager.DataTab.FilteredIndex[e.RowIndex].Name;
+                }
+                else
+                    e.Value = tManager.DataCore.Index[e.RowIndex].Name;
+            };
 
             await Task.Run(() => { populate_selection_info(tManager.DataCore.Index[0]); });
 
@@ -664,63 +744,6 @@ namespace Grimoire.Tabs.Styles
             });
 
             extStatus.ResetText();
-        }
-
-        async Task<bool> check_locations(string dir)
-        {
-            string[] extDirs = Directory.GetDirectories(dir);
-
-            ts_progress.Maximum = extDirs.Length;
-
-            for (int extIdx = 0; extIdx < extDirs.Length; extIdx++)
-            {
-                string extDir = extDirs[extIdx];
-
-                //check if dir is 2 characters long (e.g. .db/.fx)
-                int extOffset = 0;
-                extOffset = (extDir[extDir.Length - 3] == '\\') ? 2 : 3;
-
-                string dirExt = extDir.Substring(extDir.Length - extOffset);
-
-                ts_status.Text = $"Checking directory: {extDirs[extIdx]}...";
-
-                string[] dirFiles = Directory.GetFiles(extDirs[extIdx]);
-
-                for (int dirFileIdx = 0; dirFileIdx < dirFiles.Length; dirFileIdx++)
-                {
-                    string name = Path.GetFileName(dirFiles[dirFileIdx]);
-
-                    extOffset = (name[name.Length - 3] == '.') ? 2 : 3;
-                    string ext = name.Substring(name.Length - extOffset);
-
-                    if (ext != dirExt)
-                    {
-                        if (MessageBox.Show($"File: {name} does not belong to the directory: /{dirExt}/\n\nWould you like to move it", "Directory Mistmatch Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                        {
-                            string destName = $"{dir}//{ext}//{name}";
-                            string sourceName = $"{extDir}//{name}";
-
-                            if (File.Exists(destName))
-                                if (MessageBox.Show($"A file with the same name already exists in the destination folder!\n\nWould you like to delete it?", "Duplicate File Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                                    File.Delete(destName);
-                                else
-                                    return false;
-
-                            File.Move(sourceName, destName);
-                        }
-                        else
-                            return false;
-                    }
-                }
-
-                ts_progress.Value = extIdx;
-            }
-
-            ts_status.Text = "";
-            ts_progress.Maximum = 100;
-            ts_progress.Value = 0;
-
-            return true;
         }
 
         private async void insert_files(string[] filePaths)
@@ -774,6 +797,5 @@ namespace Grimoire.Tabs.Styles
         private void localize() => xMan.Localize(this, Localization.Enums.SenderType.Tab);
 
         #endregion
-
     }
 }

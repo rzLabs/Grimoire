@@ -27,7 +27,11 @@ namespace Grimoire.GUI
             localize();
         }
 
-        public string Value { get { return (input.Text.Length > 0) ? input.Text : null; } set { input.Text = value; } }
+        public string Value 
+        { 
+            get { return (input.Text.Length > 0) ? input.Text : null; }
+            set { input.Text = value; }
+        }
 
         private void okBtn_Click(object sender, EventArgs e)
         {

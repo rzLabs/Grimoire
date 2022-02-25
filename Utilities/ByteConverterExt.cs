@@ -1,27 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Grimoire.Utilities
 {
     public class ByteConverterExt
     {
-        public static string ToString(byte[] b)
+        /// <summary>
+        /// Convert byte array to encoded string
+        /// </summary>
+        /// <param name="inBuffer"><c>byte[]</c> containing string data</param>
+        /// <returns>Compressed (trimmed of nulls) string</returns>
+        public static string ToString(byte[] inBuffer)
         {
-            int num = 0;
-            for (int i = 0; i < (int)b.Length && b[i] > 0; i++)
+            int index = -1;
+
+            for (int i = 0; i < inBuffer.Length; i++)
             {
-                num++;
-            }
-            byte[] numArray = new byte[num];
-            for (int i = 0; i < num && b[i] > 0; i++)
-            {
-                numArray[i] = b[i];
+                if (inBuffer[i] == 0)
+                {
+                    index = i;
+                    break;
+                }
             }
 
-            return Encoding.ASCII.GetString(numArray);
+            if (index == -1)
+                return Encoding.Default.GetString(inBuffer);
+
+            return Encoding.Default.GetString(inBuffer, 0, index);
         }
 
         public static Byte[] ToBytes(string str)
@@ -31,22 +39,41 @@ namespace Grimoire.Utilities
             return bytes;
         }
 
-        public static Byte[] ToBytes(string str, int size)
+        public static byte[] ToBytes(string str, int length, Encoding encoding)
         {
-            Byte[] bytes = new Byte[size];
-            byte[] buffer = Encoding.GetEncoding("ASCII").GetBytes(str);
-            try
+            byte[] strBuffer = encoding.GetBytes(str);
+            byte[] outBuffer = new byte[length];
+
+            Buffer.BlockCopy(strBuffer, 0, outBuffer, 0, strBuffer.Length);
+
+            return outBuffer;
+        }
+
+        public static byte[] ToByte<T>(object obj)
+        {
+            if (obj == null)
+                return null;
+
+            BinaryFormatter bf = new BinaryFormatter();
+            using (MemoryStream ms = new MemoryStream())
             {
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    bytes[i] = buffer[i];
-                }
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
             }
-            catch
+        }
+
+        public static T FromBytes<T>(byte[] data)
+        {
+            if (data == null)
+                return default(T);
+
+            BinaryFormatter bf = new BinaryFormatter();
+
+            using (MemoryStream ms = new MemoryStream(data))
             {
-                System.Windows.Forms.MessageBox.Show(Encoding.Default.GetString(buffer));
+                object obj = bf.Deserialize(ms);
+                return (T)obj;
             }
-            return bytes;
         }
     }
 }

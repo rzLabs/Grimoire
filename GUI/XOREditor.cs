@@ -77,7 +77,7 @@ namespace Grimoire.GUI
 
         private void ts_file_load_config_Click(object sender, EventArgs e)
         {
-            xorKey = Main.Instance.ConfigMan.GetByteArray("ModifiedXORKey");
+            xorKey = Main.Instance.ConfigMgr.GetByteArray("ModifiedXORKey");
 
             if (xorKey != null && xorKey.Length >= 0)
             {
@@ -106,8 +106,8 @@ namespace Grimoire.GUI
         {
             if (provider != null && provider.Length > 0)
             {
-                Main.Instance.ConfigMan.UpdateByteArray("ModifiedXORKey", provider.Bytes.ToArray());
-                await Main.Instance.ConfigMan.Save();
+                Main.Instance.ConfigMgr.UpdateByteArray("ModifiedXORKey", provider.Bytes.ToArray());
+                await Main.Instance.ConfigMgr.Save();
             }
         }
 
@@ -184,7 +184,6 @@ namespace Grimoire.GUI
                         colCount = 0;
                         colStr += "\n";
                         outStr += colStr;
-                        colStr = null;
                     }
                     else
                         outStr += colStr;

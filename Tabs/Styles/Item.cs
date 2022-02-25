@@ -4,20 +4,13 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Grimoire.DB;
-using Grimoire.Tabs.Enums;
-using Grimoire.Tabs.Structures;
 using Grimoire.Utilities;
-using Daedalus;
-using Daedalus.Structures;
-using DataCore;
-using DataCore.Structures;
 using Grimoire.Configuration;
 using Grimoire.GUI;
+using Grimoire.Structures;
 
 using Serilog;
 
@@ -25,21 +18,20 @@ namespace Grimoire.Tabs.Styles
 {
     public partial class Item : UserControl
     {
-        ConfigManager configMan = GUI.Main.Instance.ConfigMan;
+        ConfigManager configMan = GUI.Main.Instance.ConfigMgr;
+        StructureManager structMgr = StructureManager.Instance;
 
-        DataCore.Core data = new DataCore.Core(Encoding.Default); // TODO: Load encoding from config
+        DataCore.Core data = new DataCore.Core(Encoding.Default);
 
         DataTable selectionTbl = null;
 
         DataTable itemTbl = null;
-        Daedalus.Core itemRDB = new Daedalus.Core();
+        StructureObject itemRDB;
 
         DataTable stringTbl = null;
-        Daedalus.Core stringRDB = new Daedalus.Core();
+        StructureObject stringRDB;
 
         SPR spr;
-
-        DBHelper db = null;
 
         Dictionary<string, Dictionary<string, int>> enums = new Dictionary<string, Dictionary<string, int>>();
 
@@ -55,6 +47,9 @@ namespace Grimoire.Tabs.Styles
             configureCores();
 
             useArenaPt = configMan["UseArenaPoint", "Item"];
+
+            itemRDB = structMgr.GetStruct("ItemResource72").Result;
+            stringRDB = structMgr.GetStruct("StringResource").Result;
         }
 
         public void Clear()
@@ -103,57 +98,54 @@ namespace Grimoire.Tabs.Styles
 
         void configureCores()
         {
-            data.UseModifiedXOR = configMan.GetOption<bool>("Data", "UseModifiedXor");
-            data.SetXORKey(configMan.GetByteArray("ModifiedXORKey"));
+            data.UseModifiedXOR = configMan.Get<bool>("UseModifiedXOR", "Data", false);
 
-            // TODO: gotta put the modified key error catching here bud
+            if (data.UseModifiedXOR)
+            {
+                byte[] modifiedKey = configMan.GetByteArray("ModifiedXORKey");
 
-            stringRDB.ProgressMaxChanged += (o, x) =>
-            {
-                this.Invoke(new MethodInvoker(delegate { 
-                    ts_prog_bar.Maximum = x.Maximum;
-                }));
-            };
+                if (modifiedKey == null || modifiedKey.Length != 256)
+                {
+                    Log.Fatal("Invalid XOR Key!");
+                    return;
+                }
 
-            stringRDB.ProgressValueChanged += (o, x) =>
-            {
-                this.Invoke(new MethodInvoker(delegate {
-                    ts_prog_bar.Value = x.Value;
-                }));
-            };
+                data.SetXORKey(modifiedKey);
 
-            itemRDB.ProgressMaxChanged += (o, x) =>
-            {
-                this.Invoke(new MethodInvoker(delegate {
-                    ts_prog_bar.Maximum = x.Maximum; 
-                }));
-            };
-            itemRDB.ProgressValueChanged += (o, x) =>
-            {
-                this.Invoke(new MethodInvoker(delegate {
-                    ts_prog_bar.Value = x.Value;
-                }));
-            };
+                if (!data.ValidXOR)
+                {
+                    string msg = "The provided ModifiedXORKey is invalid!";
+
+                    Log.Error(msg);
+
+                    MessageBox.Show(msg, "XOR Key Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                Log.Information($"Using modified xor key:\n");
+
+                if (GUI.Main.Instance.LogLevel.MinimumLevel <= Serilog.Events.LogEventLevel.Debug)
+                    Log.Debug($"\n{StringExt.ByteArrayToString(modifiedKey)}");
+            }
+
+            //TODO: set encoding from config
 
             spr = new SPR(data);
-
-            db = new DBHelper(configMan);
         }
 
-        private void ts_select_struct_btn_Click(object sender, EventArgs e)
+        private async void ts_select_struct_btn_Click(object sender, EventArgs e)
         {
             string structDir = configMan.GetDirectory("Directory", "RDB");
             string structName = configMan["ItemStruct"];
             string structPath = null;
 
-            using (OpenFileDialog ofDlg = new OpenFileDialog()
-            {
+            using (OpenFileDialog ofDlg = new OpenFileDialog() {
                 InitialDirectory = structDir,
                 DefaultExt = ".lua",
                 Title = "Select Structure Definition",
                 FileName = $"{structName}.lua"
-            })
-            {
+            }) {
                 if (ofDlg.ShowDialog(this) == DialogResult.OK)
                 {
                     if (File.Exists(ofDlg.FileName))
@@ -165,7 +157,8 @@ namespace Grimoire.Tabs.Styles
                         if (ts_struct_name.Text != configMan["ItemStruct", "Item"])
                         {
                             configMan["ItemStruct", "Item"] = ts_struct_name.Text;
-                            configMan.Save();
+
+                            await configMan.Save();
                         }
 
                         ts_status.Text = string.Empty;
@@ -175,8 +168,6 @@ namespace Grimoire.Tabs.Styles
                     return;
 
                 Log.Debug($"User selected:\n\t- {ofDlg.FileName}");
-
-                itemRDB.Initialize(ofDlg.FileName);
             }
 
             if (structPath != null)
@@ -197,11 +188,12 @@ namespace Grimoire.Tabs.Styles
         void bindEnums()
         {
             try {
-                enums["item_type"] = itemRDB.GetEnum(configMan["type_enum"]);
-                enums["item_group"] = itemRDB.GetEnum(configMan["group_enum"]);
-                enums["item_class"] = itemRDB.GetEnum(configMan["class_enum"]);
-                enums["item_wear_type"] = itemRDB.GetEnum(configMan["wear_type_enum"]);
-                enums["item_decrease_type"] = itemRDB.GetEnum(configMan["decrease_type_enum"]);
+                // TODO: reimplement me bro!
+                //enums["item_type"] = itemRDB.GetEnum(configMan["type_enum"]);
+                //enums["item_group"] = itemRDB.GetEnum(configMan["group_enum"]);
+                //enums["item_class"] = itemRDB.GetEnum(configMan["class_enum"]);
+                //enums["item_wear_type"] = itemRDB.GetEnum(configMan["wear_type_enum"]);
+                //enums["item_decrease_type"] = itemRDB.GetEnum(configMan["decrease_type_enum"]);
 
                 type_lst.DataSource = new BindingSource(enums["item_type"], null);
                 type_lst.DisplayMember = "Key";
@@ -237,16 +229,25 @@ namespace Grimoire.Tabs.Styles
         {
             string structDir = configMan.GetDirectory("Directory", "RDB");
             string structName = configMan["StringStruct", "Item"];
-            string structPath = $"{structDir}\\{structName}.lua";
 
-            if (File.Exists(structPath))
-                stringRDB.Initialize(structPath);
+            string statement = stringRDB.SelectStatement;
 
-            string statement = generateSelect(RdbType.String);
+            try
+            {
+                await Task.Run(() => {
+                    stringTbl = DatabaseUtility.GetDataTable(statement);
+                });
+            }
+            catch (Exception ex)
+            {
+                string msg = $"An exception occured while fetching table data!\n\nSQL Statement:\n{statement}\n\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}";
 
-            await Task.Run(() => { //TODO: I need to be in a try block
-                stringTbl = db.GetDataTable(statement);
-            });
+                Log.Error(msg);
+
+                MessageBox.Show(msg, "Load Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
 
             ts_select_struct_btn.Enabled = true;
 
@@ -255,10 +256,10 @@ namespace Grimoire.Tabs.Styles
 
         async void loadItems()
         {
-            string statement = generateSelect(RdbType.Item);
+            string statement = itemRDB.SelectStatement;
 
             await Task.Run(() => {
-                itemTbl = db.GetDataTable(statement);
+                itemTbl = DatabaseUtility.GetDataTable(statement);
             });
 
             Log.Information($"{itemTbl?.Rows.Count} items loaded from database.");
@@ -266,8 +267,7 @@ namespace Grimoire.Tabs.Styles
             ts_select.Enabled = true;
         }
 
-#pragma warning disable 4014
-        async void loadSPR()
+        void loadSPR()
         {
             string sprDir = configMan.GetDirectory("SprDirectory", "Item");
 
@@ -276,11 +276,11 @@ namespace Grimoire.Tabs.Styles
 
             Task.Run(() =>
             {
-                foreach (string filename in Directory.GetFiles(sprDir)) //TODO: it should be made sure the file is actually a .spr
-                    spr.LoadFromFile(filename);
+                foreach (string filename in Directory.GetFiles(sprDir))
+                    if (Path.GetExtension(filename).Remove(0, 1) == "spr")
+                        spr.LoadFromFile(filename);
             });
         }
-#pragma warning restore 4014
 
         async void loadData()
         {
@@ -296,27 +296,7 @@ namespace Grimoire.Tabs.Styles
                     }
                 });
             else
-            {
                 Log.Error($"Failed to load data index because {dataDir} does not exist!");
-            }
-        }
-
-        string generateSelect(RdbType type)
-        {
-            string statement = "SELECT ";
-
-            Cell[] fieldList = (type == RdbType.Item) ? itemRDB.VisibleCells : stringRDB.VisibleCells;
-
-            foreach (Cell field in fieldList)
-                statement += $"[{field.Name}],";
-
-            string tableName = (type == RdbType.Item) ? "ItemResource" : "StringResource"; //TODO: these names should come from config
-
-            statement = string.Format("{0} FROM dbo.{1} with (NOLOCK)", statement.Remove(statement.Length - 1, 1), tableName);
-
-            Log.Debug($"Select statement generated for type: {type.ToString()}\nStatement:\n\t- {statement}");
-
-            return statement;
         }
 
         private async void ts_select_item_selector_Click(object sender, EventArgs e)
@@ -335,7 +315,7 @@ namespace Grimoire.Tabs.Styles
 
             await Task.Run(() => {
                 try { 
-                    selectionTbl = db.GetDataTable(statement);
+                    selectionTbl = DatabaseUtility.GetDataTable(statement);
                 }
                 catch (Exception ex)
                 {
@@ -354,11 +334,8 @@ namespace Grimoire.Tabs.Styles
 
             if (selectedID == -1)
             {
-                string msg = $"Invalid item id: {selectedID}";
+                LogUtility.MessageBoxAndLog($"Invalid item id: {selectedID}", "Item Select Exception", Serilog.Events.LogEventLevel.Error);
 
-                Log.Error(msg);
-
-                MessageBox.Show(msg, "ID Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -373,11 +350,8 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                string msg = $"An exception occured while preparing item id: {selectedID}\n\nMessage:\n\t-ex.Message\n\nStack-Trace:\n\t{ex.StackTrace}";
-                
-                Log.Error(msg);
+                LogUtility.MessageBoxAndLog(ex, "selecting item", "Item Select Exception", Serilog.Events.LogEventLevel.Error);
 
-                MessageBox.Show(msg, "Search Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }
@@ -398,13 +372,18 @@ namespace Grimoire.Tabs.Styles
             string dumpDir = $"{configMan.GetDirectory("DumpDirectory", "Grim")}\\jpg";
             string icon_file_name = spr.GetFileName(selectedItem["icon_file_name"].ToString());
             string iconPath = $"{dumpDir}\\{icon_file_name}";
+            string itemName = stringTbl.Select($"code = {selectedItem["name_id"]}")[0]["value"].ToString();
 
-            Image iconImg = Bitmap.FromFile(iconPath);
+            if (File.Exists(iconPath))
+            {
+                Image iconImg = Bitmap.FromFile(iconPath);
+                icon_pbx.Image = iconImg;
+            }
 
-            icon_pbx.Image = iconImg;
+            Tabs.TabManager.Instance.Text = itemName;
 
             id_lb.Text = selectedItem["id"].ToString();
-            itemName_lb.Text = stringTbl.Select($"code = {selectedItem["name_id"]}")[0]["value"].ToString();
+            itemName_lb.Text = itemName;
 
             rankInput.Value = Convert.ToInt32(selectedItem["rank"]);
             lvInput.Value = Convert.ToInt32(selectedItem["level"]);
@@ -440,17 +419,18 @@ namespace Grimoire.Tabs.Styles
             decrease_type_lst.SelectedValue = Convert.ToInt32(selectedItem["decrease_type"]);
         }
 
-        Row getRow(RdbType type, string name, object value)
+        RowObject getRow(RdbType type, string name, object value)
         {
-            Daedalus.Core core = (type == RdbType.Item) ? itemRDB : stringRDB;
+            StructureObject structObj = (type == RdbType.Item) ? itemRDB : stringRDB;
 
-            for (int r = 0; r < core.RowCount; r++)
+            for (int r = 0; r < structObj.RowCount; r++)
             {
-                Row row = core[r];
+                RowObject row = structObj.Rows[r];
 
-                Cell cell = row.GetCell(name);
+                CellBase cell = row.GetCell(name);
+                object val = row[cell.Index];
 
-                if (cell.Value.ToString() == value.ToString())
+                if (val.ToString() == value.ToString())
                     return row;
             }
 
@@ -465,7 +445,8 @@ namespace Grimoire.Tabs.Styles
 
         private void Item_Load(object sender, EventArgs e)
         {
-            loadStrings();
+            // Use discard so that compiler doesn't complain that the call isn't awaited. We do not need to wait, continue on.
+            _ = loadStrings();
             loadSPR();
 
             ts_status.Text = string.Empty;
@@ -509,13 +490,9 @@ namespace Grimoire.Tabs.Styles
 
                                 populateControls();
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                string msg = $"An exception occured while preparing item id: {id}";
-
-                                Log.Error(msg);
-
-                                MessageBox.Show(msg, "Search Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                LogUtility.MessageBoxAndLog(ex, "selecting item", "Item Select Exception", Serilog.Events.LogEventLevel.Error);
 
                                 return;
                             }
