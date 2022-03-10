@@ -13,6 +13,8 @@ using Grimoire.Utilities;
 using Serilog;
 using Serilog.Events;
 
+// TODO: show filtered tag and operator/term being processed
+// TODO: update displayed rowcount if being filtered
 namespace Grimoire.Tabs.Styles
 {
     public partial class RDB2 : UserControl
@@ -30,7 +32,7 @@ namespace Grimoire.Tabs.Styles
 
         Progress<int> taskProgress;
 
-        ILogger log = Serilog.Log.ForContext<RDB2>();
+        ILogger Log = Serilog.Log.ForContext<RDB2>();
 
         #endregion
 
@@ -38,9 +40,13 @@ namespace Grimoire.Tabs.Styles
 
         public StructureObject StructObject = null;
 
+        public List<RowObject> FilteredRows = new List<RowObject>();
+
         public string BuildDirectory;
 
         #endregion
+
+        public DataGridView Grid => grid;
 
         public RDB2()
         {
@@ -131,7 +137,7 @@ namespace Grimoire.Tabs.Styles
 
             tabMgr.Text = Path.GetFileNameWithoutExtension(filename);
 
-            log.Information($"{tabMgr.Text} loaded in... {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}");
+            Log.Information($"{tabMgr.Text} loaded in... {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}");
         }
 
         public void WriteFile(string filename)
@@ -152,6 +158,38 @@ namespace Grimoire.Tabs.Styles
             actionsw.Stop();
 
             LogUtility.MessageBoxAndLog($"{StructObject.Rows.Count} rows written to: {StructObject.RDBName} in {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}", "Save Successful", LogEventLevel.Information);
+        }
+
+        public void Filter()
+        {
+            using (RdbSearch search = new RdbSearch(StructObject) { StartPosition = FormStartPosition.CenterParent })
+            {
+                if (search.ShowDialog(this) != DialogResult.OK)
+                {
+                    Serilog.Log.Verbose("User cancelled the filter process!");
+                    return;
+                }
+
+                FilteredRows.Clear();
+
+                try
+                {
+                    for (int i = 0; i < search.Results.Length; i++)
+                    {
+                        var indexPair = search.Results[i];
+
+                        FilteredRows.Add(StructObject.Rows[indexPair.Key]);
+                    }
+
+                    Grid.Rows.Clear();
+                    Grid.RowCount = FilteredRows.Count;
+                }
+                catch (Exception ex)
+                {
+                    LogUtility.MessageBoxAndLog(ex, "filtering the grid.", "Filter Exception", LogEventLevel.Error);
+                    return;
+                }
+            }
         }
 
         #endregion
@@ -294,7 +332,7 @@ namespace Grimoire.Tabs.Styles
 
             ts_save.Enabled = rows.Length > 0;
 
-            log.Information($"{StructObject.TableName} loaded from sql in {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}");
+            Log.Information($"{StructObject.TableName} loaded from sql in {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}");
         }
 
         private void ts_save_file_Click(object sender, EventArgs e)
@@ -366,20 +404,50 @@ namespace Grimoire.Tabs.Styles
             DatabaseUtility.WriteTableData(StructObject, taskProgress).ContinueWith(_ => LogUtility.MessageBoxAndLog($"{StructObject.RowCount} written to sql table: {StructObject.TableName}", "SQL Export Successful", LogEventLevel.Information));
         }
 
+        private void ts_search_Click(object sender, EventArgs e)
+        {
+            if (FilteredRows.Count > 0)
+            {
+                FilteredRows.Clear();
+                Grid.Rows.Clear();
+                Grid.RowCount = StructObject.RowCount;
+            }
+
+            if (StructObject?.RowCount > 0)
+                Filter();
+            else
+                Serilog.Log.Verbose("Cannot filter no data!");
+        }
+
         private void rowGrid_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (e.RowIndex >= grid.RowCount)
-                return;
+            CellBase cell = cell = StructObject.DataCells[e.ColumnIndex];
+            dynamic val = null;
 
-            if (e.ColumnIndex >= StructObject.DataCells.Count)
-                return;
+            if (FilteredRows.Count > 0) // The loaded data has been filtered
+            {
+                if (e.RowIndex < 0 || e.RowIndex >= FilteredRows.Count ||
+                    e.ColumnIndex < 0 || e.ColumnIndex >= StructObject.DataCells.Count)
+                    return;
 
-            CellBase cell = StructObject.DataCells[e.ColumnIndex];
-
-            if (cell.PrimaryType == typeof(string))
-                e.Value = StructObject.Encoding.GetString((byte[])StructObject.Rows[e.RowIndex][e.ColumnIndex]);
+                if (cell.PrimaryType == typeof(string))
+                    val = StructObject.Encoding.GetString((byte[])FilteredRows[e.RowIndex][e.ColumnIndex]);
+                else
+                    val = FilteredRows[e.RowIndex][e.ColumnIndex];
+            }
             else
-                e.Value = StructObject.Rows[e.RowIndex][e.ColumnIndex];
+            {
+                if (e.RowIndex < 0 || e.RowIndex >= StructObject.Rows.Count ||
+                    e.ColumnIndex < 0 || e.ColumnIndex >= StructObject.DataCells.Count)
+                    return;
+
+                if (cell.PrimaryType == typeof(string))
+                    val = StructObject.Encoding.GetString((byte[])StructObject.Rows[e.RowIndex][e.ColumnIndex]);
+                else
+                    val = StructObject.Rows[e.RowIndex][e.ColumnIndex];
+            }
+
+            e.Value = val;       
         }
 
         #endregion

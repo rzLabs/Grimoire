@@ -8,13 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
+using Newtonsoft.Json;
 using Grimoire.Configuration;
 using Grimoire.Structures;
-using static System.Windows.Forms.ListViewItem;
 
 namespace Grimoire.GUI
 {
-    // TODO: implement remembering closed groups
     // TODO: implement remembering the sort direction of the last sorted column
     public partial class StructureSelect : Form
     {
@@ -118,7 +117,17 @@ namespace Grimoire.GUI
 
             lv_all.ColumnClick += Lv_all_ColumnClick;
 
+            lv_all.GroupExpandingCollapsing += Lv_all_GroupExpandingCollapsing;
+
             Controls.Add(lv_all);
+        }
+
+        private void Lv_all_GroupExpandingCollapsing(object sender, GroupExpandingCollapsingEventArgs e)
+        {
+            string key = e.Group.Key as string;
+
+
+            throw new NotImplementedException(); // TODO: implement saving 'structgroups' to .json (too much data to store inside the Config.json!)
         }
 
         private void Lv_all_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -156,7 +165,7 @@ namespace Grimoire.GUI
 
         private void StructureSelect_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (configMgr.Count > 0) // TODO: for some reason every once in a blue moon the ConfigMgr will save 0 settings. Destroying user configs. Lets not do th at :(
+            if (configMgr.Count > 0) // for some reason every once in a blue moon the ConfigMgr will save 0 settings. Destroying user configs. Lets not do that :(
                 _ = configMgr.Save();
         }
     }

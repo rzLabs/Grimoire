@@ -190,16 +190,12 @@ namespace Grimoire.GUI
                         break;
                 }
             }
-            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.F) // TODO: implement searching the Arc instance for data
+            else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.F)
             {
-                //if (tManager.ArcInstance.RowCount > 0)
-                //{
-                //    using (ListInput input = new ListInput("RDB Search", tManager.ArcInstance.VisibleCellNames))
-                //        if (input.ShowDialog(this) == DialogResult.OK)
-                //            tManager.RDBTab.Search(input.Field, input.Term);
-                //}
-                //else
-                //    Log.Information("Cannot activate ListInput without loaded data!");
+                if (tManager.ArcInstance.RowCount > 0)
+                    tManager.RDBTab.Filter();
+                else
+                    Log.Warning("Cannot activate search without loaded data!");
             }
             else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
             {
@@ -250,13 +246,13 @@ namespace Grimoire.GUI
         {
             string gVersion = System.Windows.Forms.Application.ProductVersion;
             string dCore_Version = FileVersionInfo.GetVersionInfo("DataCore.dll").FileVersion;
-            string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
-            string aboutStr = string.Format("Grimoire v{0}\nDataCore v{1}\nDaedalus v{2}\n\nWritten by: iSmokeDrow\n\n" + 
+            //string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
+            string aboutStr = $"Grimoire v{gVersion}\nDataCore v{dCore_Version}\nArchimedes v1.0.0\n\nWritten by: iSmokeDrow\n\n" + 
                                             "Third-Party Software:\n\t-Newtonsoft.JSON\n\t-SeriLog\n\t-MoonSharp\n\t-Be.HexBox\n\t-BrightIdeaSoftware.ObjectListView\n" +
                                             "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- InkDevil\n\t- XavierDeFawks\n\t- ThunderNikk\n\t- Exterminator\n\t"+
                                             "- Medaion\n\t- AziaMafia\n\t- ADRENALINE\n\t- Musta2\n\t- OceanWisdom\n\t- Sandro\n\t- Smashley\n\t- Bernyy\n\n" +
-                                            "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!",
-                                            gVersion, dCore_Version, rCore_Version);
+                                            "And a very special thanks to everyone who uses Grimoire! Please report bugs you may find to iSmokeDrow#3102 on Discord!";
+
             MessageBox.Show(aboutStr, "About Me", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -291,21 +287,27 @@ namespace Grimoire.GUI
 
         private void ts_test_btn_Click(object sender, EventArgs e)
         {
-            tManager.Create(Style.RDB2);
-            //string structPath = $"{System.IO.Directory.GetCurrentDirectory()}\\Structures\\StringResource_TEST.lua";
-            //string rdbPath = $"{System.IO.Directory.GetCurrentDirectory()}\\Output\\db_string.rdb";
+            //tManager.ArcInstance.Search("id", 910023, SearchReturn.Indicies);
+        }
 
-            //Structures.StructureObject structObj = new Structures.StructureObject(structPath);
+        private void ts_utilities_md5_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string salt = DialogUtility.RequestInput<string>("Input Required", "Enter salt (e.g. 2011)", DialogUtility.DialogType.Text);
+                string password = DialogUtility.RequestInput<string>("Input Required", "Enter your password", DialogUtility.DialogType.Text);
 
-            //Stopwatch sw = new Stopwatch();
+                string hashedStr = CryptoUtility.GenerateMD5Hash($"{salt}{password}");
 
-            //sw.Start();
+                Clipboard.SetText(hashedStr);
 
-            //structObj.Read(rdbPath);
-
-            //sw.Stop();
-
-            //MessageBox.Show($"{structObj.Rows.Count} rows loaded in {StringExt.MilisecondsToString(sw.ElapsedMilliseconds)}");
+                LogUtility.MessageBoxAndLog($"{hashedStr} copied to clipboard!", "Hash Successful!", LogEventLevel.Information);
+            }
+            catch (Exception ex)
+            {
+                LogUtility.MessageBoxAndLog(ex, "generating an MD5 hash", "Hash Exception", LogEventLevel.Error);
+                return;
+            }     
         }
     }
 }

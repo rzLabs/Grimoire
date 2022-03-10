@@ -137,6 +137,12 @@
     <Compile Include="GUI\MessageListBox.Designer.cs">
       <DependentUpon>MessageListBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\RdbSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\RdbSearch.Designer.cs">
+      <DependentUpon>RdbSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -252,6 +258,9 @@
     <EmbeddedResource Include="GUI\BitFlag.resx">
       <DependentUpon>BitFlag.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\RdbSearch.resx">
+      <DependentUpon>RdbSearch.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\StructureSelect.resx">
       <DependentUpon>StructureSelect.cs</DependentUpon>
     </EmbeddedResource>
@@ -261,6 +270,7 @@
     <None Include="Config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Groups.json" />
     <None Include="GUI\DataRebuild.resx">
       <DependentUpon>DataRebuild.cs</DependentUpon>
     </None>
@@ -342,6 +352,7 @@
     <None Include="StructLinks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="Utilities\CryptoUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

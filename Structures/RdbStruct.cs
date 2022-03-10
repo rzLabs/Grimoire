@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using System.Text;
 
@@ -27,7 +28,6 @@ using MoonSharp.Interpreter;
  *                                                                                       *
  * ************************************************************************************* *
  * ************************************************************************************* */
-// TODO: Archimedes needs to be moved to its own project and namespace
 namespace Grimoire.Structures
 {
     #region Enums
@@ -124,6 +124,23 @@ namespace Grimoire.Structures
         Update
     }
 
+    public enum SearchOperator
+    {
+        Equal,
+        NotEqual,
+        Like,
+        NotLike,
+        Above,
+        Below,
+        Between
+    }
+
+    public enum SearchReturn
+    {
+        Indicies,
+        Values
+    }
+
     #endregion
 
     #region Interfaces
@@ -147,6 +164,8 @@ namespace Grimoire.Structures
     /// </summary>
     public class StructureObject : ICloneable
     {
+        protected Script scriptObj = null;  
+
         /// <summary>
         /// Path to the structure file set during this objects construction
         /// </summary>
@@ -335,7 +354,7 @@ namespace Grimoire.Structures
             if (string.IsNullOrEmpty(scriptStr))
                 throw new NullReferenceException("Failed to read the structure lua contents!");
 
-            Script scriptObj = new Script();
+            scriptObj = new Script();
 
             string curDir = Directory.GetCurrentDirectory();
 
@@ -350,6 +369,8 @@ namespace Grimoire.Structures
             declareGlobals(scriptObj);
             
             scriptObj.DoString(scriptStr);
+
+            Dictionary<string, int> enumDict = new Dictionary<string, int>();
 
             // If the info flag isnt present, proceed to processing the header and data cells
             if (!flags.HasFlag(ParseFlags.Info))
@@ -720,6 +741,30 @@ namespace Grimoire.Structures
         }
 
         /// <summary>
+        /// Parse a user defined Enums lua that has been saved to the .\Modules folder
+        /// </summary>
+        /// <param name="key">Name of the table defined in the enum.lua</param>
+        /// <returns>Prepared dictionary of enum values</returns>
+        public Dictionary<string, int> GetEnum(string key)
+        {
+            Dictionary<string, int> enumDict = new Dictionary<string, int>();
+
+            if (scriptObj.Globals[key] != null)
+            {
+                Table enumTbl = scriptObj.Globals[key] as Table;
+
+                for (int i = 1; i < enumTbl.Length + 1; i++)
+                {
+                    Table valTbl = enumTbl.Get(i).Table;
+
+                    enumDict.Add(valTbl.Get(1).String, (int)valTbl.Get(2).Number);
+                }
+            }
+
+            return enumDict;
+        }
+
+        /// <summary>
         /// Buffer the file at the provided filename and parse the contents based on the structure contained in the previously parsed structure lua.
         /// </summary>
         /// <param name="filename">Path to the rdb file to be read</param>
@@ -825,6 +870,124 @@ namespace Grimoire.Structures
         }
 
         /// <summary>
+        /// Search the loaded collection of rows for cells containing a value'(s) that meet the provided operator criteria
+        /// </summary>
+        /// <param name="column">Cell being targeted</param>
+        /// <param name="value">Value to be compared against</param>
+        /// <param name="op">Operator of the comparison</param>
+        /// <returns>List of row/cell index pairs if returnType is Indicies, List of value objects otherwise</returns>
+        public object Search(string column, Array value, SearchOperator op) => Search(column, value, op);
+
+        /// <summary>
+        /// Search the loaded collection of rows for cells containing a value'(s) that meet the provided operator criteria
+        /// </summary>
+        /// <param name="column">Cell being targeted</param>
+        /// <param name="value">Value to be compared against</param>
+        /// <param name="ret">Type of data to be returned.</param>
+        /// <returns>List of row/cell index pairs if returnType is Indicies, List of value objects otherwise</returns>
+        public object Search(string column, Array value, SearchReturn ret) => Search(column, value, SearchOperator.Equal, ret);
+
+        /// <summary>
+        /// Search the loaded collection of rows for cells containing a value'(s) that meet the provided operator criteria
+        /// </summary>
+        /// <param name="column">Cell being targeted</param>
+        /// <param name="value">Value to be compared against</param>
+        /// <param name="op">Operator of the comparison</param>
+        /// <param name="returnType">Type of data to be returned.</param>
+        /// <returns>List of row/cell index pairs if return type is Indicies, List of value objects otherwise</returns>
+        public object Search(string column, Array value, SearchOperator op = SearchOperator.Equal, SearchReturn returnType = SearchReturn.Values) 
+        {
+            if (column == null)
+                throw new ArgumentNullException("Column name cannot be null!");
+
+            CellBase cell = DataCells.Find(c => c.Name == column);
+
+            IList values = new List<object>();
+
+            if (returnType == SearchReturn.Indicies)
+                values = new List<KeyValuePair<int, int>>();
+
+            if (cell == null)
+                throw new NullReferenceException($"Could not find cell by name: {column}");
+                                            
+            for (int i = 0; i < RowCount; i++)
+            {
+                RowObject row = Rows[i];
+
+                for (int j = 0; j < value.Length; j++) // Since the input 'value' is an array of values between 1 and n elements, lets loop the generic array
+                {
+                    dynamic curVal = (cell.PrimaryType == typeof(string)) ? Encoding.GetString((byte[])row[column]) : Convert.ChangeType(row[column], cell.PrimaryType);
+                    dynamic cmpVal = Convert.ChangeType(value.GetValue(j), cell.PrimaryType); // Now we can convert the generic array element into a proper value type
+
+                    bool add = false;
+
+                    switch (op)
+                    {
+                        case SearchOperator.Above:
+                            add = curVal > cmpVal;
+                            break;
+
+                        case SearchOperator.Below:
+                            add = curVal < cmpVal;
+                            break;
+
+                        case SearchOperator.Equal:
+                            add = curVal == cmpVal;
+                            break;
+
+                        case SearchOperator.NotEqual:
+                            add = curVal != cmpVal;
+                            break;
+
+                        case SearchOperator.Like:
+                            {
+                                string curStr = curVal.ToString();
+                                string cmpStr = cmpVal.ToString();
+
+                                if (curStr.Contains(cmpStr))
+                                    add = true;
+                            }
+                            break;
+
+                        case SearchOperator.NotLike:
+                            {
+                                string curStr = curVal.ToString();
+                                string cmpStr = cmpVal.ToString();
+
+                                if (!curStr.Contains(cmpStr))
+                                    add = true;
+                            }
+                            break;
+
+                        case SearchOperator.Between:
+                            {
+                                if (value.Length != 2)
+                                    throw new InvalidDataException("the input value must consist of two comma delimited numbers!");
+
+                                int min = Convert.ToInt32(value.GetValue(0));
+                                int max = Convert.ToInt32(value.GetValue(1));
+
+                                if (curVal >= min && curVal <= max)
+                                    add = true;
+                            }
+                            break;
+                    }
+
+                    if (add)
+                        if (returnType == SearchReturn.Indicies)
+                            values.Add(new KeyValuePair<int, int>(i, cell.Index));
+                        else
+                            values.Add(curVal);
+                }
+            }
+
+            if (returnType == SearchReturn.Values)
+                return values.Cast<object>().ToArray();
+
+            return values.Cast<KeyValuePair<int, int>>().ToArray();
+        }
+
+        /// <summary>
         /// Create a clone of this structure object (contains only the schema, not actual data!)
         /// </summary>
         /// <returns>Clone of this structure</returns>
@@ -923,10 +1086,7 @@ namespace Grimoire.Structures
         /// </summary>
         /// <param name="flags">Flag'(s) to be matched against</param>
         /// <returns>Boxed (object) value</returns>
-        public object this[CellFlags flags]
-        {
-            get => values?[GetCellByFlag(flags).Index];
-        }
+        public object this[CellFlags flags] => values?[GetCellByFlag(flags).Index];
 
         /// <summary>
         /// Length (of cells) contained in this row object
@@ -1152,7 +1312,7 @@ namespace Grimoire.Structures
                 if (i == Length)
                 {
                     if (type == SqlStringType.Insert)
-                        return $"{cmdStr}({cellStr.Remove(cellStr.Length - 1)}) VALUES ({valStr.Remove(valStr.Length - 1)})";
+                        return $"{cmdStr}({cellStr.Remove(cellStr.Length - 1)}) values ({valStr.Remove(valStr.Length - 1)})";
                     else
                     {
                         cell = GetCell(whereColumn);

@@ -953,7 +953,9 @@ namespace Grimoire.Tabs.Styles
                         if (useArena)
                             dbObj.Parameters.Add("@arena_point", SqlDbType.Int).Value = entry.ArenaPoint;
 
-                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
+                        int rows = await dbObj.ExecuteNonQuery();
+
+                        Log.Debug($"{rows} inserted into the MarketResource table.");
                     }
                 }
 
@@ -1007,7 +1009,9 @@ namespace Grimoire.Tabs.Styles
                         if (useArena)
                             dbObj.Parameters.Add("@arena_ratio", SqlDbType.Decimal).Value = entry.ArenaRatio;
 
-                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
+                        int rows = await dbObj.ExecuteNonQuery();
+
+                        Log.Debug($"{rows} updated in the MarketResource table.");
 
                         cmd = (!useArena) ? itemUpdate[0] : itemUpdate[1];
 
@@ -1020,7 +1024,9 @@ namespace Grimoire.Tabs.Styles
                         if (useArena)
                             dbObj.Parameters.Add("@arena_point", SqlDbType.Int).Value = entry.ArenaPoint;
 
-                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
+                        rows = await dbObj.ExecuteNonQuery();
+
+                        Log.Debug($"{rows} inserted into the ItemResource table.");
                     }
 
                     updates.RemoveAt(i);
@@ -1068,7 +1074,9 @@ namespace Grimoire.Tabs.Styles
                         dbObj.Parameters.Add("@sort_id", SqlDbType.Int).Value = entry.SortID;
                         dbObj.Parameters.Add("@name", SqlDbType.VarChar).Value = entry.MarketName;
 
-                        await dbObj.ExecuteNonQuery(); // TODO: these should track rows effected for logging purposes
+                        int rows = await dbObj.ExecuteNonQuery();
+
+                        Log.Debug($"{rows} deleted from the MarketResource table.");
                     }
                 }
 

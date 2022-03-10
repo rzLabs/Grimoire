@@ -54,8 +54,12 @@ namespace Grimoire.Tabs.Styles
             this.gridCMS = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.rows_txBx = new System.Windows.Forms.TextBox();
             this.date_txBx = new System.Windows.Forms.TextBox();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.ts_search = new System.Windows.Forms.ToolStripButton();
+            this.gridCMS_clear = new System.Windows.Forms.ToolStripMenuItem();
             this.ts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
+            this.gridCMS.SuspendLayout();
             this.SuspendLayout();
             // 
             // ts
@@ -65,6 +69,8 @@ namespace Grimoire.Tabs.Styles
             this.ts_load,
             this.ts_save,
             this.toolStripSeparator1,
+            this.ts_search,
+            this.toolStripSeparator3,
             this.ts_encLbl,
             this.ts_enc_list,
             this.toolStripSeparator2,
@@ -125,7 +131,7 @@ namespace Grimoire.Tabs.Styles
             this.ts_save_file_sql,
             this.ts_save_file_csv});
             this.ts_save_file.Name = "ts_save_file";
-            this.ts_save_file.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_file.Size = new System.Drawing.Size(95, 22);
             this.ts_save_file.Text = "File";
             this.ts_save_file.Click += new System.EventHandler(this.ts_save_file_Click);
             // 
@@ -170,7 +176,7 @@ namespace Grimoire.Tabs.Styles
             // ts_save_sql
             // 
             this.ts_save_sql.Name = "ts_save_sql";
-            this.ts_save_sql.Size = new System.Drawing.Size(180, 22);
+            this.ts_save_sql.Size = new System.Drawing.Size(95, 22);
             this.ts_save_sql.Text = "SQL";
             this.ts_save_sql.Click += new System.EventHandler(this.ts_save_sql_Click);
             // 
@@ -225,6 +231,7 @@ namespace Grimoire.Tabs.Styles
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grid.ContextMenuStrip = this.gridCMS;
             this.grid.Location = new System.Drawing.Point(3, 28);
             this.grid.Name = "grid";
             this.grid.Size = new System.Drawing.Size(774, 391);
@@ -234,8 +241,10 @@ namespace Grimoire.Tabs.Styles
             // 
             // gridCMS
             // 
+            this.gridCMS.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gridCMS_clear});
             this.gridCMS.Name = "gridCMS";
-            this.gridCMS.Size = new System.Drawing.Size(61, 4);
+            this.gridCMS.Size = new System.Drawing.Size(102, 26);
             // 
             // rows_txBx
             // 
@@ -263,6 +272,28 @@ namespace Grimoire.Tabs.Styles
             this.date_txBx.TabIndex = 36;
             this.date_txBx.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // ts_search
+            // 
+            this.ts_search.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ts_search.Image = ((System.Drawing.Image)(resources.GetObject("ts_search.Image")));
+            this.ts_search.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ts_search.Name = "ts_search";
+            this.ts_search.Size = new System.Drawing.Size(46, 22);
+            this.ts_search.Text = "Search";
+            this.ts_search.Click += new System.EventHandler(this.ts_search_Click);
+            // 
+            // gridCMS_clear
+            // 
+            this.gridCMS_clear.Enabled = false;
+            this.gridCMS_clear.Name = "gridCMS_clear";
+            this.gridCMS_clear.Size = new System.Drawing.Size(180, 22);
+            this.gridCMS_clear.Text = "Clear";
+            // 
             // RDB2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -276,6 +307,7 @@ namespace Grimoire.Tabs.Styles
             this.ts.ResumeLayout(false);
             this.ts.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
+            this.gridCMS.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -306,5 +338,8 @@ namespace Grimoire.Tabs.Styles
         private System.Windows.Forms.ToolStripMenuItem ts_save_sql;
         private System.Windows.Forms.ToolStripMenuItem ts_save_file_sql_insert;
         private System.Windows.Forms.ToolStripMenuItem ts_save_file_sql_update;
+        private System.Windows.Forms.ToolStripButton ts_search;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem gridCMS_clear;
     }
 }

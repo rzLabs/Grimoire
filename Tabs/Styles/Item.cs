@@ -140,12 +140,13 @@ namespace Grimoire.Tabs.Styles
             string structName = configMan["ItemStruct"];
             string structPath = null;
 
-            using (OpenFileDialog ofDlg = new OpenFileDialog() {
+            using (OpenFileDialog ofDlg = new OpenFileDialog() 
+            {
                 InitialDirectory = structDir,
                 DefaultExt = ".lua",
                 Title = "Select Structure Definition",
-                FileName = $"{structName}.lua"
-            }) {
+                FileName = $"{structName}.lua" }) 
+            { 
                 if (ofDlg.ShowDialog(this) == DialogResult.OK)
                 {
                     if (File.Exists(ofDlg.FileName))

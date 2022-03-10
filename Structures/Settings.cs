@@ -43,17 +43,8 @@ namespace Grimoire.Structures
         [Description("The password used to connect to the world database. Leave blank if Trusted Connection is true"), Category("Database"), DisplayName("Arcadia Password")]
         public string WorldPass { get => configMan["WorldPass"]; set => configMan["WorldPass"] = value; }
 
-        [Description("Determines if the target table of the save operation will be backed up before inserting the .rdb data by creating a script (.sql) of the tables data in the /scripts/ folder"), Category("Database"), DisplayName("Backup Table")]
-        public bool BackupTable { get => configMan["Backup", "DB"]; set => configMan["Backup", "DB"] = value; }
-
-        [Description("Determines if the target table of any SQL save operation will be dropped and recreated or truncated before inserting the .rdb data"), Category("Database"), DisplayName("Drop Table")]
-        public bool DropTable { get => configMan["DropOnExport"]; set => configMan["DropOnExport"] = value; }
-
         [Description("Directory where sql related scripts will be stored."), Category("Database"), DisplayName("Scripts Directory")]
         public string ScriptsDirectory { get => configMan["ScriptsDirectory", "DB"]; set => configMan["ScriptsDirectory", "DB"] = value; }
-
-        [Description("Determines the period of time (in seconds) a SQL Connection attempt will last before timing out (expiring)."), Category("Database"), DisplayName("Connection Timeout")]
-        public int ConnTimeout { get => (int)configMan["Timeout", "DB"]; set => configMan["Timeout", "DB"] = value; }
 
         [Description("If defined, this is where any exported/built files will be placed. If not defined Grimoire will use/create the 'Output' folder."), Category("Data/RDB Utility"), DisplayName("Build Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string BuildDirectory 
@@ -107,9 +98,6 @@ namespace Grimoire.Structures
 
         // rdb
 
-        [Description("Determines if the structure you select will be loaded the moment you select it or manually with \"Load\" button"), Category("RDB Utility"), DisplayName("Load on Select")]
-        public bool AutoLoad { get => configMan["Struct_AutoLoad"]; set => configMan["Struct_AutoLoad"] = value; }
-        
         [Description("The path where RDB Structure .lua Files are stored. Likely /structures/"), Category("RDB Utility"), DisplayName("Structures Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public string RDBStructureDirectory { get => configMan["Directory", "RDB"]; set => configMan["Directory", "RDB"] = value; }
 

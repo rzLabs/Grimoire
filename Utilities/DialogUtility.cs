@@ -56,7 +56,15 @@ namespace Grimoire.Utilities
             switch (type)
             {
                 case DialogType.Number:
+                    {
+                        using (InputBox inputBx = new InputBox(task, false))
+                        {
+                            if (inputBx.ShowDialog(Main.Instance) != DialogResult.OK)
+                                break;
 
+                            input = Convert.ToInt32(inputBx.Value);
+                        }
+                    }
                     break;
 
                 case DialogType.Text:
@@ -67,8 +75,6 @@ namespace Grimoire.Utilities
                         {                        
                             if (inputBx.ShowDialog(Main.Instance) != DialogResult.OK)
                                 break;
-
-                            // TODO: we need to try/catch
 
                             input = inputBx.Value;
                         }

@@ -54,7 +54,7 @@ namespace Grimoire.Utilities
         /// </summary>
         /// <param name="connection_string">Properly formed MSSQL connection string</param>
         /// <param name="command_text">Text to be parsed during the SQL transaction of this DatabaseObject</param>
-        public DatabaseObject(string connection_string, string command_text = null) 
+        public DatabaseObject(string connection_string, string command_text = null)
         {
             Connection = new SqlConnection(connection_string);
 
@@ -223,7 +223,7 @@ namespace Grimoire.Utilities
                 string name = configMgr["WorldName"];
                 string user = configMgr["WorldUser"];
                 string pass = configMgr["WorldPass"];
-                bool trusted = configMgr["Trusted", "DB"];
+                bool trusted = configMgr.Get<bool>("Trusted", "DB", false);
 
                 string connStr = $"Server={ip};Database={name};";
 

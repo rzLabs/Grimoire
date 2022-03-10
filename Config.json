@@ -17,7 +17,6 @@
     "SortColumn": "epic"
   },
   "DB": {
-    "Engine": 0,
     "IP": "(local)",
     "Port": 1433,
     "Trusted": true,
@@ -25,9 +24,7 @@
     "WorldUser": "",
     "WorldPass": "",
     "Backup": false,
-    "DropOnExport": false,
-    "ScriptsDirectory": ".\\Scripts",
-    "Timeout": 0
+    "ScriptsDirectory":  ".\\Scripts"
   },
   "RDB": {
     "Struct_AutoLoad": true,

@@ -407,7 +407,7 @@ namespace Grimoire.Tabs.Styles
             rdb2sql_btn.AllowDrop = true;
         }
 
-        void initLinks() // TODO: may eventually need to be async
+        void initLinks() // may eventually need to be async
         {
             StructLinkUtility.Parse();
         }

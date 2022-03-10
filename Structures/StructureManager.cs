@@ -48,7 +48,7 @@ namespace Grimoire.Structures
         {
             StructureObject structObj = structures.Find(s => s.StructName == name).Clone() as StructureObject;
 
-            if (structObj == null) // TODO: log this issue
+            if (structObj == null)
             {
                 LogUtility.MessageBoxAndLog("Failed to get the target structure object!", "GetStruct Exception", LogEventLevel.Error);
 
