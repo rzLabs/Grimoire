@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
+using Archimedes;
 using Grimoire.Configuration;
 using Grimoire.GUI;
 using Grimoire.Structures;
@@ -262,6 +262,11 @@ namespace Grimoire.Tabs
 
         #region Methods (public)
 
+        /// <summary>
+        /// Collect the keys of all tabs bearing the provided style.
+        /// </summary>
+        /// <param name="style">Style being compared against</param>
+        /// <returns>Array of key strings</returns>
         public string[] GetKeysByStyle(Style style)
         {
             List<string> keys = new List<string>();
@@ -280,6 +285,11 @@ namespace Grimoire.Tabs
             return keys.ToArray();
         }
 
+        /// <summary>
+        /// Create and if appropriate focus to a new tab of the provided style
+        /// </summary>
+        /// <param name="style">Style of the tab being created</param>
+        /// <returns>Key of the created tab</returns>
         public string Create(Style style)
         {
             string key = string.Format("{0}_{1}", pages.Count, (int)style);
@@ -289,11 +299,6 @@ namespace Grimoire.Tabs
 
             switch (style)
             {
-                //case Style.RDB:
-                //    tab.Controls.Add(new Styles.rdbTab(key) { Dock = DockStyle.Fill });
-                //    text = "RDB Utility";
-                //    break;
-
                 case Style.DATA:
                     tab.Controls.Add(new Styles.Data(key, true) { Dock = DockStyle.Fill });
                     text = "Data Utility";
@@ -344,6 +349,9 @@ namespace Grimoire.Tabs
             return key;
         }
 
+        /// <summary>
+        /// Clear (if applicable) the current tab being viewed
+        /// </summary>
         public void Clear()
         {
             switch (Style)
@@ -370,6 +378,9 @@ namespace Grimoire.Tabs
             Log.Verbose($"{Text} has been cleared!");
         }
 
+        /// <summary>
+        /// Destroy and remove the currently selected tab
+        /// </summary>
         public void Destroy()
         {
             pages.RemoveAt(RightClick_TabIdx);
@@ -378,6 +389,11 @@ namespace Grimoire.Tabs
             Log.Information($"{Text} has been closed!");
         }
 
+        /// <summary>
+        /// Set the header text of the tab bearing the provided key.
+        /// </summary>
+        /// <param name="key">Key of the tab to be altered</param>
+        /// <param name="text">New tab header text</param>
         public void SetText(string key, string text)
         {
             if (pages.ContainsKey(key))

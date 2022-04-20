@@ -9,8 +9,6 @@ using Grimoire.Configuration;
 using Grimoire.Structures;
 using Grimoire.Utilities;
 
-using Newtonsoft.Json;
-
 using Serilog;
 using Serilog.Events;
 
@@ -22,7 +20,19 @@ namespace Grimoire.Utilities
     public static class StructLinkUtility
     {
         static ConfigManager configMgr = GUI.Main.Instance.ConfigMgr;
-        static Dictionary<string, string> links;
+        static List<StructLink> links;
+
+        /// <summary>
+        /// Generate a "default" set of links
+        /// </summary>
+        public static void GenerateDefault()
+        {
+            List<StructLink> links = new List<StructLink> { new StructLink() { StructureName = "StringResource", FileName = "db_string.rdb" },
+                                                            new StructLink() { StructureName = "ItemResource73", FileName = "db_item.rdb" },
+                                                            new StructLink() { StructureName = "MonsterResource73", FileName = "db_monster.rdb" } };
+
+            JsonUtility.SerializeObject(links, $"{Directory.GetCurrentDirectory()}\\Links.json");
+        }
 
         /// <summary>
         /// Reads all links listed in LinksPath (e.g. StructLinks.json)
@@ -40,7 +50,7 @@ namespace Grimoire.Utilities
 
             string linksContent = File.ReadAllText(linksPath);
 
-            links = JsonConvert.DeserializeObject<Dictionary<string, string>>(linksContent);
+            links = JsonUtility.DeserializeObject<List<StructLink>>(linksContent);
 
             Log.Information($"{links.Count} links loaded from:\n\t- StructLinks.json");
         }
@@ -50,7 +60,7 @@ namespace Grimoire.Utilities
         /// </summary>
         /// <param name="filename">Filename to be checked</param>
         /// <returns><c>True or False</c></returns>
-        public static bool FilenameLinkExists(string filename) => links.ContainsKey(filename);
+        public static bool FilenameLinkExists(string filename) => links.FindIndex(l=>l.FileName == filename) != -1;
 
         /// <summary>
         /// Determine is a filename/structure link exists
@@ -64,20 +74,13 @@ namespace Grimoire.Utilities
         /// </summary>
         /// <param name="filename">Filename being linked against</param>
         /// <returns>Structure filename linked to the provided Filename</returns>
-        public static string GetStructName(string filename) => links?[filename];
+        public static string GetStructName(string filename) => links?.Find(l=>l.FileName == filename)?.StructureName;
 
         /// <summary>
         /// Get the linked file name
         /// </summary>
         /// <param name="filename">Struct filename being linked against</param>
         /// <returns>Filename linked to the provided Structure filename</returns>
-        public static string GetFileName(string structName)
-        {
-            foreach (KeyValuePair<string, string> kvp in links)
-                if (kvp.Value == $"{structName}")
-                    return kvp.Key;
-
-            return null;
-        }
+        public static string GetFileName(string structName) => links?.Find(l => l.StructureName == structName).FileName;
     }
 }

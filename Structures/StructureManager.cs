@@ -5,7 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Archimedes;
+using Archimedes.Enums;
 using Grimoire.Configuration;
 using Grimoire.Utilities;
 
@@ -80,15 +81,23 @@ namespace Grimoire.Structures
                     return;
                 }
 
-                for (int i = 0; i < structObj.Epic.Length; i++)
+                float globalEpic = configMgr.Get<float>("Epic", "Grim");
+                float structEpic_1 = structObj.Epic[0];
+                float structEpic_2 = (structObj.Epic.Length > 1) ? structObj.Epic[1] : structEpic_1;
+
+                if (structEpic_1 == 0 && structEpic_1 == structEpic_2 || globalEpic >= structEpic_1 && globalEpic <= structEpic_2)
                 {
-                    float epic = structObj.Epic[i];
+                    structures.Add(structObj);
 
-                    if (!AvailableEpics.Contains(epic))
-                        AvailableEpics.Add(epic);
+                    for (int i = 0; i < structObj.Epic.Length; i++)
+                    {
+                        float epic = structObj.Epic[i];
+
+                        if (!AvailableEpics.Contains(epic))
+                            AvailableEpics.Add(epic);
+                    }
                 }
-
-                structures.Add(structObj);
+                            
             }
 
             Log.Information($"{structures.Count} structures loaded.");

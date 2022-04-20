@@ -352,6 +352,14 @@ namespace Grimoire.Tabs.Styles
 
             string buildDir = configMan.GetDirectory("BuildDirectory", "Grim");
 
+            if (!Directory.Exists(buildDir))
+            {
+                if (DialogUtility.RequestInput<bool>("The build directory does not exist! Would you like to create it?", "Input Required", DialogUtility.DialogType.YesNo))
+                    Directory.CreateDirectory(buildDir);
+                else
+                    return;
+            }
+
             for (int i = 0; i < grid.SelectedRows.Count; i++)
             {
                 IndexEntry entry = core.GetEntry(grid.SelectedRows[i].Cells[0].Value.ToString());
@@ -381,6 +389,14 @@ namespace Grimoire.Tabs.Styles
         {
             string buildDirectory = configMan.GetDirectory("BuildDirectory", "Grim");
             string ext = extensions.SelectedNode.Text;
+
+            if (!Directory.Exists(buildDirectory))
+            {
+                if (DialogUtility.RequestInput<bool>("The build directory does not exist! Would you like to create it?", "Input Required", DialogUtility.DialogType.YesNo))
+                    Directory.CreateDirectory(buildDirectory);
+                else
+                    return;
+            }
             
             if (ext.Length >= 2)
             {
@@ -598,7 +614,7 @@ namespace Grimoire.Tabs.Styles
         {
             bool backup = configMan["Backup", "Data"];
             int codepage = configMan.Get<int>("Codepage", "Grim");
-            Encoding encoding = Encoding.GetEncoding(codepage);
+            Encoding encoding = Encodings.GetByCodePage(codepage);
             core = new Core(backup, encoding);
             
             core.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];

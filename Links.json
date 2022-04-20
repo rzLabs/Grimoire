@@ -1,0 +1,14 @@
+[
+  {
+    "FileName": "db_string.rdb",
+    "StructureName": "StringResource"
+  },
+  {
+    "FileName": "db_item.rdb",
+    "StructureName": "ItemResource73"
+  },
+  {
+    "FileName": "db_monster.rdb",
+    "StructureName": "MonsterResource73"
+  }
+]

@@ -13,6 +13,8 @@ using Grimoire.GUI;
 using Grimoire.Structures;
 
 using Serilog;
+using Archimedes;
+using Archimedes.Cells;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -47,9 +49,6 @@ namespace Grimoire.Tabs.Styles
             configureCores();
 
             useArenaPt = configMan["UseArenaPoint", "Item"];
-
-            itemRDB = structMgr.GetStruct("ItemResource72").Result;
-            stringRDB = structMgr.GetStruct("StringResource").Result;
         }
 
         public void Clear()
@@ -444,8 +443,11 @@ namespace Grimoire.Tabs.Styles
             Item
         }
 
-        private void Item_Load(object sender, EventArgs e)
+        private async void Item_Load(object sender, EventArgs e)
         {
+            stringRDB = await structMgr.GetStruct("StringResource");
+            itemRDB = await structMgr.GetStruct("ItemResource73");
+
             // Use discard so that compiler doesn't complain that the call isn't awaited. We do not need to wait, continue on.
             _ = loadStrings();
             loadSPR();

@@ -14,7 +14,7 @@ namespace Grimoire.Utilities
     public static class CryptoUtility
     {
         /// <summary>
-        /// Generate a MD5 hash string (for Rapopelz password comparison)
+        /// Generate a MD5 hash string (for Rappelz password comparison)
         /// </summary>
         /// <param name="input">Salt+Password string</param>
         /// <returns>Salted and Hashed password string</returns>
@@ -30,7 +30,7 @@ namespace Grimoire.Utilities
                 for (int i = 0; i < hashBuffer.Length; i++)
                     outStr += hashBuffer[i].ToString("X2");
 
-                return outStr;
+                return outStr.ToLower();
             }
         }
     }

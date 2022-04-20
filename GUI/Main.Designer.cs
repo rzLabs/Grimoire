@@ -45,9 +45,9 @@
             this.ts_dump_updater = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_spr_gen = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_xor_editor = new System.Windows.Forms.ToolStripMenuItem();
+            this.ts_utilities_md5 = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_test_btn = new System.Windows.Forms.ToolStripMenuItem();
             this.test_btn = new System.Windows.Forms.Button();
-            this.ts_utilities_md5 = new System.Windows.Forms.ToolStripMenuItem();
             this.tabs_cMenu.SuspendLayout();
             this.ms.SuspendLayout();
             this.SuspendLayout();
@@ -148,7 +148,7 @@
             this.ts_test_btn});
             this.ms.Location = new System.Drawing.Point(9, 4);
             this.ms.Name = "ms";
-            this.ms.Size = new System.Drawing.Size(225, 24);
+            this.ms.Size = new System.Drawing.Size(66, 24);
             this.ms.TabIndex = 6;
             this.ms.Text = "menuStrip1";
             // 
@@ -169,37 +169,44 @@
             // 
             this.ts_log_viewer.Enabled = false;
             this.ts_log_viewer.Name = "ts_log_viewer";
-            this.ts_log_viewer.Size = new System.Drawing.Size(180, 22);
+            this.ts_log_viewer.Size = new System.Drawing.Size(154, 22);
             this.ts_log_viewer.Text = "Log Viewer";
             this.ts_log_viewer.Click += new System.EventHandler(this.ts_log_viewer_Click);
             // 
             // ts_bitflag_editor
             // 
             this.ts_bitflag_editor.Name = "ts_bitflag_editor";
-            this.ts_bitflag_editor.Size = new System.Drawing.Size(180, 22);
+            this.ts_bitflag_editor.Size = new System.Drawing.Size(154, 22);
             this.ts_bitflag_editor.Text = "BitFlag Editor";
             this.ts_bitflag_editor.Click += new System.EventHandler(this.ts_bitflag_editor_Click);
             // 
             // ts_dump_updater
             // 
             this.ts_dump_updater.Name = "ts_dump_updater";
-            this.ts_dump_updater.Size = new System.Drawing.Size(180, 22);
+            this.ts_dump_updater.Size = new System.Drawing.Size(154, 22);
             this.ts_dump_updater.Text = "Dump Updater";
             this.ts_dump_updater.Click += new System.EventHandler(this.ts_dump_updater_Click);
             // 
             // ts_spr_gen
             // 
             this.ts_spr_gen.Name = "ts_spr_gen";
-            this.ts_spr_gen.Size = new System.Drawing.Size(180, 22);
+            this.ts_spr_gen.Size = new System.Drawing.Size(154, 22);
             this.ts_spr_gen.Text = "SPR Generator";
             this.ts_spr_gen.Click += new System.EventHandler(this.ts_spr_gen_Click);
             // 
             // ts_xor_editor
             // 
             this.ts_xor_editor.Name = "ts_xor_editor";
-            this.ts_xor_editor.Size = new System.Drawing.Size(180, 22);
+            this.ts_xor_editor.Size = new System.Drawing.Size(154, 22);
             this.ts_xor_editor.Text = "XOR Editor";
             this.ts_xor_editor.Click += new System.EventHandler(this.ts_xor_editor_Click);
+            // 
+            // ts_utilities_md5
+            // 
+            this.ts_utilities_md5.Name = "ts_utilities_md5";
+            this.ts_utilities_md5.Size = new System.Drawing.Size(154, 22);
+            this.ts_utilities_md5.Text = "MD5 Generator";
+            this.ts_utilities_md5.Click += new System.EventHandler(this.ts_utilities_md5_Click);
             // 
             // ts_test_btn
             // 
@@ -211,7 +218,6 @@
             // 
             // test_btn
             // 
-            this.test_btn.Enabled = false;
             this.test_btn.Location = new System.Drawing.Point(78, 7);
             this.test_btn.Name = "test_btn";
             this.test_btn.Size = new System.Drawing.Size(75, 23);
@@ -220,13 +226,6 @@
             this.test_btn.UseVisualStyleBackColor = true;
             this.test_btn.Visible = false;
             this.test_btn.Click += new System.EventHandler(this.ts_test_btn_Click);
-            // 
-            // ts_utilities_md5
-            // 
-            this.ts_utilities_md5.Name = "ts_utilities_md5";
-            this.ts_utilities_md5.Size = new System.Drawing.Size(180, 22);
-            this.ts_utilities_md5.Text = "MD5 Generator";
-            this.ts_utilities_md5.Click += new System.EventHandler(this.ts_utilities_md5_Click);
             // 
             // Main
             // 

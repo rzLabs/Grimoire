@@ -12,6 +12,7 @@ using System.Windows.Forms;
 
 using Grimoire.Configuration;
 using Grimoire.Tabs;
+using Grimoire.GUI;
 using Grimoire.Utilities;
 using Grimoire.Structures;
 
@@ -19,10 +20,11 @@ using DataCore.Functions;
 
 using Serilog;
 using Serilog.Events;
+using Archimedes;
 
 namespace Grimoire.Tabs.Styles
 {
-    // TODO: go full retard and add md5 password generator utility to grim, cause why not
+    // TODO: check for directories and create if they do not exist
     public partial class Launcher : UserControl
     {
         #region Fields
@@ -218,7 +220,6 @@ namespace Grimoire.Tabs.Styles
 
         private async void launch_data_btn_DragDrop(object sender, DragEventArgs e)
         {
-            string msg = null;
             string path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0] ?? "NULL";
             Encoding encoding = Encoding.GetEncoding(configMgr.Get<int>("Codepage", "Grim", 1252));
             bool backup = configMgr.Get<bool>("Backup", "data", true);
@@ -227,11 +228,7 @@ namespace Grimoire.Tabs.Styles
 
             if (!File.Exists(path))
             {
-                msg = $"File cannot be found at path:\n\t- {path}";
-
-                Log.Error(msg);
-
-                MessageBox.Show(msg, "Launch Data Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogUtility.MessageBoxAndLog($"File cannot be found at path:\n\t- {path}", "Data Quick Launch Exception", LogEventLevel.Error);
 
                 return;
             }
@@ -242,18 +239,66 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                msg = $"An exception occured during launch!\nMessage:\n\t{ ex.Message}\n\nStack - Trace:\n\t{ ex.StackTrace}";
+                LogUtility.MessageBoxAndLog($"An exception occured during launch!\nMessage:\n\t{ ex.Message}\n\nStack - Trace:\n\t{ ex.StackTrace}", "Data Quick Launch Exception", LogEventLevel.Error);
 
-                Log.Error(msg);
-
-                MessageBox.Show(msg, "Launch Data Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
             string key = tabMgr.Create(Style.DATA);
 
-            ((Styles.Data)tabMgr.DataTabByKey(key)).Load(core);
+            tabMgr.DataTabByKey(key).Load(core);
 
             tabMgr.SelectedIndex = tabMgr.Count - 1;
+        }
+
+        private async void launch_rdb_btn_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] paths = ((string[])e.Data.GetData(DataFormats.FileDrop));
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                string path = paths[i];
+
+                if (!File.Exists(path))
+                {
+                    LogUtility.MessageBoxAndLog($"Could not hash {Path.GetFileName(path)} because its path does not exist!\n\t- {path}", "Hash Exception", LogEventLevel.Error);
+
+                    continue;
+                }
+
+                try
+                {
+                    string filename = Path.GetFileName(path);
+                    string structname = StructLinkUtility.GetStructName(filename);
+
+                    if (string.IsNullOrEmpty(structname))
+                    {
+                        using (StructureSelect select = new StructureSelect())
+                        {
+                            if (select.ShowDialog(this) != DialogResult.OK)
+                            {
+                                Log.Verbose("User cancelled structure selection!");
+                                return;
+                            }
+
+                            structname = select.SelectedText;
+                        }
+                    }
+
+                    string key = tabMgr.Create(Style.RDB2);
+                    RDB2 rdbTab = tabMgr.RDBTabByKey(key);
+
+                    rdbTab.StructObject = await structMgr.GetStruct(structname);
+                    rdbTab.GenerateColumns();
+
+                    rdbTab.ReadFile(path);
+                }
+                catch (Exception ex)
+                {
+                    LogUtility.MessageBoxAndLog(ex, "quick launching rdb tab", "RDB Quick Launch Exception", LogEventLevel.Error);
+                    return;
+                }
+            }
         }
 
         private async void rdb2sql_btn_DragDrop(object sender, DragEventArgs e)
@@ -398,6 +443,7 @@ namespace Grimoire.Tabs.Styles
         {
             quickLaunch_grpbx.AllowDrop = true;
             ((Control)launch_data_btn).AllowDrop = true;
+            ((Control)launch_rdb_btn).AllowDrop = true;
             newClient_btn.AllowDrop = true;
             dumpClient_btn.AllowDrop = true;
 
@@ -407,7 +453,7 @@ namespace Grimoire.Tabs.Styles
             rdb2sql_btn.AllowDrop = true;
         }
 
-        void initLinks() // may eventually need to be async
+        void initLinks() // may eventually need to be async (so simple I really doubt it)
         {
             StructLinkUtility.Parse();
         }
@@ -540,11 +586,11 @@ namespace Grimoire.Tabs.Styles
                 Log.Verbose($"Build Directory created.\n\t- {buildDir}");
             }
 
-            string filename = StructLinkUtility.GetFileName(structName) ?? DialogUtility.RequestQuestionInput<string>("Input Required", $"No existing filename link for the provided structure: {structName}\n\nWould you like to enter one manually?", "Enter the filename", DialogUtility.DialogType.Path);
+            string filename = StructLinkUtility.GetFileName(structName) ?? DialogUtility.RequestQuestionInput<string>("Input Required", $"No existing filename link for the provided structure: {structName} exists!\n\nWould you like to enter one manually?", "Enter the filename", DialogUtility.DialogType.Path);
 
             if (filename == null)
             {
-                LogUtility.MessageBoxAndLog($"Failed to link structure: {structName} to a filename! Please verify the contents of your provided StructLinks.json", "SQL 2 RDB Exception", LogEventLevel.Error);
+                LogUtility.MessageBoxAndLog($"Failed to link structure: {structName} to a filename! Please verify the contents of your provided StructLinks.json", "SQL Save Exception", LogEventLevel.Error);
 
                 return null;
             }
@@ -706,5 +752,7 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
+
+
     }
 }

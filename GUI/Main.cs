@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Grimoire.Tabs;
 using Grimoire.Utilities;
@@ -46,6 +47,8 @@ namespace Grimoire.GUI
             setLogLevel();
 
             check_first_start();
+
+            Task.Run(() => GroupUtility.Load());
 
             Log.Information("Starting Structure Manager...");
 
@@ -195,7 +198,7 @@ namespace Grimoire.GUI
                 if (tManager.ArcInstance.RowCount > 0)
                     tManager.RDBTab.Filter();
                 else
-                    Log.Warning("Cannot activate search without loaded data!");
+                    Log.Warning("Cannot activate filter without loaded data!");
             }
             else if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
             {
@@ -246,7 +249,6 @@ namespace Grimoire.GUI
         {
             string gVersion = System.Windows.Forms.Application.ProductVersion;
             string dCore_Version = FileVersionInfo.GetVersionInfo("DataCore.dll").FileVersion;
-            //string rCore_Version = FileVersionInfo.GetVersionInfo("Daedalus.dll").FileVersion;
             string aboutStr = $"Grimoire v{gVersion}\nDataCore v{dCore_Version}\nArchimedes v1.0.0\n\nWritten by: iSmokeDrow\n\n" + 
                                             "Third-Party Software:\n\t-Newtonsoft.JSON\n\t-SeriLog\n\t-MoonSharp\n\t-Be.HexBox\n\t-BrightIdeaSoftware.ObjectListView\n" +
                                             "\n\nSpecial Thanks:\n\t- Glandu2\n\t- Gangor\n\t- InkDevil\n\t- XavierDeFawks\n\t- ThunderNikk\n\t- Exterminator\n\t"+
@@ -287,7 +289,7 @@ namespace Grimoire.GUI
 
         private void ts_test_btn_Click(object sender, EventArgs e)
         {
-            //tManager.ArcInstance.Search("id", 910023, SearchReturn.Indicies);
+            StructLinkUtility.GenerateDefault();        
         }
 
         private void ts_utilities_md5_Click(object sender, EventArgs e)
@@ -297,7 +299,7 @@ namespace Grimoire.GUI
                 string salt = DialogUtility.RequestInput<string>("Input Required", "Enter salt (e.g. 2011)", DialogUtility.DialogType.Text);
                 string password = DialogUtility.RequestInput<string>("Input Required", "Enter your password", DialogUtility.DialogType.Text);
 
-                string hashedStr = CryptoUtility.GenerateMD5Hash($"{salt}{password}");
+                string hashedStr = CryptoUtility.GenerateMD5Hash($"{salt}{password}").ToLower();
 
                 Clipboard.SetText(hashedStr);
 

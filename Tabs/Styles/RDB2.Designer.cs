@@ -44,6 +44,8 @@ namespace Grimoire.Tabs.Styles
             this.ts_save_file_csv = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_save_sql = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ts_search = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ts_encLbl = new System.Windows.Forms.ToolStripLabel();
             this.ts_enc_list = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -52,11 +54,9 @@ namespace Grimoire.Tabs.Styles
             this.ts_sel_struct_btn = new System.Windows.Forms.ToolStripButton();
             this.grid = new System.Windows.Forms.DataGridView();
             this.gridCMS = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.gridCMS_clear = new System.Windows.Forms.ToolStripMenuItem();
             this.rows_txBx = new System.Windows.Forms.TextBox();
             this.date_txBx = new System.Windows.Forms.TextBox();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.ts_search = new System.Windows.Forms.ToolStripButton();
-            this.gridCMS_clear = new System.Windows.Forms.ToolStripMenuItem();
             this.ts.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.gridCMS.SuspendLayout();
@@ -185,6 +185,21 @@ namespace Grimoire.Tabs.Styles
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
+            // ts_search
+            // 
+            this.ts_search.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ts_search.Image = ((System.Drawing.Image)(resources.GetObject("ts_search.Image")));
+            this.ts_search.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ts_search.Name = "ts_search";
+            this.ts_search.Size = new System.Drawing.Size(46, 22);
+            this.ts_search.Text = "Search";
+            this.ts_search.Click += new System.EventHandler(this.ts_search_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
             // ts_encLbl
             // 
             this.ts_encLbl.Name = "ts_encLbl";
@@ -194,8 +209,10 @@ namespace Grimoire.Tabs.Styles
             // ts_enc_list
             // 
             this.ts_enc_list.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ts_enc_list.Enabled = false;
             this.ts_enc_list.Name = "ts_enc_list";
             this.ts_enc_list.Size = new System.Drawing.Size(114, 25);
+            this.ts_enc_list.SelectedIndexChanged += new System.EventHandler(this.ts_enc_list_SelectedIndexChanged);
             // 
             // toolStripSeparator2
             // 
@@ -244,7 +261,15 @@ namespace Grimoire.Tabs.Styles
             this.gridCMS.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gridCMS_clear});
             this.gridCMS.Name = "gridCMS";
-            this.gridCMS.Size = new System.Drawing.Size(102, 26);
+            this.gridCMS.Size = new System.Drawing.Size(131, 26);
+            // 
+            // gridCMS_clear
+            // 
+            this.gridCMS_clear.Enabled = false;
+            this.gridCMS_clear.Name = "gridCMS_clear";
+            this.gridCMS_clear.Size = new System.Drawing.Size(130, 22);
+            this.gridCMS_clear.Text = "Clear Filter";
+            this.gridCMS_clear.Click += new System.EventHandler(this.gridCMS_clear_Click);
             // 
             // rows_txBx
             // 
@@ -271,28 +296,6 @@ namespace Grimoire.Tabs.Styles
             this.date_txBx.Size = new System.Drawing.Size(69, 20);
             this.date_txBx.TabIndex = 36;
             this.date_txBx.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
-            // ts_search
-            // 
-            this.ts_search.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ts_search.Image = ((System.Drawing.Image)(resources.GetObject("ts_search.Image")));
-            this.ts_search.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ts_search.Name = "ts_search";
-            this.ts_search.Size = new System.Drawing.Size(46, 22);
-            this.ts_search.Text = "Search";
-            this.ts_search.Click += new System.EventHandler(this.ts_search_Click);
-            // 
-            // gridCMS_clear
-            // 
-            this.gridCMS_clear.Enabled = false;
-            this.gridCMS_clear.Name = "gridCMS_clear";
-            this.gridCMS_clear.Size = new System.Drawing.Size(180, 22);
-            this.gridCMS_clear.Text = "Clear";
             // 
             // RDB2
             // 

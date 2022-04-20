@@ -15,6 +15,7 @@ namespace Grimoire.Utilities
         public enum DialogType
         {
             Number,
+            YesNo,
             Text,
             Folder,
             Path,
@@ -36,6 +37,14 @@ namespace Grimoire.Utilities
         {
             if (MessageBox.Show(question, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question) == DialogResult.Yes)
                 return RequestInput<T>(title, task, type);
+
+            return default(T);
+        }
+
+        public static T RequestQuestionInput<T>(string title, string question, string task, DialogType type, params object[] options)
+        {
+            if (MessageBox.Show(question, title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question) == DialogResult.Yes)
+                return RequestInput<T>(title, task, type, options);
 
             return default(T);
         }
@@ -65,6 +74,10 @@ namespace Grimoire.Utilities
                             input = Convert.ToInt32(inputBx.Value);
                         }
                     }
+                    break;
+
+                case DialogType.YesNo:
+                    input = (MessageBox.Show(title, task, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes);
                     break;
 
                 case DialogType.Text:

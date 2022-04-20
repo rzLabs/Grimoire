@@ -138,6 +138,7 @@ namespace Grimoire.Tabs.Styles
             // 
             // rdb2sql_btn
             // 
+            this.rdb2sql_btn.Enabled = false;
             this.rdb2sql_btn.Location = new System.Drawing.Point(69, 198);
             this.rdb2sql_btn.Name = "rdb2sql_btn";
             this.rdb2sql_btn.Size = new System.Drawing.Size(108, 23);
@@ -338,6 +339,7 @@ namespace Grimoire.Tabs.Styles
             this.launch_rdb_btn.TabIndex = 3;
             this.launch_rdb_btn.TabStop = false;
             this.launch_rdb_btn.Click += new System.EventHandler(this.launch_btn_Click);
+            this.launch_rdb_btn.DragDrop += new System.Windows.Forms.DragEventHandler(this.launch_rdb_btn_DragDrop);
             this.launch_rdb_btn.DragEnter += new System.Windows.Forms.DragEventHandler(this.launcher_control_DragEnter);
             this.launch_rdb_btn.MouseDown += new System.Windows.Forms.MouseEventHandler(this.launch_rdb_btn_MouseDown);
             this.launch_rdb_btn.MouseUp += new System.Windows.Forms.MouseEventHandler(this.launch_rdb_btn_MouseUp);

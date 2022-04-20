@@ -96,6 +96,9 @@ namespace Grimoire.Structures
         [Description("Determines if the DataCore.Core will be cleared after a successful 'New' client has been created. If set to False the newly created client will be displayed as if loaded."), Category("Data Utility"), DisplayName("Clear on Create")]
         public bool ClearCreate { get => configMan["ClearOnCreate"]; set => configMan["ClearOnCreate"] = value; }
 
+        [Description("If set, only structure lua with matching epic will be shown in the Structure Select menu"), Category("Data Utility"), DisplayName("Epic")]
+        public float GlobalEpic { get => configMan.Get<float>("Epic", "Grim"); set => configMan["Epic", "Grim"] = value; }
+
         // rdb
 
         [Description("The path where RDB Structure .lua Files are stored. Likely /structures/"), Category("RDB Utility"), DisplayName("Structures Directory"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]

@@ -13,10 +13,15 @@ using Grimoire.Utilities;
 using Serilog;
 using Serilog.Events;
 
-// TODO: show filtered tag and operator/term being processed
-// TODO: update displayed rowcount if being filtered
+using Archimedes;
+using Archimedes.Enums;
+using Archimedes.Entities;
+using Archimedes.Cells;
+
 namespace Grimoire.Tabs.Styles
 {
+    // TODO: implement saving displayed ..
+
     public partial class RDB2 : UserControl
     {
         #region Private fields
@@ -160,29 +165,35 @@ namespace Grimoire.Tabs.Styles
             LogUtility.MessageBoxAndLog($"{StructObject.Rows.Count} rows written to: {StructObject.RDBName} in {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}", "Save Successful", LogEventLevel.Information);
         }
 
-        public void Filter()
+        public void Filter() 
         {
             using (RdbSearch search = new RdbSearch(StructObject) { StartPosition = FormStartPosition.CenterParent })
             {
                 if (search.ShowDialog(this) != DialogResult.OK)
                 {
-                    Serilog.Log.Verbose("User cancelled the filter process!");
+                    Log.Verbose("User cancelled the filter process!");
                     return;
                 }
 
                 FilteredRows.Clear();
 
+                if (search.Results.Length <= 0)
+                {
+                    Log.Debug("There were no search results returned!");
+                    return;
+                }    
+
                 try
                 {
-                    for (int i = 0; i < search.Results.Length; i++)
-                    {
-                        var indexPair = search.Results[i];
-
-                        FilteredRows.Add(StructObject.Rows[indexPair.Key]);
-                    }
+                    foreach (var result in search.Results)
+                        FilteredRows.Add(StructObject.Rows[result.Key]);
 
                     Grid.Rows.Clear();
                     Grid.RowCount = FilteredRows.Count;
+
+                    rows_txBx.Text = FilteredRows.Count.ToString();
+
+                    gridCMS.Items["gridCMS_clear"].Enabled = FilteredRows.Count > 0;
                 }
                 catch (Exception ex)
                 {
@@ -190,6 +201,20 @@ namespace Grimoire.Tabs.Styles
                     return;
                 }
             }
+        }
+
+        public void ClearFilter() 
+        {
+            Grid.RowCount = 0;
+            Grid.Rows.Clear();
+
+            FilteredRows.Clear();
+
+            Grid.RowCount = StructObject.RowCount;
+
+            rows_txBx.Text = StructObject.RowCount.ToString();
+
+            gridCMS.Items[0].Enabled = false;
         }
 
         #endregion
@@ -276,6 +301,20 @@ namespace Grimoire.Tabs.Styles
 
             StructObject = await structMgr.GetStruct(structName);
 
+            if (StructObject is null)
+            {
+                Log.Error($"Failed to get instance of {structName} from the Structure Manager!");
+
+                return; 
+            }
+
+            GenerateColumns();
+
+            ts_enc_list.Enabled = true;
+        }
+
+        public void GenerateColumns()
+        {
             ts_sel_struct_btn.Text = StructObject.Name;
             ts_sel_struct_btn.Checked = true;
             ts_sel_struct_btn.Enabled = false;
@@ -285,7 +324,6 @@ namespace Grimoire.Tabs.Styles
             // Create the original task to generate the columns
             Task<DataGridViewTextBoxColumn[]> generateColumns = Task.Run(() => generateGridColumns());
 
-#pragma warning disable CS4014
             // We do not need to wait for the columns to be generated to proceed. Chain a new task to the original generateColumns call, then invoke the calling thread to update it with the results.
             generateColumns.ContinueWith(t => Invoke((MethodInvoker)(() =>
             {
@@ -293,7 +331,14 @@ namespace Grimoire.Tabs.Styles
 
                 ts_load.Enabled = grid.Columns.Count > 0;
             })));
-#pragma warning restore CS4014 
+        }
+
+        private void ts_enc_list_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ts_enc_list.SelectedIndex == -1)
+                return;
+
+            StructObject.Encoding = Encodings.GetByName(ts_enc_list.Text);
         }
 
         private async void ts_load_sql_Click(object sender, EventArgs e)
@@ -407,11 +452,7 @@ namespace Grimoire.Tabs.Styles
         private void ts_search_Click(object sender, EventArgs e)
         {
             if (FilteredRows.Count > 0)
-            {
-                FilteredRows.Clear();
-                Grid.Rows.Clear();
-                Grid.RowCount = StructObject.RowCount;
-            }
+                ClearFilter();
 
             if (StructObject?.RowCount > 0)
                 Filter();
@@ -419,35 +460,23 @@ namespace Grimoire.Tabs.Styles
                 Serilog.Log.Verbose("Cannot filter no data!");
         }
 
+        private void gridCMS_clear_Click(object sender, EventArgs e) => ClearFilter();
+
         private void rowGrid_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             CellBase cell = cell = StructObject.DataCells[e.ColumnIndex];
-            dynamic val = null;
 
-            if (FilteredRows.Count > 0) // The loaded data has been filtered
-            {
-                if (e.RowIndex < 0 || e.RowIndex >= FilteredRows.Count ||
-                    e.ColumnIndex < 0 || e.ColumnIndex >= StructObject.DataCells.Count)
-                    return;
+            var rows = (FilteredRows.Count > 0) ? FilteredRows : StructObject.Rows;
 
-                if (cell.PrimaryType == typeof(string))
-                    val = StructObject.Encoding.GetString((byte[])FilteredRows[e.RowIndex][e.ColumnIndex]);
-                else
-                    val = FilteredRows[e.RowIndex][e.ColumnIndex];
-            }
+            if (e.RowIndex < 0 || e.RowIndex >= rows.Count || e.ColumnIndex < 0 || e.ColumnIndex >= StructObject.DataCells.Count)
+                return;
+
+            if (cell.PrimaryType == typeof(string))
+                e.Value = StructObject.Encoding.GetString((byte[])rows[e.RowIndex][e.ColumnIndex]);
+            else if (cell.PrimaryType == typeof(int) && cell.SecondaryType == ArcType.TYPE_BIT_VECTOR)
+                e.Value = Convert.ToString((int)rows[e.RowIndex][e.ColumnIndex], 2);
             else
-            {
-                if (e.RowIndex < 0 || e.RowIndex >= StructObject.Rows.Count ||
-                    e.ColumnIndex < 0 || e.ColumnIndex >= StructObject.DataCells.Count)
-                    return;
-
-                if (cell.PrimaryType == typeof(string))
-                    val = StructObject.Encoding.GetString((byte[])StructObject.Rows[e.RowIndex][e.ColumnIndex]);
-                else
-                    val = StructObject.Rows[e.RowIndex][e.ColumnIndex];
-            }
-
-            e.Value = val;       
+                e.Value = rows[e.RowIndex][e.ColumnIndex];
         }
 
         #endregion

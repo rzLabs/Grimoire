@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Archimedes;
+using Archimedes.Cells;
+using Archimedes.Enums;
 using Grimoire.Structures;
 using Grimoire.Utilities;
 
@@ -14,13 +11,15 @@ using Serilog.Events;
 
 namespace Grimoire.GUI
 {
+    // TODO: remove whitespace from beginning and end of the input box
+    // TODO: check for the presence of , in the input (denoting multiple values or a range, given the checked radio button)
+    // TODO: if white-space between value and , remove it
     public partial class RdbSearch : Form
     {
         public KeyValuePair<int, int>[] Results;
 
         public RdbSearch(StructureObject structObject)
         {
-
             InitializeComponent();
 
             structObj = structObject;
@@ -45,10 +44,7 @@ namespace Grimoire.GUI
                 LogUtility.MessageBoxAndLog($"Cannot find cell named {cells_lst.Text}", "Search Exception", Serilog.Events.LogEventLevel.Error);
 
                 return;
-            }
-            
-
-            var inputVal = Array.CreateInstance(typeof(object), 0); // Create a dummy array to satisfy the var needing an assignment
+            }         
 
             SearchOperator searchOp = SearchOperator.Equal;
 
@@ -82,9 +78,7 @@ namespace Grimoire.GUI
                 Array inputs = Array.CreateInstance(cell.PrimaryType, inputObjects.Count);
                 Array.Copy(inputObjects.ToArray(), inputs, inputObjects.Count);
 
-                inputVal = inputs;
-
-                Results = (KeyValuePair<int, int>[])structObj.Search(cell.Name, inputVal, searchOp, SearchReturn.Indicies);
+                Results = (KeyValuePair<int, int>[])structObj.Search(cell.Name, inputs, searchOp, SearchReturn.Indicies);
 
                 DialogResult = DialogResult.OK;
             }

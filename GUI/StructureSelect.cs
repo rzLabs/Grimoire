@@ -12,6 +12,9 @@ using Newtonsoft.Json;
 using Grimoire.Configuration;
 using Grimoire.Structures;
 
+using Grimoire.Utilities;
+using Archimedes;
+
 namespace Grimoire.GUI
 {
     // TODO: implement remembering the sort direction of the last sorted column
@@ -27,29 +30,6 @@ namespace Grimoire.GUI
             InitializeComponent();
 
             generateEntries();
-
-            if (configMgr.Get<bool>("RememberSort", "Structures"))
-            {
-                ObjectListView lv_all = Controls["lv_all"] as ObjectListView;
-
-                string sortcol = configMgr.Get<string>("SortColumn", "Structures", "name");
-
-                lv_all.Sort(lv_all.AllColumns.Find(c => c.Name == sortcol), SortOrder.Ascending);
-            }
-
-            if (configMgr.Get<bool>("RememberLast", "Structures")) // Y U NO UPDATE ACTUAL FOCUS!?!?
-            {
-                string last_structname = configMgr.Get<string>("LastSelected", "Structures");
-
-                if (last_structname != null)
-                {
-                    ObjectListView lv_all = Controls["lv_all"] as ObjectListView;
-                    StructureObject structObj = lv_all.Objects.Cast<StructureObject>().FirstOrDefault(s => s.StructName == last_structname);
-
-                    if (structObj != null)
-                        lv_all.SelectObject(structObj, true);
-                }
-            }
         }
 
         void generateEntries()
@@ -82,27 +62,12 @@ namespace Grimoire.GUI
             columns[1] = new OLVColumn() { Name = "version", Text = "Version", AspectName = "Version", Width = 100 };
             columns[2] = new OLVColumn() { Name = "epic", Text = "Epic", AspectName = "Epic", Width = 100 };
 
-            columns[2].AspectGetter = delegate (object rowObject) 
-            {
-                StructureObject structObj = rowObject as StructureObject;
+            columns[2].AspectGetter = delegate (object rowObject) {
+                return formatEpic(((StructureObject)rowObject).Epic);
+            };
 
-                string epicStr = string.Empty;
-
-                if (structObj.Epic.Length == 1 && structObj.Epic[0] == 0)
-                    epicStr = "All";
-                else if (structObj.Epic.Length == 1)
-                    epicStr = structObj.Epic[0].ToString();
-                else if (structObj.Epic.Length == 2)
-                {
-                    if (structObj.Epic[0] == 0) // min version
-                        epicStr += $"All to {structObj.Epic[1]}";
-                    else if (structObj.Epic[1] == 99) //max version
-                        epicStr = $"{structObj.Epic[0]} +"; // Current version on
-                    else
-                        epicStr = $"{structObj.Epic[0]} - {structObj.Epic[1]}"; //Min version - Max version
-                }
-
-                return epicStr;
+            columns[2].GroupKeyGetter = delegate (object rowObject) {
+                return formatEpic(((StructureObject)rowObject)?.Epic);
             };
 
             columns[3] = new OLVColumn() { Name = "author", Text = "Author", AspectName = "Author", Width = 120 };
@@ -111,23 +76,60 @@ namespace Grimoire.GUI
 
             lv_all.RebuildColumns();
 
-            lv_all.SetObjects(structMgr);
-
             lv_all.DoubleClick += lv_Double_Click;
 
             lv_all.ColumnClick += Lv_all_ColumnClick;
 
+            lv_all.AboutToCreateGroups += Lv_all_AboutToCreateGroups;
+
             lv_all.GroupExpandingCollapsing += Lv_all_GroupExpandingCollapsing;
+
+            lv_all.SetObjects(structMgr);
 
             Controls.Add(lv_all);
         }
 
+        private void Lv_all_AboutToCreateGroups(object sender, CreateGroupsEventArgs e)
+        {
+            foreach (var group in e.Groups)
+            {
+                string key = group.Key.ToString() ?? "nil";
+
+                if (!GroupUtility.Exists(key))
+                    continue;
+
+                group.Collapsed = !GroupUtility.Get(key); //OLV saves group status as 'IsExpanded' so !IsExpanded == collapsed
+            }
+        }
+
+        string formatEpic(float[] epic)
+        {
+            string epicStr = string.Empty;
+
+            if (epic.Length == 1 && epic[0] == 0)
+                epicStr = "All";
+            else if (epic.Length == 1)
+                epicStr = epic[0].ToString();
+            else if (epic.Length == 2)
+            {
+                if (epic[0] == 0) // min version
+                    epicStr += $"All to {epic[1]}";
+                else if (epic[1] == 99) //max version
+                    epicStr = $"{epic[0]} +"; // Current version on
+                else
+                    epicStr = $"{epic[0]} - {epic[1]}"; //Min version - Max version
+            }
+
+            return epicStr;
+        }
+
         private void Lv_all_GroupExpandingCollapsing(object sender, GroupExpandingCollapsingEventArgs e)
         {
-            string key = e.Group.Key as string;
+            var key = e.Group.Key.ToString();
 
+            GroupUtility.Set(key, e.IsExpanding); // If true, the group is expanded (open). Otherwise the group is collapsed (closed)
 
-            throw new NotImplementedException(); // TODO: implement saving 'structgroups' to .json (too much data to store inside the Config.json!)
+            Task.Run(() => GroupUtility.Save()); // We do not need to wait for this to finish
         }
 
         private void Lv_all_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -149,6 +151,10 @@ namespace Grimoire.GUI
         void setResult(string result, DialogResult dlgResult)
         {
             SelectedText = result;
+
+            if (configMgr.Get<bool>("RememberLast", "Structures", false))
+                configMgr["LastSelected", "Structures"] = result;
+
             DialogResult = dlgResult;
         }
 
@@ -167,6 +173,39 @@ namespace Grimoire.GUI
         {
             if (configMgr.Count > 0) // for some reason every once in a blue moon the ConfigMgr will save 0 settings. Destroying user configs. Lets not do that :(
                 _ = configMgr.Save();
+        }
+
+        private void StructureSelect_Shown(object sender, EventArgs e)
+        {
+            if (configMgr.Get<bool>("RememberSort", "Structures"))
+            {
+                ObjectListView lv_all = Controls["lv_all"] as ObjectListView;
+
+                string sortcol = configMgr.Get<string>("SortColumn", "Structures", "name");
+
+                lv_all.ShowSortIndicators = true;
+                lv_all.LastSortColumn = lv_all.AllColumns[lv_all.Columns[sortcol].Index];
+                lv_all.Sort();
+            }
+
+            if (configMgr.Get<bool>("RememberLast", "Structures")) // Y U NO UPDATE ACTUAL FOCUS!?!?
+            { // this shit actually works, the item gets selected! However the highlight bar doesn't get drawn until the user interacts with the control! Defeats the fucking purpose of pre-selecting dunnit!?
+                string last_structname = configMgr.Get<string>("LastSelected", "Structures");
+
+                if (last_structname != null)
+                {
+                    ObjectListView lv_all = Controls["lv_all"] as ObjectListView;
+
+                    foreach (StructureObject structObj in lv_all.Objects)
+                        if (structObj.StructName == last_structname)
+                            lv_all.SelectObject(structObj, true);
+                }
+            }
+
+        }
+
+        private void StructureSelect_Load(object sender, EventArgs e)
+        {
         }
     }
 }
