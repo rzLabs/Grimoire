@@ -69,8 +69,6 @@ namespace Grimoire.Tabs.Styles
         {
             InitializeComponent();
 
-            Task.Run(() => { loadStructs(); });
-
             initLinks();
 
             enableDragNDrops();
@@ -485,33 +483,6 @@ namespace Grimoire.Tabs.Styles
         void initLinks() // may eventually need to be async (so simple I really doubt it)
         {
             StructLinkUtility.Parse();
-        }
-
-        void loadStructs()
-        {
-            structDir = configMgr.GetDirectory("Directory", "Structures");
-
-            if (!Directory.Exists(structDir))
-            {
-                LogUtility.MessageBoxAndLog($"The provided structures directory does not exist!\n\t- {structDir}", "Load Structure Exception", LogEventLevel.Error);
-
-                return;
-            }
-
-            string[] filepaths = Directory.GetFiles(structDir);
-
-            loadedStructs = new string[filepaths.Length];
-
-            for (int i = 0; i < filepaths.Length; i++)
-            {
-                string name = Path.GetFileNameWithoutExtension(filepaths[i]);
-
-                loadedStructs[i] = name;
-            }
-
-            //rdb_structs_lst.Items.AddRange(loadedStructs);  
-
-            Log.Debug($"{loadedStructs.Length} structure files loaded from:\n\t- {structDir}");
         }
 
         void startTimers()
