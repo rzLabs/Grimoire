@@ -57,11 +57,11 @@ namespace Grimoire.Tabs.Styles
             set => BeginInvoke(new MethodInvoker(delegate { hasher_status_lb.Text = (value) ? "Working..." : string.Empty; }));
         }
 
-        bool structLstEnabled
-        {
-            get => rdb_structs_lst.Enabled;
-            set => rdb_structs_lst.Enabled = value;
-        }
+        //bool structLstEnabled
+        //{
+        //    get => rdb_structs_lst.Enabled;
+        //    set => rdb_structs_lst.Enabled = value;
+        //}
 
         #endregion
 
@@ -323,26 +323,57 @@ namespace Grimoire.Tabs.Styles
         {
             List<string> completedExports = new List<string>();
 
+            string buildDir = configMgr.GetDirectory("BuildDirectory", "Grim");
             string structDir = configMgr.GetDirectory("Directory", "Structures");
+            string[] selectedStructs = null;
 
             actionSW.Restart();
 
-            structLstEnabled = false;
-
-            for (int i = 0; i < rdb_structs_lst.CheckedItems.Count; i++)
+            using (StructureSelect select = new StructureSelect())
             {
-                string structName = $"{rdb_structs_lst.CheckedItems[i] as string}.lua";
-                string filename = await saveSQLtoRDB(structName);
+                if (select.ShowDialog(this) == DialogResult.OK)
+                    selectedStructs = select.SelectedStructures;
+            }
 
-                if (filename != null)
-                    completedExports.Add(filename);
+            if (selectedStructs is null)
+                return;
+
+            foreach (string name in selectedStructs)
+            {
+                var structObj = await structMgr.GetStruct(name);
+
+                if (structObj is null)
+                {
+                    // TODO: log
+
+                    continue;
+                }
+
+                string filename = $"{buildDir}\\{structObj.RDBName}";
+
+                taskProgress = new Progress<int>(onRDBProgress);
+
+                try
+                {
+
+                    await DatabaseUtility.ReadTableData(structObj, taskProgress);
+
+                    structObj.Write(filename);
+                }
+                catch (Exception ex)
+                {
+                    // TODO: log
+
+                    continue;
+                }
+
+                completedExports.Add(structObj.StructName);
             }
 
             actionSW.Stop();
 
             if (completedExports.Count > 0)
             {
-
                 Log.Information($"SQL Export of {completedExports.Count} sql tables completed in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)}");
 
                 DialogUtility.ShowMessageListBox("SQL Export Successful", "The following files have been successfully saved from SQL!", completedExports);
@@ -350,8 +381,6 @@ namespace Grimoire.Tabs.Styles
 
             rdb_prg.Maximum = 100;
             rdb_prg.Value = 0;
-
-            structLstEnabled = true;
         }
 
         private void rdb2sql_btn_Click(object sender, EventArgs e)
@@ -433,7 +462,7 @@ namespace Grimoire.Tabs.Styles
             tabMgr.HashTabByKey(key).Add_Dropped_Files(toConvert.ToArray());
         }
 
-        private void RdbBtn_check_Tick(object sender, EventArgs e) => sql2rdb_btn.Enabled = (rdb_structs_lst.CheckedItems.Count > 0) ? true : false;
+        private void RdbBtn_check_Tick(object sender, EventArgs e) { }
 
         #endregion
 
@@ -450,7 +479,7 @@ namespace Grimoire.Tabs.Styles
             ((Control)launch_hash_btn).AllowDrop = true;
             hasher_drop_grpbx.AllowDrop = true;
 
-            rdb2sql_btn.AllowDrop = true;
+            rdbToSQL_grpBx.AllowDrop = true;
         }
 
         void initLinks() // may eventually need to be async (so simple I really doubt it)
@@ -480,7 +509,7 @@ namespace Grimoire.Tabs.Styles
                 loadedStructs[i] = name;
             }
 
-            rdb_structs_lst.Items.AddRange(loadedStructs);  
+            //rdb_structs_lst.Items.AddRange(loadedStructs);  
 
             Log.Debug($"{loadedStructs.Length} structure files loaded from:\n\t- {structDir}");
         }
@@ -751,8 +780,12 @@ namespace Grimoire.Tabs.Styles
             hash_prg.Value = value;
         }
 
+
         #endregion
 
+        private void label1_Click(object sender, EventArgs e)
+        {
 
+        }
     }
 }

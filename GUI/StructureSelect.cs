@@ -23,7 +23,9 @@ namespace Grimoire.GUI
         StructureManager structMgr = StructureManager.Instance;
         ConfigManager configMgr = Main.Instance.ConfigMgr;
 
-        public string SelectedText;
+        public string SelectedText => SelectedStructures[0];
+
+        public string[] SelectedStructures;
 
         public StructureSelect()
         {
@@ -39,7 +41,7 @@ namespace Grimoire.GUI
                 Name = "lv_all",
                 Dock = DockStyle.None,
                 FullRowSelect = true,
-                MultiSelect = false,
+                MultiSelect = true,
                 ShowGroups = true,
                 HasCollapsibleGroups = true,
                 Location = new Point(12, 12),
@@ -143,26 +145,31 @@ namespace Grimoire.GUI
         {
             StructureObject structObj = ((ObjectListView)sender).SelectedObject as StructureObject;
 
-            setResult(structObj.StructName, DialogResult.OK);
+            setResults(new[] { structObj.StructName }, DialogResult.OK);
 
             Hide();
         }
 
-        void setResult(string result, DialogResult dlgResult)
+        void setResults(string[] results, DialogResult dlgResult)
         {
-            SelectedText = result;
+            SelectedStructures = results;
 
-            if (configMgr.Get<bool>("RememberLast", "Structures", false))
-                configMgr["LastSelected", "Structures"] = result;
+            //if (configMgr.Get<bool>("RememberLast", "Structures", false)) // TODO: s
+            //    configMgr["LastSelected", "Structures"] = result;
 
             DialogResult = dlgResult;
         }
 
         private void struct_select_btn_Click(object sender, EventArgs e)
         {
-            StructureObject structObj = ((ObjectListView)Controls["lv_all"]).SelectedObject as StructureObject;
+            var objects = ((ObjectListView)Controls["lv_all"]).SelectedObjects;
 
-            setResult(structObj.StructName, DialogResult.OK);
+            string[] results = new string[objects.Count];
+
+            for (int i = 0; i < results.Length; i++)
+                results[i] = ((StructureObject)objects[i]).StructName;
+
+            setResults(results, DialogResult.OK);
 
             Hide();
         }

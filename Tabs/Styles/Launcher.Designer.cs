@@ -32,10 +32,10 @@ namespace Grimoire.Tabs.Styles
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Launcher));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rdb_grpbx = new System.Windows.Forms.GroupBox();
-            this.rdb_structs_lst = new System.Windows.Forms.CheckedListBox();
+            this.rdbToSQL_grpBx = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.rdb_status_lb = new System.Windows.Forms.Label();
             this.rdb_prg = new System.Windows.Forms.ProgressBar();
-            this.rdb2sql_btn = new System.Windows.Forms.Button();
             this.sql2rdb_btn = new System.Windows.Forms.Button();
             this.hash_grpbx = new System.Windows.Forms.GroupBox();
             this.hasher_status_lb = new System.Windows.Forms.Label();
@@ -64,6 +64,7 @@ namespace Grimoire.Tabs.Styles
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.rdb_grpbx.SuspendLayout();
+            this.rdbToSQL_grpBx.SuspendLayout();
             this.hash_grpbx.SuspendLayout();
             this.hasher_drop_grpbx.SuspendLayout();
             this.data_grpBx.SuspendLayout();
@@ -85,10 +86,12 @@ namespace Grimoire.Tabs.Styles
             this.groupBox1.Controls.Add(this.rdb_grpbx);
             this.groupBox1.Controls.Add(this.hash_grpbx);
             this.groupBox1.Controls.Add(this.data_grpBx);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(3, 169);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.groupBox1.Location = new System.Drawing.Point(4, 195);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(747, 276);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox1.Size = new System.Drawing.Size(872, 318);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Quick Actions";
@@ -96,67 +99,75 @@ namespace Grimoire.Tabs.Styles
             // rdb_grpbx
             // 
             this.rdb_grpbx.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.rdb_grpbx.Controls.Add(this.rdb_structs_lst);
+            this.rdb_grpbx.Controls.Add(this.rdbToSQL_grpBx);
             this.rdb_grpbx.Controls.Add(this.rdb_status_lb);
             this.rdb_grpbx.Controls.Add(this.rdb_prg);
-            this.rdb_grpbx.Controls.Add(this.rdb2sql_btn);
             this.rdb_grpbx.Controls.Add(this.sql2rdb_btn);
-            this.rdb_grpbx.Location = new System.Drawing.Point(444, 22);
+            this.rdb_grpbx.Location = new System.Drawing.Point(518, 25);
+            this.rdb_grpbx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rdb_grpbx.Name = "rdb_grpbx";
-            this.rdb_grpbx.Size = new System.Drawing.Size(297, 248);
+            this.rdb_grpbx.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.rdb_grpbx.Size = new System.Drawing.Size(346, 286);
             this.rdb_grpbx.TabIndex = 2;
             this.rdb_grpbx.TabStop = false;
             this.rdb_grpbx.Text = "RDB";
             // 
-            // rdb_structs_lst
+            // rdbToSQL_grpBx
             // 
-            this.rdb_structs_lst.CheckOnClick = true;
-            this.rdb_structs_lst.Enabled = false;
-            this.rdb_structs_lst.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rdb_structs_lst.FormattingEnabled = true;
-            this.rdb_structs_lst.Location = new System.Drawing.Point(9, 23);
-            this.rdb_structs_lst.Name = "rdb_structs_lst";
-            this.rdb_structs_lst.Size = new System.Drawing.Size(282, 169);
-            this.rdb_structs_lst.TabIndex = 6;
-            this.rdb_structs_lst.ThreeDCheckBoxes = true;
+            this.rdbToSQL_grpBx.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rdbToSQL_grpBx.Controls.Add(this.label1);
+            this.rdbToSQL_grpBx.Location = new System.Drawing.Point(8, 29);
+            this.rdbToSQL_grpBx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.rdbToSQL_grpBx.Name = "rdbToSQL_grpBx";
+            this.rdbToSQL_grpBx.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.rdbToSQL_grpBx.Size = new System.Drawing.Size(332, 179);
+            this.rdbToSQL_grpBx.TabIndex = 6;
+            this.rdbToSQL_grpBx.TabStop = false;
+            this.rdbToSQL_grpBx.Text = "To SQL";
+            this.rdbToSQL_grpBx.DragDrop += new System.Windows.Forms.DragEventHandler(this.rdb2sql_btn_DragDrop);
+            this.rdbToSQL_grpBx.DragEnter += new System.Windows.Forms.DragEventHandler(this.launcher_control_DragEnter);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label1.Location = new System.Drawing.Point(81, 86);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(173, 17);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Drop Files/Folder Here";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // rdb_status_lb
             // 
             this.rdb_status_lb.AutoSize = true;
-            this.rdb_status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rdb_status_lb.Location = new System.Drawing.Point(6, 222);
+            this.rdb_status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.rdb_status_lb.Location = new System.Drawing.Point(7, 256);
+            this.rdb_status_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.rdb_status_lb.Name = "rdb_status_lb";
             this.rdb_status_lb.Size = new System.Drawing.Size(0, 13);
             this.rdb_status_lb.TabIndex = 5;
             // 
             // rdb_prg
             // 
-            this.rdb_prg.Location = new System.Drawing.Point(199, 227);
+            this.rdb_prg.Location = new System.Drawing.Point(233, 262);
+            this.rdb_prg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rdb_prg.Name = "rdb_prg";
-            this.rdb_prg.Size = new System.Drawing.Size(92, 18);
+            this.rdb_prg.Size = new System.Drawing.Size(107, 21);
             this.rdb_prg.TabIndex = 3;
-            // 
-            // rdb2sql_btn
-            // 
-            this.rdb2sql_btn.Enabled = false;
-            this.rdb2sql_btn.Location = new System.Drawing.Point(69, 198);
-            this.rdb2sql_btn.Name = "rdb2sql_btn";
-            this.rdb2sql_btn.Size = new System.Drawing.Size(108, 23);
-            this.rdb2sql_btn.TabIndex = 4;
-            this.rdb2sql_btn.Text = "RDB > SQL";
-            this.rdb2sql_btn.UseVisualStyleBackColor = true;
-            this.rdb2sql_btn.Click += new System.EventHandler(this.rdb2sql_btn_Click);
-            this.rdb2sql_btn.DragDrop += new System.Windows.Forms.DragEventHandler(this.rdb2sql_btn_DragDrop);
-            this.rdb2sql_btn.DragEnter += new System.Windows.Forms.DragEventHandler(this.launcher_control_DragEnter);
             // 
             // sql2rdb_btn
             // 
-            this.sql2rdb_btn.Enabled = false;
-            this.sql2rdb_btn.Location = new System.Drawing.Point(183, 198);
+            this.sql2rdb_btn.Location = new System.Drawing.Point(7, 253);
+            this.sql2rdb_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.sql2rdb_btn.Name = "sql2rdb_btn";
-            this.sql2rdb_btn.Size = new System.Drawing.Size(108, 23);
+            this.sql2rdb_btn.Size = new System.Drawing.Size(126, 27);
             this.sql2rdb_btn.TabIndex = 3;
-            this.sql2rdb_btn.Text = "SQL > RDB";
+            this.sql2rdb_btn.Text = "SQL to RDB";
             this.sql2rdb_btn.UseVisualStyleBackColor = true;
             this.sql2rdb_btn.Click += new System.EventHandler(this.sql2rdb_btn_Click);
             // 
@@ -167,9 +178,11 @@ namespace Grimoire.Tabs.Styles
             this.hash_grpbx.Controls.Add(this.hasher_status_lb);
             this.hash_grpbx.Controls.Add(this.hash_prg);
             this.hash_grpbx.Controls.Add(this.hasher_drop_grpbx);
-            this.hash_grpbx.Location = new System.Drawing.Point(225, 22);
+            this.hash_grpbx.Location = new System.Drawing.Point(262, 25);
+            this.hash_grpbx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.hash_grpbx.Name = "hash_grpbx";
-            this.hash_grpbx.Size = new System.Drawing.Size(213, 248);
+            this.hash_grpbx.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.hash_grpbx.Size = new System.Drawing.Size(248, 286);
             this.hash_grpbx.TabIndex = 1;
             this.hash_grpbx.TabStop = false;
             this.hash_grpbx.Text = "Hasher";
@@ -177,8 +190,9 @@ namespace Grimoire.Tabs.Styles
             // hasher_status_lb
             // 
             this.hasher_status_lb.AutoSize = true;
-            this.hasher_status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hasher_status_lb.Location = new System.Drawing.Point(6, 228);
+            this.hasher_status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.hasher_status_lb.Location = new System.Drawing.Point(7, 263);
+            this.hasher_status_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.hasher_status_lb.Name = "hasher_status_lb";
             this.hasher_status_lb.Size = new System.Drawing.Size(0, 13);
             this.hasher_status_lb.TabIndex = 6;
@@ -186,9 +200,10 @@ namespace Grimoire.Tabs.Styles
             // hash_prg
             // 
             this.hash_prg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.hash_prg.Location = new System.Drawing.Point(115, 227);
+            this.hash_prg.Location = new System.Drawing.Point(134, 262);
+            this.hash_prg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.hash_prg.Name = "hash_prg";
-            this.hash_prg.Size = new System.Drawing.Size(92, 18);
+            this.hash_prg.Size = new System.Drawing.Size(107, 21);
             this.hash_prg.TabIndex = 1;
             // 
             // hasher_drop_grpbx
@@ -197,9 +212,11 @@ namespace Grimoire.Tabs.Styles
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.hasher_drop_grpbx.Controls.Add(this.drop_fileFolder_lb);
-            this.hasher_drop_grpbx.Location = new System.Drawing.Point(6, 19);
+            this.hasher_drop_grpbx.Location = new System.Drawing.Point(7, 22);
+            this.hasher_drop_grpbx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.hasher_drop_grpbx.Name = "hasher_drop_grpbx";
-            this.hasher_drop_grpbx.Size = new System.Drawing.Size(201, 199);
+            this.hasher_drop_grpbx.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.hasher_drop_grpbx.Size = new System.Drawing.Size(234, 230);
             this.hasher_drop_grpbx.TabIndex = 0;
             this.hasher_drop_grpbx.TabStop = false;
             this.hasher_drop_grpbx.DragDrop += new System.Windows.Forms.DragEventHandler(this.hasher_drop_grpbx_DragDrop);
@@ -209,8 +226,9 @@ namespace Grimoire.Tabs.Styles
             // 
             this.drop_fileFolder_lb.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.drop_fileFolder_lb.AutoSize = true;
-            this.drop_fileFolder_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.drop_fileFolder_lb.Location = new System.Drawing.Point(13, 94);
+            this.drop_fileFolder_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.drop_fileFolder_lb.Location = new System.Drawing.Point(15, 108);
+            this.drop_fileFolder_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.drop_fileFolder_lb.Name = "drop_fileFolder_lb";
             this.drop_fileFolder_lb.Size = new System.Drawing.Size(173, 17);
             this.drop_fileFolder_lb.TabIndex = 0;
@@ -226,9 +244,11 @@ namespace Grimoire.Tabs.Styles
             this.data_grpBx.Controls.Add(this.newClient_btn);
             this.data_grpBx.Controls.Add(this.newClient_ico);
             this.data_grpBx.Controls.Add(this.dumpClient_btn);
-            this.data_grpBx.Location = new System.Drawing.Point(6, 22);
+            this.data_grpBx.Location = new System.Drawing.Point(7, 25);
+            this.data_grpBx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.data_grpBx.Name = "data_grpBx";
-            this.data_grpBx.Size = new System.Drawing.Size(213, 248);
+            this.data_grpBx.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.data_grpBx.Size = new System.Drawing.Size(248, 286);
             this.data_grpBx.TabIndex = 0;
             this.data_grpBx.TabStop = false;
             this.data_grpBx.Text = "Data";
@@ -236,8 +256,9 @@ namespace Grimoire.Tabs.Styles
             // data_status_lb
             // 
             this.data_status_lb.AutoSize = true;
-            this.data_status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.data_status_lb.Location = new System.Drawing.Point(5, 228);
+            this.data_status_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.data_status_lb.Location = new System.Drawing.Point(6, 263);
+            this.data_status_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.data_status_lb.Name = "data_status_lb";
             this.data_status_lb.Size = new System.Drawing.Size(0, 13);
             this.data_status_lb.TabIndex = 6;
@@ -245,22 +266,25 @@ namespace Grimoire.Tabs.Styles
             // dataStatus_lb
             // 
             this.dataStatus_lb.AutoSize = true;
-            this.dataStatus_lb.Location = new System.Drawing.Point(6, 226);
+            this.dataStatus_lb.Location = new System.Drawing.Point(7, 261);
+            this.dataStatus_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.dataStatus_lb.Name = "dataStatus_lb";
             this.dataStatus_lb.Size = new System.Drawing.Size(0, 17);
             this.dataStatus_lb.TabIndex = 5;
             // 
             // data_prg
             // 
-            this.data_prg.Location = new System.Drawing.Point(115, 227);
+            this.data_prg.Location = new System.Drawing.Point(134, 262);
+            this.data_prg.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.data_prg.Name = "data_prg";
-            this.data_prg.Size = new System.Drawing.Size(92, 18);
+            this.data_prg.Size = new System.Drawing.Size(107, 21);
             this.data_prg.TabIndex = 4;
             // 
             // dmpClient_ico
             // 
             this.dmpClient_ico.Image = ((System.Drawing.Image)(resources.GetObject("dmpClient_ico.Image")));
-            this.dmpClient_ico.Location = new System.Drawing.Point(6, 79);
+            this.dmpClient_ico.Location = new System.Drawing.Point(7, 91);
+            this.dmpClient_ico.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.dmpClient_ico.Name = "dmpClient_ico";
             this.dmpClient_ico.Size = new System.Drawing.Size(48, 48);
             this.dmpClient_ico.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -269,9 +293,10 @@ namespace Grimoire.Tabs.Styles
             // 
             // newClient_btn
             // 
-            this.newClient_btn.Location = new System.Drawing.Point(60, 25);
+            this.newClient_btn.Location = new System.Drawing.Point(70, 29);
+            this.newClient_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.newClient_btn.Name = "newClient_btn";
-            this.newClient_btn.Size = new System.Drawing.Size(147, 48);
+            this.newClient_btn.Size = new System.Drawing.Size(172, 55);
             this.newClient_btn.TabIndex = 2;
             this.newClient_btn.Text = "New Client";
             this.newClient_btn.UseVisualStyleBackColor = true;
@@ -282,7 +307,8 @@ namespace Grimoire.Tabs.Styles
             // newClient_ico
             // 
             this.newClient_ico.Image = ((System.Drawing.Image)(resources.GetObject("newClient_ico.Image")));
-            this.newClient_ico.Location = new System.Drawing.Point(6, 25);
+            this.newClient_ico.Location = new System.Drawing.Point(7, 29);
+            this.newClient_ico.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.newClient_ico.Name = "newClient_ico";
             this.newClient_ico.Size = new System.Drawing.Size(48, 48);
             this.newClient_ico.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -292,9 +318,11 @@ namespace Grimoire.Tabs.Styles
             // dumpClient_btn
             // 
             this.dumpClient_btn.Controls.Add(this.dragData_lb);
-            this.dumpClient_btn.Location = new System.Drawing.Point(60, 71);
+            this.dumpClient_btn.Location = new System.Drawing.Point(70, 82);
+            this.dumpClient_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.dumpClient_btn.Name = "dumpClient_btn";
-            this.dumpClient_btn.Size = new System.Drawing.Size(147, 57);
+            this.dumpClient_btn.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.dumpClient_btn.Size = new System.Drawing.Size(172, 66);
             this.dumpClient_btn.TabIndex = 0;
             this.dumpClient_btn.TabStop = false;
             this.dumpClient_btn.DragDrop += new System.Windows.Forms.DragEventHandler(this.dumpClient_btn_DragDrop);
@@ -303,8 +331,9 @@ namespace Grimoire.Tabs.Styles
             // dragData_lb
             // 
             this.dragData_lb.AutoSize = true;
-            this.dragData_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dragData_lb.Location = new System.Drawing.Point(25, 26);
+            this.dragData_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.dragData_lb.Location = new System.Drawing.Point(29, 30);
+            this.dragData_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.dragData_lb.Name = "dragData_lb";
             this.dragData_lb.Size = new System.Drawing.Size(95, 17);
             this.dragData_lb.TabIndex = 0;
@@ -315,7 +344,8 @@ namespace Grimoire.Tabs.Styles
             this.launch_data_btn.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.launch_data_btn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.launch_data_btn.Image = ((System.Drawing.Image)(resources.GetObject("launch_data_btn.Image")));
-            this.launch_data_btn.Location = new System.Drawing.Point(27, 38);
+            this.launch_data_btn.Location = new System.Drawing.Point(31, 44);
+            this.launch_data_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.launch_data_btn.Name = "launch_data_btn";
             this.launch_data_btn.Size = new System.Drawing.Size(66, 66);
             this.launch_data_btn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -332,7 +362,8 @@ namespace Grimoire.Tabs.Styles
             this.launch_rdb_btn.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.launch_rdb_btn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.launch_rdb_btn.Image = ((System.Drawing.Image)(resources.GetObject("launch_rdb_btn.Image")));
-            this.launch_rdb_btn.Location = new System.Drawing.Point(187, 38);
+            this.launch_rdb_btn.Location = new System.Drawing.Point(218, 44);
+            this.launch_rdb_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.launch_rdb_btn.Name = "launch_rdb_btn";
             this.launch_rdb_btn.Size = new System.Drawing.Size(66, 66);
             this.launch_rdb_btn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -349,7 +380,8 @@ namespace Grimoire.Tabs.Styles
             this.launch_hash_btn.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.launch_hash_btn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.launch_hash_btn.Image = ((System.Drawing.Image)(resources.GetObject("launch_hash_btn.Image")));
-            this.launch_hash_btn.Location = new System.Drawing.Point(330, 38);
+            this.launch_hash_btn.Location = new System.Drawing.Point(385, 44);
+            this.launch_hash_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.launch_hash_btn.Name = "launch_hash_btn";
             this.launch_hash_btn.Size = new System.Drawing.Size(66, 66);
             this.launch_hash_btn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -366,7 +398,8 @@ namespace Grimoire.Tabs.Styles
             this.launch_item_btn.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.launch_item_btn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.launch_item_btn.Image = ((System.Drawing.Image)(resources.GetObject("launch_item_btn.Image")));
-            this.launch_item_btn.Location = new System.Drawing.Point(489, 38);
+            this.launch_item_btn.Location = new System.Drawing.Point(570, 44);
+            this.launch_item_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.launch_item_btn.Name = "launch_item_btn";
             this.launch_item_btn.Size = new System.Drawing.Size(66, 66);
             this.launch_item_btn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -381,7 +414,8 @@ namespace Grimoire.Tabs.Styles
             this.launch_market_btn.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.launch_market_btn.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.launch_market_btn.Image = ((System.Drawing.Image)(resources.GetObject("launch_market_btn.Image")));
-            this.launch_market_btn.Location = new System.Drawing.Point(646, 38);
+            this.launch_market_btn.Location = new System.Drawing.Point(754, 44);
+            this.launch_market_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.launch_market_btn.Name = "launch_market_btn";
             this.launch_market_btn.Size = new System.Drawing.Size(66, 66);
             this.launch_market_btn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -406,10 +440,12 @@ namespace Grimoire.Tabs.Styles
             this.quickLaunch_grpbx.Controls.Add(this.launch_rdb_btn);
             this.quickLaunch_grpbx.Controls.Add(this.launch_item_btn);
             this.quickLaunch_grpbx.Controls.Add(this.launch_hash_btn);
-            this.quickLaunch_grpbx.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.quickLaunch_grpbx.Location = new System.Drawing.Point(3, 3);
+            this.quickLaunch_grpbx.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.quickLaunch_grpbx.Location = new System.Drawing.Point(4, 3);
+            this.quickLaunch_grpbx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.quickLaunch_grpbx.Name = "quickLaunch_grpbx";
-            this.quickLaunch_grpbx.Size = new System.Drawing.Size(747, 160);
+            this.quickLaunch_grpbx.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.quickLaunch_grpbx.Size = new System.Drawing.Size(872, 185);
             this.quickLaunch_grpbx.TabIndex = 7;
             this.quickLaunch_grpbx.TabStop = false;
             this.quickLaunch_grpbx.Text = "Quick Launch";
@@ -418,7 +454,8 @@ namespace Grimoire.Tabs.Styles
             // 
             this.market_lb.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.market_lb.AutoSize = true;
-            this.market_lb.Location = new System.Drawing.Point(652, 120);
+            this.market_lb.Location = new System.Drawing.Point(761, 138);
+            this.market_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.market_lb.Name = "market_lb";
             this.market_lb.Size = new System.Drawing.Size(57, 17);
             this.market_lb.TabIndex = 11;
@@ -428,7 +465,8 @@ namespace Grimoire.Tabs.Styles
             // 
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(503, 120);
+            this.label7.Location = new System.Drawing.Point(587, 138);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(38, 17);
             this.label7.TabIndex = 10;
@@ -438,7 +476,8 @@ namespace Grimoire.Tabs.Styles
             // 
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(335, 120);
+            this.label6.Location = new System.Drawing.Point(391, 138);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(60, 17);
             this.label6.TabIndex = 9;
@@ -448,7 +487,8 @@ namespace Grimoire.Tabs.Styles
             // 
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(200, 120);
+            this.label5.Location = new System.Drawing.Point(233, 138);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(40, 17);
             this.label5.TabIndex = 8;
@@ -458,7 +498,8 @@ namespace Grimoire.Tabs.Styles
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(38, 120);
+            this.label4.Location = new System.Drawing.Point(44, 138);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(42, 17);
             this.label4.TabIndex = 7;
@@ -467,15 +508,18 @@ namespace Grimoire.Tabs.Styles
             // Launcher
             // 
             this.AllowDrop = true;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.quickLaunch_grpbx);
             this.Controls.Add(this.groupBox1);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "Launcher";
-            this.Size = new System.Drawing.Size(753, 448);
+            this.Size = new System.Drawing.Size(878, 517);
             this.groupBox1.ResumeLayout(false);
             this.rdb_grpbx.ResumeLayout(false);
             this.rdb_grpbx.PerformLayout();
+            this.rdbToSQL_grpBx.ResumeLayout(false);
+            this.rdbToSQL_grpBx.PerformLayout();
             this.hash_grpbx.ResumeLayout(false);
             this.hash_grpbx.PerformLayout();
             this.hasher_drop_grpbx.ResumeLayout(false);
@@ -524,12 +568,12 @@ namespace Grimoire.Tabs.Styles
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ProgressBar hash_prg;
         private System.Windows.Forms.ProgressBar rdb_prg;
-        private System.Windows.Forms.Button rdb2sql_btn;
         private System.Windows.Forms.ProgressBar data_prg;
         private System.Windows.Forms.Label dataStatus_lb;
         private System.Windows.Forms.Label rdb_status_lb;
         private System.Windows.Forms.Label data_status_lb;
-        private System.Windows.Forms.CheckedListBox rdb_structs_lst;
         private System.Windows.Forms.Label hasher_status_lb;
+        private System.Windows.Forms.GroupBox rdbToSQL_grpBx;
+        private System.Windows.Forms.Label label1;
     }
 }
