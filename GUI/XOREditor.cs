@@ -79,7 +79,7 @@ namespace Grimoire.GUI
         {
             xorKey = Main.Instance.ConfigMgr.GetByteArray("ModifiedXORKey");
 
-            if (xorKey != null && xorKey.Length >= 0)
+            if (xorKey != null && xorKey.Length > 0)
             {
                 provider = new DynamicByteProvider(xorKey);
 
@@ -93,6 +93,9 @@ namespace Grimoire.GUI
         private void ts_reset_Click(object sender, EventArgs e)
         {
             clear_provider();
+
+            if (xorKey is null)
+                return;
 
             provider = new DynamicByteProvider(xorKey);
 

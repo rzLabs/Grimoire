@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <None Update="Config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Groups.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
