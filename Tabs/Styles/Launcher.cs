@@ -24,7 +24,6 @@ using Archimedes;
 
 namespace Grimoire.Tabs.Styles
 {
-    // TODO: check for directories and create if they do not exist
     public partial class Launcher : UserControl
     {
         #region Fields
@@ -36,7 +35,6 @@ namespace Grimoire.Tabs.Styles
         string structDir;
 
         StructureManager structMgr = StructureManager.Instance;
-        string[] loadedStructs;
 
         Timer rdbBtn_check = new Timer() { Interval = 500 };
 
@@ -57,12 +55,6 @@ namespace Grimoire.Tabs.Styles
             set => BeginInvoke(new MethodInvoker(delegate { hasher_status_lb.Text = (value) ? "Working..." : string.Empty; }));
         }
 
-        //bool structLstEnabled
-        //{
-        //    get => rdb_structs_lst.Enabled;
-        //    set => rdb_structs_lst.Enabled = value;
-        //}
-
         #endregion
 
         public Launcher()
@@ -72,8 +64,6 @@ namespace Grimoire.Tabs.Styles
             initLinks();
 
             enableDragNDrops();
-
-            startTimers();
         }
 
         #region Events
@@ -342,7 +332,7 @@ namespace Grimoire.Tabs.Styles
 
                 if (structObj is null)
                 {
-                    // TODO: log
+                    LogUtility.MessageBoxAndLog($"Unable to get structure: {name}! Skipping...", "RDB To SQL Exception", LogEventLevel.Warning);
 
                     continue;
                 }
@@ -360,7 +350,7 @@ namespace Grimoire.Tabs.Styles
                 }
                 catch (Exception ex)
                 {
-                    // TODO: log
+                    LogUtility.MessageBoxAndLog(ex, "exporting {name} rdb to sql", "RDB To SQL Exception", LogEventLevel.Error);
 
                     continue;
                 }
@@ -483,12 +473,6 @@ namespace Grimoire.Tabs.Styles
         void initLinks() // may eventually need to be async (so simple I really doubt it)
         {
             StructLinkUtility.Parse();
-        }
-
-        void startTimers()
-        {
-            rdbBtn_check.Tick += RdbBtn_check_Tick;
-            rdbBtn_check.Start();
         }
 
         async void createClient(string dumpDirectory = null)
@@ -751,12 +735,6 @@ namespace Grimoire.Tabs.Styles
             hash_prg.Value = value;
         }
 
-
         #endregion
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

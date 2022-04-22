@@ -20,11 +20,12 @@ namespace Grimoire.Tabs.Styles
         #region Properties
 
         string key;
-        Core core;
 
         readonly Tabs.TabManager tManager;
         readonly ConfigManager configMan;
         readonly Stopwatch actionSW = new Stopwatch();
+
+        public Core Core;
 
         public List<IndexEntry> FilteredIndex = new List<IndexEntry>();
 
@@ -44,25 +45,13 @@ namespace Grimoire.Tabs.Styles
             get
             {
                 if (!Filtered && !Searching)
-                    return core.RowCount;
+                    return Core.RowCount;
                 else if (Filtered && !Searching)
                     return FilteredIndex.Count;
                 else if (!Filtered && Searching)
                     return SearchIndex.Count;
                 else
                     return 0;
-            }
-        }
-
-        // TODO: this can be handled better and without throwing
-        public DataCore.Core Core
-        {
-            get
-            {
-                if (core == null) 
-                    throw new Exception("DataCore is null!");
-
-                return core;
             }
         }
 
@@ -195,13 +184,13 @@ namespace Grimoire.Tabs.Styles
 
             try
             {
-                if (core.Index.Count > 0)
-                    core.Clear();
+                if (Core.Index.Count > 0)
+                    Core.Clear();
 
-                core.Backups = false;
+                Core.Backups = false;
 
                 await Task.Run(() => {
-                    core.BuildDataFiles(dumpDirectory, buildDirectory);
+                    Core.BuildDataFiles(dumpDirectory, buildDirectory);
                 });
 
                 msg = "Client build completed!";
@@ -211,11 +200,11 @@ namespace Grimoire.Tabs.Styles
                 MessageBox.Show(msg, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
                 if (configMan.Get<bool>("ClearOnCreate", "Data", true)) // bool is weird with index accessor, use .Get<T> to ensure type compatibility.
-                    core.Clear();
+                    Core.Clear();
                 else
                     display_data();
 
-                core.Backups = true;
+                Core.Backups = true;
             }
             catch (Exception ex)
             {
@@ -331,14 +320,14 @@ namespace Grimoire.Tabs.Styles
 
             if (!string.IsNullOrEmpty(filename))
             {
-                IndexEntry entry = core.GetEntry(filename);
+                IndexEntry entry = Core.GetEntry(filename);
 
                 if (entry != null)
                 {
                     if (MessageBox.Show($"You are about to delete\n\n{filename}!!!\n\nYou should be absolutely sure you want to do this!\n\nDo you want to continue?", "Input Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         await Task.Run(() => {
-                            core.DeleteFileEntry(entry.DataID, (int)entry.Offset, entry.Length);
+                            Core.DeleteFileEntry(entry.DataID, (int)entry.Offset, entry.Length);
                         });
                     }
                 }
@@ -362,7 +351,7 @@ namespace Grimoire.Tabs.Styles
 
             for (int i = 0; i < grid.SelectedRows.Count; i++)
             {
-                IndexEntry entry = core.GetEntry(grid.SelectedRows[i].Cells[0].Value.ToString());
+                IndexEntry entry = Core.GetEntry(grid.SelectedRows[i].Cells[0].Value.ToString());
 
                 ts_status.Text = string.Format("Exporting: {0}...", entry.Name);
 
@@ -371,7 +360,7 @@ namespace Grimoire.Tabs.Styles
                 try
                 {
                     await Task.Run(() => {
-                        core.ExportFileEntry(buildDir, entry);
+                        Core.ExportFileEntry(buildDir, entry);
                     });
                 }
                 catch (Exception ex)
@@ -400,7 +389,7 @@ namespace Grimoire.Tabs.Styles
             
             if (ext.Length >= 2)
             {
-                List<IndexEntry> entries = core.GetEntriesByExtension(ext);
+                List<IndexEntry> entries = Core.GetEntriesByExtension(ext);
 
                 ts_status.Text = $"Exporting: {ext}...";
 
@@ -411,7 +400,7 @@ namespace Grimoire.Tabs.Styles
                     await Task.Run(() =>
                     {
                         if (ext == "all")
-                            core.ExportAllEntries(buildDirectory);
+                            Core.ExportAllEntries(buildDirectory);
                         else
                         {
                             buildDirectory += $@"\{ext}\";
@@ -419,7 +408,7 @@ namespace Grimoire.Tabs.Styles
                             if (!Directory.Exists(buildDirectory))
                                 Directory.CreateDirectory(buildDirectory);
 
-                            core.ExportExtEntries(buildDirectory, ext);
+                            Core.ExportExtEntries(buildDirectory, ext);
                         }
                     });
 
@@ -452,11 +441,11 @@ namespace Grimoire.Tabs.Styles
 
             try
             {
-                IndexEntry storedEntry = core.GetEntry(filename);
+                IndexEntry storedEntry = Core.GetEntry(filename);
 
                 bool isRDB = storedEntry.Extension == "rdb";
 
-                internalBuffer = (isRDB) ? core.GetFileBytes(storedEntry, 128) : core.GetFileBytes(storedEntry);
+                internalBuffer = (isRDB) ? Core.GetFileBytes(storedEntry, 128) : Core.GetFileBytes(storedEntry);
                 externalBuffer = (isRDB) ? File.ReadAllBytes(compareFile).Skip(128).ToArray() : File.ReadAllBytes(compareFile);
 
                 // This shit takes forever! remember its 408 thousand bytes for fieldpropresource, imagine item
@@ -497,7 +486,7 @@ namespace Grimoire.Tabs.Styles
 
             if (searchInput.Text.Length > 2)
             {
-                SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text)) : core.GetEntriesByPartialName(searchInput.Text);
+                SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.Name.Contains(searchInput.Text)) : Core.GetEntriesByPartialName(searchInput.Text);
 
                 grid.Rows.Clear();
                 grid.RowCount = SearchIndex.Count;
@@ -517,7 +506,7 @@ namespace Grimoire.Tabs.Styles
                         return;
                     }
 
-                    SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.DataID == dataId).OrderBy(i => i.Offset).ToList() : core.GetEntriesByDataId(dataId);
+                    SearchIndex = (Filtered) ? FilteredIndex.FindAll(i => i.DataID == dataId).OrderBy(i => i.Offset).ToList() : Core.GetEntriesByDataId(dataId);
 
                     grid.Rows.Clear();
                     grid.RowCount = SearchIndex.Count;
@@ -598,7 +587,7 @@ namespace Grimoire.Tabs.Styles
 
         new public void Load(DataCore.Core core)
         {
-            this.core = core;
+            this.Core = core;
             display_data();
         }
 
@@ -615,11 +604,11 @@ namespace Grimoire.Tabs.Styles
             bool backup = configMan["Backup", "Data"];
             int codepage = configMan.Get<int>("Codepage", "Grim");
             Encoding encoding = Encodings.GetByCodePage(codepage);
-            core = new Core(backup, encoding);
+            Core = new Core(backup, encoding);
             
-            core.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];
+            Core.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];
 
-            if (core.UseModifiedXOR)
+            if (Core.UseModifiedXOR)
             {
                 byte[] modifiedKey = configMan.GetByteArray("ModifiedXORKey");
 
@@ -629,9 +618,9 @@ namespace Grimoire.Tabs.Styles
                     return;
                 }
 
-                core.SetXORKey(modifiedKey);
+                Core.SetXORKey(modifiedKey);
 
-                if (!core.ValidXOR)
+                if (!Core.ValidXOR)
                 {
                     string msg = "The provided ModifiedXORKey is invalid!";
 
@@ -653,18 +642,18 @@ namespace Grimoire.Tabs.Styles
 
         void hook_core_events()
         {
-            core.CurrentMaxDetermined += Core_CurrentMaxDetermined;
-            core.CurrentProgressChanged += Core_CurrentProgressChanged;
-            core.CurrentProgressReset += Core_CurrentProgressReset;
-            core.MessageOccured += Core_MessageOccured;
+            Core.CurrentMaxDetermined += Core_CurrentMaxDetermined;
+            Core.CurrentProgressChanged += Core_CurrentProgressChanged;
+            Core.CurrentProgressReset += Core_CurrentProgressReset;
+            Core.MessageOccured += Core_MessageOccured;
         }
 
         void unhook_core_events()
         {
-            core.CurrentMaxDetermined -= Core_CurrentMaxDetermined;
-            core.CurrentProgressChanged -= Core_CurrentProgressChanged;
-            core.CurrentProgressReset -= Core_CurrentProgressReset;
-            core.MessageOccured -= Core_MessageOccured;
+            Core.CurrentMaxDetermined -= Core_CurrentMaxDetermined;
+            Core.CurrentProgressChanged -= Core_CurrentProgressChanged;
+            Core.CurrentProgressReset -= Core_CurrentProgressReset;
+            Core.MessageOccured -= Core_MessageOccured;
         }
 
         void populate_selection_info()
@@ -699,14 +688,14 @@ namespace Grimoire.Tabs.Styles
             {
                 actionSW.Start();
 
-                await Task.Run(() => { core.Load(path); });
+                await Task.Run(() => { Core.Load(path); });
 
                 actionSW.Stop();
 
                 ts_file_load.Enabled = false;
                 ts_file_new.Enabled = false;
 
-                Log.Information($"{core.RowCount} entries loaded from data.000 to {tManager.Text} in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)} from path:\n\t- {path}");
+                Log.Information($"{Core.RowCount} entries loaded from data.000 to {tManager.Text} in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)} from path:\n\t- {path}");
 
                 if (docked)
                 {
@@ -726,7 +715,7 @@ namespace Grimoire.Tabs.Styles
 
         async void display_data()
         {
-            grid.RowCount = core.RowCount;
+            grid.RowCount = Core.RowCount;
             grid.VirtualMode = true;
             grid.CellValueNeeded += (o, e) =>
             {
@@ -785,15 +774,15 @@ namespace Grimoire.Tabs.Styles
                     Log.Information(msg);
 
                     await Task.Run(() => {
-                        core.ImportFileEntry(path);
+                        Core.ImportFileEntry(path);
                     });
                 }
                 else if (filePaths.Length > 1)
                     await Task.Run(() => {
-                        core.ImportFileEntries(filePaths);
+                        Core.ImportFileEntries(filePaths);
                     });
 
-                core.Save();
+                Core.Save();
             }
             catch (Exception ex)
             {

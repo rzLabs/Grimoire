@@ -293,20 +293,24 @@ namespace Grimoire.GUI
         private void ItemSelect_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                if (itemGrid.SelectedRows.Count == 1) { 
+            {
+                if (itemGrid.SelectedRows.Count == 1)
+                {
                     DialogResult = DialogResult.OK;
                     return;
-                    }
+                }
 
-            MessageBox.Show($"No item selected!", "Select Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show($"No item selected!", "Select Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            }
         }
 
         private void itemGrid_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (itemGrid.SelectedRows.Count == 1) {
+            if (itemGrid.SelectedRows.Count == 1)
+            {
                 DialogResult = DialogResult.OK;
                 return;
-                }
+            }
 
             MessageBox.Show($"No item selected!", "Select Exception", MessageBoxButtons.OK, MessageBoxIcon.Hand);
         }

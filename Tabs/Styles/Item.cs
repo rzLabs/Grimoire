@@ -128,7 +128,10 @@ namespace Grimoire.Tabs.Styles
                     Log.Debug($"\n{StringExt.ByteArrayToString(modifiedKey)}");
             }
 
-            //TODO: set encoding from config
+            int codepage = configMan.Get<int>("Codepage", "Grim");
+            Encoding encoding = Encoding.GetEncoding(codepage);
+            itemRDB.Encoding = encoding;
+            stringRDB.Encoding = encoding;
 
             spr = new SPR(data);
         }
@@ -188,12 +191,11 @@ namespace Grimoire.Tabs.Styles
         void bindEnums()
         {
             try {
-                // TODO: reimplement me bro!
-                //enums["item_type"] = itemRDB.GetEnum(configMan["type_enum"]);
-                //enums["item_group"] = itemRDB.GetEnum(configMan["group_enum"]);
-                //enums["item_class"] = itemRDB.GetEnum(configMan["class_enum"]);
-                //enums["item_wear_type"] = itemRDB.GetEnum(configMan["wear_type_enum"]);
-                //enums["item_decrease_type"] = itemRDB.GetEnum(configMan["decrease_type_enum"]);
+                enums["item_type"] = itemRDB.GetEnum(configMan["type_enum"]);
+                enums["item_group"] = itemRDB.GetEnum(configMan["group_enum"]);
+                enums["item_class"] = itemRDB.GetEnum(configMan["class_enum"]);
+                enums["item_wear_type"] = itemRDB.GetEnum(configMan["wear_type_enum"]);
+                enums["item_decrease_type"] = itemRDB.GetEnum(configMan["decrease_type_enum"]);
 
                 type_lst.DataSource = new BindingSource(enums["item_type"], null);
                 type_lst.DisplayMember = "Key";
@@ -280,23 +282,6 @@ namespace Grimoire.Tabs.Styles
                     if (Path.GetExtension(filename).Remove(0, 1) == "spr")
                         spr.LoadFromFile(filename);
             });
-        }
-
-        async void loadData()
-        {
-            string dataDir = configMan.GetDirectory("DataDirectory", "Item");
-
-            if (Directory.Exists(dataDir))
-                await Task.Run(() => {
-                    try {
-                        data.Load(dataDir);
-                    }
-                    catch (Exception ex) {
-                        Log.Error($"An exception occured loading data index!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}");
-                    }
-                });
-            else
-                Log.Error($"Failed to load data index because {dataDir} does not exist!");
         }
 
         private async void ts_select_item_selector_Click(object sender, EventArgs e)

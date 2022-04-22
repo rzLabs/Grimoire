@@ -17,6 +17,7 @@ using Serilog.Events;
 
 namespace Grimoire.Structures
 {
+    // TODO: rebuild the struct list if global epic is changed
     public class StructureManager : IEnumerable<StructureObject>
     {
         ConfigManager configMgr = GUI.Main.Instance.ConfigMgr;
@@ -85,6 +86,7 @@ namespace Grimoire.Structures
                 float structEpic_1 = structObj.Epic[0];
                 float structEpic_2 = (structObj.Epic.Length > 1) ? structObj.Epic[1] : structEpic_1;
 
+                // Struct epic is all | globalEpic >= struct min epic && <= struct max epic || globalEpic is all
                 if (structEpic_1 == 0 && structEpic_1 == structEpic_2 || globalEpic >= structEpic_1 && globalEpic <= structEpic_2 || globalEpic == 0)
                 {
                     structures.Add(structObj);

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 using Be.Windows.Forms;
+using Grimoire.Utilities;
+using Serilog.Events;
 
 namespace Grimoire.GUI
 {
@@ -79,15 +81,16 @@ namespace Grimoire.GUI
         {
             xorKey = Main.Instance.ConfigMgr.GetByteArray("ModifiedXORKey");
 
-            if (xorKey != null && xorKey.Length > 0)
+            if (xorKey is null && xorKey.Length != 256)
             {
-                provider = new DynamicByteProvider(xorKey);
-
-                if (provider != null)
-                    set_provider();
+                LogUtility.MessageBoxAndLog("No XOR key has been defined in the Config.json! Please load from key file or default.", "Nothing Loaded", LogEventLevel.Error);
+                return;
             }
-            else //TODO: BAD MESSAGE!
-                MessageBox.Show("No XOR key has been defined in the Config.json! Please load from key file or default.", "Nothing Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            provider = new DynamicByteProvider(xorKey);
+
+            if (provider != null)
+                set_provider();
         }
 
         private void ts_reset_Click(object sender, EventArgs e)

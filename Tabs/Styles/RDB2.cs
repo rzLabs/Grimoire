@@ -20,7 +20,7 @@ using Archimedes.Cells;
 
 namespace Grimoire.Tabs.Styles
 {
-    // TODO: implement saving displayed ..
+    // TODO: implement saving displayed rows only
 
     public partial class RDB2 : UserControl
     {

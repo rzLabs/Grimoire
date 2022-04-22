@@ -11,9 +11,6 @@ using Serilog.Events;
 
 namespace Grimoire.GUI
 {
-    // TODO: remove whitespace from beginning and end of the input box
-    // TODO: check for the presence of , in the input (denoting multiple values or a range, given the checked radio button)
-    // TODO: if white-space between value and , remove it
     public partial class RdbSearch : Form
     {
         public KeyValuePair<int, int>[] Results;
@@ -67,10 +64,10 @@ namespace Grimoire.GUI
             {
                 if (input_txtBx.Text.Contains(","))
                 {
-                    string[] inputStrings = input_txtBx.Text.Split(new char[] { ',' });
+                    string[] inputStrings = input_txtBx.Text.Trim().Split(new char[] { ',' });
 
                     for (int i = 0; i < inputStrings.Length; i++)
-                        inputObjects.Add(Convert.ChangeType(inputStrings[i], cell.PrimaryType));
+                        inputObjects.Add(Convert.ChangeType(inputStrings[i].Trim(), cell.PrimaryType)); // TODO: white space trimming should be verified and tested
                 }
                 else
                     inputObjects.Add(Convert.ChangeType(input_txtBx.Text, cell.PrimaryType));
