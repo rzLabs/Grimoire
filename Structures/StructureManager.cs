@@ -62,9 +62,12 @@ namespace Grimoire.Structures
             return structObj;
         }
 
-        public void Load(string directory)
+        public void Load(string directory = null)
         {
-            structDir = directory;
+            structures.Clear();
+
+            if (directory is not null)
+                structDir = directory;
 
             foreach (string filename in Directory.GetFiles(structDir))
             {
@@ -83,11 +86,11 @@ namespace Grimoire.Structures
                 }
 
                 float globalEpic = configMgr.Get<float>("Epic", "Grim");
-                float structEpic_1 = structObj.Epic[0];
-                float structEpic_2 = (structObj.Epic.Length > 1) ? structObj.Epic[1] : structEpic_1;
+                float epicMin = structObj.Epic[0];
+                float epicMax = (structObj.Epic.Length > 1) ? structObj.Epic[1] : epicMin;
 
                 // Struct epic is all | globalEpic >= struct min epic && <= struct max epic || globalEpic is all
-                if (structEpic_1 == 0 && structEpic_1 == structEpic_2 || globalEpic >= structEpic_1 && globalEpic <= structEpic_2 || globalEpic == 0)
+                if (epicMin == 0 && epicMin == epicMax || globalEpic >= epicMin && globalEpic <= epicMax || globalEpic == 0)
                 {
                     structures.Add(structObj);
 

@@ -310,6 +310,9 @@ namespace Grimoire.Utilities
                 return null;
             }
 
+            if (structure.TableName is null)
+                    structure.TableName = DialogUtility.RequestQuestionInput<string>("Input Required", "No table name has been defined!\n\nWould you like to input one now?", "Input desired table name");
+
             dbObj.CommandText = $"SELECT count(*) FROM dbo.{structure.TableName}";
 
             int rowCount = await dbObj.ExecuteScalar<int>();

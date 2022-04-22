@@ -18,6 +18,9 @@ using Archimedes.Enums;
 using Archimedes.Entities;
 using Archimedes.Cells;
 
+using DataCore;
+using System.Text;
+
 namespace Grimoire.Tabs.Styles
 {
     // TODO: implement saving displayed rows only
@@ -32,6 +35,7 @@ namespace Grimoire.Tabs.Styles
         ConfigManager configMgr = Main.Instance.ConfigMgr;
         TabManager tabMgr = TabManager.Instance;
         XmlManager xMgr = XmlManager.Instance;
+        Core dCore = new Core(false, Encoding.Default);
 
         Stopwatch actionsw = new Stopwatch();
 
@@ -74,18 +78,7 @@ namespace Grimoire.Tabs.Styles
 
         public void Localize() => xMgr.Localize(this, Localization.Enums.SenderType.Tab);
 
-        public void TS_Load_Click(object sender, EventArgs e)
-        {
-            Paths.DefaultDirectory = configMgr.GetDirectory("DefaultDirectory", "RDB");
-            Paths.DefaultFileName = StructObject.RDBName;
-
-            string rdbPath = Paths.FilePath;
-
-            if (rdbPath == null)
-                return;
-
-            ReadFile(rdbPath);
-        }
+        public void TS_Load_Click(object sender, EventArgs e) => ReadFile();
 
         public void TS_Save_File_RDB_Click(object sender, EventArgs e)
         {
@@ -111,17 +104,105 @@ namespace Grimoire.Tabs.Styles
             WriteFile(rdbpath);
         }
 
-        public void ReadFile(string filename)
+        public async void ReadFile(string filename = null)
         {
+            Paths.DefaultDirectory = configMgr.GetDirectory("DefaultDirectory", "RDB");
+            Paths.DefaultFileName = StructObject.RDBName;
+
+            string rdbPath = filename ?? Paths.FilePath;
+            byte[] rdbBytes = null;
+
+            if (rdbPath == null)
+                return;
+
             actionsw.Restart();
 
             try
             {
-                StructObject.Read(filename);
+                if (rdbPath.EndsWith(".000")) // user wants rdb list from the data index
+                {
+                    dCore.UseModifiedXOR = configMgr["UseModifiedXOR", "Data"];
+
+                    if (dCore.UseModifiedXOR)
+                    {
+                        byte[] modifiedKey = configMgr.GetByteArray("ModifiedXORKey");
+
+                        if (modifiedKey == null || modifiedKey.Length != 256)
+                        {
+                            Log.Fatal("Invalid XOR Key!");
+                            return;
+                        }
+
+                        dCore.SetXORKey(modifiedKey);
+
+                        if (!dCore.ValidXOR)
+                        {
+                            string msg = "The provided ModifiedXORKey is invalid!";
+
+                            Log.Error(msg);
+
+                            MessageBox.Show(msg, "XOR Key Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            return;
+                        }
+
+                        Log.Information($"Using modified xor key:\n");
+
+                        if (GUI.Main.Instance.LogLevel.MinimumLevel <= Serilog.Events.LogEventLevel.Debug)
+                            Log.Debug($"\n{StringExt.ByteArrayToString(modifiedKey)}");
+                    }
+
+                    Log.Information($"{TabManager.Instance.Text} attempting to load file selected from index at\n\t- {rdbPath}");
+
+                    List<DataCore.Structures.IndexEntry> results = null;
+
+                    await Task.Run(() =>
+                    {
+                        dCore.Load(rdbPath);
+                        results = dCore.GetEntriesByExtensions("rdb", "ref");
+                    });
+
+                    if (results.Count == 0)
+                    {
+                        string msg = "No results returned for extension search: rdb, ref!";
+
+                        Log.Error(msg);
+
+                        MessageBox.Show(msg, "Data Load Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+
+                    Log.Information($"File List retreived successfully! ({StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)})\n\t- Selections available: {results.Count}");
+
+                    using (ListSelect selectGUI = new ListSelect("Select RDB", results, StructObject.RDBName))
+                    {
+                        selectGUI.ShowDialog(Main.Instance);
+
+                        if (selectGUI.DialogResult == DialogResult.OK)
+                        {
+                            string fileName = selectGUI.SelectedText;
+                            DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
+                            rdbBytes = dCore.GetFileBytes(finalResult);
+
+                            Log.Information($"User selected: {fileName}");
+                        }
+                        else
+                        {
+                            Log.Error($"User canceled Data load on {TabManager.Instance.Text}");
+
+                            return;
+                        }
+                    }
+                }
+                else
+                    rdbBytes = File.ReadAllBytes(rdbPath);
+
+                StructObject.Read(rdbBytes);
             }
             catch (Exception ex)
             {
-                LogUtility.MessageBoxAndLog(ex, "loading file", "Load File Exception", LogEventLevel.Error);
+                // TODO: log
 
                 return;
             }
@@ -140,7 +221,7 @@ namespace Grimoire.Tabs.Styles
 
             ts_save.Enabled = rowCnt > 0;
 
-            tabMgr.Text = Path.GetFileNameWithoutExtension(filename);
+            tabMgr.Text = StructObject.StructName;
 
             Log.Information($"{tabMgr.Text} loaded in... {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}");
         }
@@ -376,6 +457,8 @@ namespace Grimoire.Tabs.Styles
             rows_txBx.Text = rows.Length.ToString();
 
             ts_save.Enabled = rows.Length > 0;
+
+            tabMgr.Text = StructObject.TableName;
 
             Log.Information($"{StructObject.TableName} loaded from sql in {StringExt.MilisecondsToString(actionsw.ElapsedMilliseconds)}");
         }

@@ -6,6 +6,7 @@ using Grimoire.Tabs;
 using Grimoire.Configuration;
 
 using Serilog.Events;
+using System.Threading.Tasks;
 
 namespace Grimoire.Structures
 {
@@ -61,6 +62,17 @@ namespace Grimoire.Structures
             }
         }
 
+        [Description("If set, only structure lua with matching epic will be shown in the Structure Select menu"), Category("Data/RDB Utility"), DisplayName("Epic")]
+        public float GlobalEpic 
+        { 
+            get => configMan.Get<float>("Epic", "Grim");
+            set
+            {
+                configMan["Epic", "Grim"] = value;
+                Task.Run(() => StructureManager.Instance.Load()); // We don't need to wait for this
+            }
+        }
+
         // SPR / Dump utilities
 
         [Description("Directory where a previously generated data dump is located"), DisplayName("Dump Directory"), Category("SPR Generator / Dump Updater"), EditorAttribute(typeof(FolderNameEditor), typeof(UITypeEditor))]
@@ -95,9 +107,6 @@ namespace Grimoire.Structures
 
         [Description("Determines if the DataCore.Core will be cleared after a successful 'New' client has been created. If set to False the newly created client will be displayed as if loaded."), Category("Data Utility"), DisplayName("Clear on Create")]
         public bool ClearCreate { get => configMan["ClearOnCreate"]; set => configMan["ClearOnCreate"] = value; }
-
-        [Description("If set, only structure lua with matching epic will be shown in the Structure Select menu"), Category("Data Utility"), DisplayName("Epic")]
-        public float GlobalEpic { get => configMan.Get<float>("Epic", "Grim"); set => configMan["Epic", "Grim"] = value; }
 
         // rdb
 

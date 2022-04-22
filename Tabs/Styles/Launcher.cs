@@ -315,6 +315,13 @@ namespace Grimoire.Tabs.Styles
             string structDir = configMgr.GetDirectory("Directory", "Structures");
             string[] selectedStructs = null;
 
+            if (!Directory.Exists(buildDir))
+            {
+                Directory.CreateDirectory(buildDir);
+
+                Log.Verbose($"Build Directory created.\n\t- {buildDir}");
+            }
+
             actionSW.Restart();
 
             using (StructureSelect select = new StructureSelect())
@@ -343,7 +350,6 @@ namespace Grimoire.Tabs.Styles
 
                 try
                 {
-
                     await DatabaseUtility.ReadTableData(structObj, taskProgress);
 
                     structObj.Write(filename);
@@ -369,22 +375,6 @@ namespace Grimoire.Tabs.Styles
 
             rdb_prg.Maximum = 100;
             rdb_prg.Value = 0;
-        }
-
-        private void rdb2sql_btn_Click(object sender, EventArgs e)
-        {
-            Paths.DefaultDirectory = configMgr.GetDirectory("LoadDirectory", "RDB");
-
-            string path = Paths.FilePath;
-
-            if (Paths.FileResult != DialogResult.OK)
-            {
-                LogUtility.MessageBoxAndLog("No path has been selected!", "RDB 2 SQL Exception", LogEventLevel.Error);
-
-                return;
-            }
-
-            saveRDBToSQL(path);
         }
 
         async void hasher_drop_grpbx_DragDrop(object sender, DragEventArgs e)
@@ -450,8 +440,6 @@ namespace Grimoire.Tabs.Styles
             tabMgr.HashTabByKey(key).Add_Dropped_Files(toConvert.ToArray());
         }
 
-        private void RdbBtn_check_Tick(object sender, EventArgs e) { }
-
         #endregion
 
         #region Private Methods
@@ -470,10 +458,7 @@ namespace Grimoire.Tabs.Styles
             rdbToSQL_grpBx.AllowDrop = true;
         }
 
-        void initLinks() // may eventually need to be async (so simple I really doubt it)
-        {
-            StructLinkUtility.Parse();
-        }
+        void initLinks() => StructLinkUtility.Parse();
 
         async void createClient(string dumpDirectory = null)
         {
@@ -558,65 +543,6 @@ namespace Grimoire.Tabs.Styles
             data_status_lb.ResetText();
         }
 
-        async Task<string> saveSQLtoRDB(string structName)
-        {
-            string buildDir = configMgr.GetDirectory("BuildDirectory", "Grim");
-            StructureObject structObj = await structMgr.GetStruct(structName.Remove(structName.Length - 4, 4));
-
-            if (!Directory.Exists(buildDir))
-            {
-                Directory.CreateDirectory(buildDir);
-
-                Log.Verbose($"Build Directory created.\n\t- {buildDir}");
-            }
-
-            string filename = StructLinkUtility.GetFileName(structName) ?? DialogUtility.RequestQuestionInput<string>("Input Required", $"No existing filename link for the provided structure: {structName} exists!\n\nWould you like to enter one manually?", "Enter the filename", DialogUtility.DialogType.Path);
-
-            if (filename == null)
-            {
-                LogUtility.MessageBoxAndLog($"Failed to link structure: {structName} to a filename! Please verify the contents of your provided StructLinks.json", "SQL Save Exception", LogEventLevel.Error);
-
-                return null;
-            }
-
-            string buildPath = $"{buildDir}\\{filename}";
-
-            try
-            {
-                rdbWorking = true;
-
-                if (structObj.TableName == null)
-                    structObj.TableName = DialogUtility.RequestQuestionInput<string>("Input Required", "No table name has been defined!\n\nWould you like to input one now?", "Input desired table name");
-
-                int rowCount = await DatabaseUtility.GetRowCount(structObj.TableName);
-
-                if (rowCount == -99)
-                {
-                    LogUtility.MessageBoxAndLog($"Failed to get a valid row count for table: {structObj.TableName}", "Load SQL Exception", LogEventLevel.Error);
-
-                    return null;
-                }
-
-                structObj.Rows = new List<RowObject>(await DatabaseUtility.ReadTableData(structObj, taskProgress));
-
-                structObj.Write(buildPath);
-            }
-            catch (Exception ex)
-            {
-                LogUtility.MessageBoxAndLog(ex, "saving to rdb", "SQL Save Exception", LogEventLevel.Error);
-
-                return null;
-            }
-            finally
-            {
-                DatabaseUtility.Dispose();
-
-                rdbWorking = false;
-            }
-
-            return filename;
-        }
-
         async void saveRDBToSQL(string path)
         {
             if (!File.Exists(path))
@@ -628,62 +554,60 @@ namespace Grimoire.Tabs.Styles
 
             string filename = Path.GetFileName(path);
 
-            if (StructLinkUtility.FilenameLinkExists(filename)) // Check to see if this file has already been linked to a structure
+            StructureSelect select;
+            string structName = (StructLinkUtility.FilenameLinkExists(filename)) ? StructLinkUtility.GetStructName(filename) : ((select = new StructureSelect()).ShowDialog(this) == DialogResult.OK) ? select.SelectedText : null;
+            StructureObject structObj;
+
+            if (string.IsNullOrEmpty(structDir))
             {
-                string structName = StructLinkUtility.GetStructName(filename);
-                StructureObject structObj;
+                LogUtility.MessageBoxAndLog("Failed to get Structures Directory from the Config.json!", "SQL Export Exception", LogEventLevel.Error);
 
-                if (string.IsNullOrEmpty(structDir))
+                return;
+            }
+
+            if (string.IsNullOrEmpty(structName))
+            {
+                LogUtility.MessageBoxAndLog("Structure name cannot be null!", "SQL Export Exception", LogEventLevel.Error);
+
+                return;
+            }
+
+            try
+            {
+                rdbWorking = true;
+
+                structObj = await structMgr.GetStruct(structName);
+
+                structObj.Read(path);
+
+                taskProgress = new Progress<int>(onRDBProgress);
+
+                rdb_prg.Maximum = structObj.RowCount;
+
+                if (!await DatabaseUtility.WriteTableData(structObj, taskProgress))
                 {
-                    LogUtility.MessageBoxAndLog("Failed to get Structures Directory from the Config.json!", "SQL Export Exception", LogEventLevel.Error);
+                    LogUtility.MessageBoxAndLog($"Failed to save: {structObj.RDBName} to: {structObj.TableName}", "SQL Export Exception", LogEventLevel.Error);
 
                     return;
                 }
 
-                if (string.IsNullOrEmpty(structName))
+                LogUtility.MessageBoxAndLog($"{structObj.RowCount} rows saved from: {structObj.RDBName} to: {structObj.TableName}", "Export Successful!", LogEventLevel.Information);
+            }
+            catch (Exception ex)
+            {
+                LogUtility.MessageBoxAndLog(ex, "Saving RDB to SQL", "SQL Export Exception", LogEventLevel.Error);
+
+                return;
+            }
+            finally
+            {
+                BeginInvoke(new MethodInvoker(delegate
                 {
-                    LogUtility.MessageBoxAndLog("Structure name cannot be null!", "SQL Export Exception", LogEventLevel.Error);
+                    rdb_prg.Maximum = 100;
+                    rdb_prg.Value = 0;
+                }));
 
-                    return;
-                }
-
-                try
-                {
-                    rdbWorking = true;
-
-                    structObj = await structMgr.GetStruct(structName);
-
-                    structObj.Read(path);
-
-                    taskProgress = new Progress<int>(onRDBProgress);
-
-                    rdb_prg.Maximum = structObj.RowCount;
-
-                    if (!await DatabaseUtility.WriteTableData(structObj, taskProgress))
-                    {
-                        LogUtility.MessageBoxAndLog($"Failed to save: {structObj.RDBName} to: {structObj.TableName}", "SQL Export Exception", LogEventLevel.Error);
-
-                        return;
-                    }
-
-                    LogUtility.MessageBoxAndLog($"{structObj.RowCount} rows saved from: {structObj.RDBName} to: {structObj.TableName}", "Export Successful!", LogEventLevel.Information);
-                }
-                catch (Exception ex)
-                {
-                    LogUtility.MessageBoxAndLog(ex, "Saving RDB to SQL", "SQL Export Exception", LogEventLevel.Error);
-
-                    return;
-                }
-                finally
-                {
-                    BeginInvoke(new MethodInvoker(delegate
-                    {
-                        rdb_prg.Maximum = 100;
-                        rdb_prg.Value = 0;
-                    }));
-
-                    rdbWorking = false;
-                }
+                rdbWorking = false;
             }
         }
 
@@ -725,10 +649,7 @@ namespace Grimoire.Tabs.Styles
         }
 
         // We do not need to call invoke here because the object is passed in and returned on the calling thread :)
-        private void onRDBProgress(int value)
-        {
-            rdb_prg.Value = value;
-        }
+        private void onRDBProgress(int value) => rdb_prg.Value = value;
 
         private void onHashProgress(int value)
         {
