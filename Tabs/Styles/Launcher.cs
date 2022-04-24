@@ -120,7 +120,7 @@ namespace Grimoire.Tabs.Styles
 
         private void launch_market_btn_MouseUp(object sender, MouseEventArgs e) => launch_market_btn.BorderStyle = BorderStyle.FixedSingle;
 
-        private async void dumpClient_btn_DragDrop(object sender, DragEventArgs e)
+        private void dumpClient_btn_DragDrop(object sender, DragEventArgs e)
         {
             Encoding encoding = Encoding.GetEncoding(configMgr.Get<int>("Codepage", "Grim"));
             bool backup = configMgr.Get<bool>("Backup", "data");
@@ -129,7 +129,7 @@ namespace Grimoire.Tabs.Styles
 
             string[] paths = (string[])e.Data.GetData(DataFormats.FileDrop);
             string dataPath = null;
-            string buildDir = configMgr.GetDirectory("BuildDirectory", "Grim");
+
 
             if (File.GetAttributes(paths[0]).HasFlag(FileAttributes.Directory))
             {
@@ -145,50 +145,20 @@ namespace Grimoire.Tabs.Styles
             else
                 dataPath = paths[0];
 
-            data.CurrentMaxDetermined += (o, x) =>
-            {
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    data_prg.Maximum = (int)x.Maximum;
-                }));
-            };
+            dumpClient(dataPath);
+        }
 
-            data.CurrentProgressChanged += (o, x) =>
-            {
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    data_prg.Value = (int)x.Value;
-                }));
-            };
+        private void dumpClient_btn_Click(object sender, EventArgs e)
+        {
+            Paths.DefaultDirectory = configMgr.GetDirectory("LoadDirectory", "Data");
+            Paths.DefaultFileName = "data.000";
 
-            data.CurrentProgressReset += (o, x) =>
-            {
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    data_prg.Maximum = 100;
-                    data_prg.Value = 0;
-                }));
-            };
+            string path = Paths.FilePath;
 
-            await Task.Run(() =>
-            {
-                data.Load(dataPath);
-            });
-
-            if (data.RowCount <= 0)
-            {
-                string exMsg = "No data has been loaded!";
-
-                Log.Error(exMsg);
-
-                MessageBox.Show(exMsg, "Client Dump Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+            if (Paths.FileResult != DialogResult.OK)
                 return;
-            }
 
-#pragma warning disable CS4014
-            Task.Run(() => { data.ExportAllEntries(buildDir); });
-#pragma warning restore CS4014
+            dumpClient(path);
         }
 
         private void newClient_btn_Click(object sender, EventArgs e) => createClient();
@@ -541,6 +511,59 @@ namespace Grimoire.Tabs.Styles
             }
 
             data_status_lb.ResetText();
+
+            newClient_btn.Enabled = true;
+            dumpClient_btn.Enabled = true;
+        }
+
+        async void dumpClient(string dataPath)
+        {
+            string buildDir = configMgr.GetDirectory("BuildDirectory", "Grim");
+
+            data.CurrentMaxDetermined += (o, x) =>
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    data_prg.Maximum = (int)x.Maximum;
+                }));
+            };
+
+            data.CurrentProgressChanged += (o, x) =>
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    data_prg.Value = (int)x.Value;
+                }));
+            };
+
+            data.CurrentProgressReset += (o, x) =>
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    data_prg.Maximum = 100;
+                    data_prg.Value = 0;
+                }));
+            };
+
+            await Task.Run(() =>
+            {
+                data.Load(dataPath);
+            });
+
+            if (data.RowCount <= 0)
+            {
+                string exMsg = "No data has been loaded!";
+
+                Log.Error(exMsg);
+
+                MessageBox.Show(exMsg, "Client Dump Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+#pragma warning disable CS4014
+            Task.Run(() => { data.ExportAllEntries(buildDir); });
+#pragma warning restore CS4014
         }
 
         async void saveRDBToSQL(string path)
@@ -657,5 +680,6 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
+
     }
 }

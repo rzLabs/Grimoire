@@ -1,4 +1,6 @@
-﻿namespace Grimoire.Tabs
+﻿using System;
+
+namespace Grimoire.Tabs
 {
     public enum Style
     {
@@ -11,5 +13,20 @@
         LAUNCHER = 6,
         RDB2 = 98,
         NONE = 99
+    }
+
+    [Flags]
+    public enum SaveFileType
+    {
+        RDB = 1,
+        SQL = 2,
+        CSV = 4,
+        ALL = RDB | SQL | CSV
+    }
+
+    public enum SaveSqlFileType
+    {
+        Insert,
+        Update
     }
 }

@@ -202,7 +202,7 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                // TODO: log
+                LogUtility.MessageBoxAndLog(ex, "reading rdb file", "RDB Read Exception", LogEventLevel.Error);
 
                 return;
             }
@@ -236,7 +236,7 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                LogUtility.MessageBoxAndLog(ex, "loading file", "Save File Exception", LogEventLevel.Error);
+                LogUtility.MessageBoxAndLog(ex, "writing rdb file", "RDB Write Exception", LogEventLevel.Error);
 
                 return;
             }
@@ -563,20 +563,5 @@ namespace Grimoire.Tabs.Styles
         }
 
         #endregion
-    }
-
-    [Flags]
-    public enum SaveFileType
-    {
-        RDB = 1,
-        SQL = 2,
-        CSV = 4,
-        ALL = RDB | SQL | CSV
-    }
-
-    public enum SaveSqlFileType
-    {
-        Insert,
-        Update
     }
 }

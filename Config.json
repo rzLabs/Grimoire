@@ -28,7 +28,6 @@
     "ScriptsDirectory":  ".\\Scripts"
   },
   "RDB": {
-    "Struct_AutoLoad": true,
     "DefaultSaveType": 1,
     "DefaultSqlSaveType": 0,
     "DefaultDirectory":  "",
@@ -45,8 +44,7 @@
     "Backup": true,
     "UseModifiedXOR": false,
     "ModifiedXORKey": [],
-    "ClearOnCreate": false, 
-    "InputTimeout": 0
+    "ClearOnCreate": false
   },
   "Hash": {
     "AutoClear": true,

@@ -49,8 +49,6 @@ namespace Grimoire.Tabs.Styles
             this.dmpClient_ico = new System.Windows.Forms.PictureBox();
             this.newClient_btn = new System.Windows.Forms.Button();
             this.newClient_ico = new System.Windows.Forms.PictureBox();
-            this.dumpClient_btn = new System.Windows.Forms.GroupBox();
-            this.dragData_lb = new System.Windows.Forms.Label();
             this.launch_data_btn = new System.Windows.Forms.PictureBox();
             this.launch_rdb_btn = new System.Windows.Forms.PictureBox();
             this.launch_hash_btn = new System.Windows.Forms.PictureBox();
@@ -62,6 +60,7 @@ namespace Grimoire.Tabs.Styles
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.dumpClient_btn = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.rdb_grpbx.SuspendLayout();
             this.rdbToSQL_grpBx.SuspendLayout();
@@ -70,7 +69,6 @@ namespace Grimoire.Tabs.Styles
             this.data_grpBx.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dmpClient_ico)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.newClient_ico)).BeginInit();
-            this.dumpClient_btn.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.launch_data_btn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.launch_rdb_btn)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.launch_hash_btn)).BeginInit();
@@ -236,13 +234,13 @@ namespace Grimoire.Tabs.Styles
             // data_grpBx
             // 
             this.data_grpBx.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.data_grpBx.Controls.Add(this.dumpClient_btn);
             this.data_grpBx.Controls.Add(this.data_status_lb);
             this.data_grpBx.Controls.Add(this.dataStatus_lb);
             this.data_grpBx.Controls.Add(this.data_prg);
             this.data_grpBx.Controls.Add(this.dmpClient_ico);
             this.data_grpBx.Controls.Add(this.newClient_btn);
             this.data_grpBx.Controls.Add(this.newClient_ico);
-            this.data_grpBx.Controls.Add(this.dumpClient_btn);
             this.data_grpBx.Location = new System.Drawing.Point(7, 25);
             this.data_grpBx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.data_grpBx.Name = "data_grpBx";
@@ -313,30 +311,6 @@ namespace Grimoire.Tabs.Styles
             this.newClient_ico.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.newClient_ico.TabIndex = 1;
             this.newClient_ico.TabStop = false;
-            // 
-            // dumpClient_btn
-            // 
-            this.dumpClient_btn.Controls.Add(this.dragData_lb);
-            this.dumpClient_btn.Location = new System.Drawing.Point(70, 82);
-            this.dumpClient_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.dumpClient_btn.Name = "dumpClient_btn";
-            this.dumpClient_btn.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.dumpClient_btn.Size = new System.Drawing.Size(172, 66);
-            this.dumpClient_btn.TabIndex = 0;
-            this.dumpClient_btn.TabStop = false;
-            this.dumpClient_btn.DragDrop += new System.Windows.Forms.DragEventHandler(this.dumpClient_btn_DragDrop);
-            this.dumpClient_btn.DragEnter += new System.Windows.Forms.DragEventHandler(this.launcher_control_DragEnter);
-            // 
-            // dragData_lb
-            // 
-            this.dragData_lb.AutoSize = true;
-            this.dragData_lb.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.dragData_lb.Location = new System.Drawing.Point(29, 30);
-            this.dragData_lb.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.dragData_lb.Name = "dragData_lb";
-            this.dragData_lb.Size = new System.Drawing.Size(95, 17);
-            this.dragData_lb.TabIndex = 0;
-            this.dragData_lb.Text = "Dump Client";
             // 
             // launch_data_btn
             // 
@@ -504,6 +478,20 @@ namespace Grimoire.Tabs.Styles
             this.label4.TabIndex = 7;
             this.label4.Text = "Data";
             // 
+            // dumpClient_btn
+            // 
+            this.dumpClient_btn.AllowDrop = true;
+            this.dumpClient_btn.Location = new System.Drawing.Point(70, 90);
+            this.dumpClient_btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.dumpClient_btn.Name = "dumpClient_btn";
+            this.dumpClient_btn.Size = new System.Drawing.Size(172, 55);
+            this.dumpClient_btn.TabIndex = 7;
+            this.dumpClient_btn.Text = "Dump Client";
+            this.dumpClient_btn.UseVisualStyleBackColor = true;
+            this.dumpClient_btn.Click += new System.EventHandler(this.dumpClient_btn_Click);
+            this.dumpClient_btn.DragDrop += new System.Windows.Forms.DragEventHandler(this.dumpClient_btn_DragDrop);
+            this.dumpClient_btn.DragEnter += new System.Windows.Forms.DragEventHandler(this.launcher_control_DragEnter);
+            // 
             // Launcher
             // 
             this.AllowDrop = true;
@@ -527,8 +515,6 @@ namespace Grimoire.Tabs.Styles
             this.data_grpBx.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dmpClient_ico)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.newClient_ico)).EndInit();
-            this.dumpClient_btn.ResumeLayout(false);
-            this.dumpClient_btn.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.launch_data_btn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.launch_rdb_btn)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.launch_hash_btn)).EndInit();
@@ -552,8 +538,6 @@ namespace Grimoire.Tabs.Styles
         private System.Windows.Forms.PictureBox dmpClient_ico;
         private System.Windows.Forms.Button newClient_btn;
         private System.Windows.Forms.PictureBox newClient_ico;
-        private System.Windows.Forms.GroupBox dumpClient_btn;
-        private System.Windows.Forms.Label dragData_lb;
         private System.Windows.Forms.PictureBox launch_data_btn;
         private System.Windows.Forms.PictureBox launch_rdb_btn;
         private System.Windows.Forms.PictureBox launch_hash_btn;
@@ -574,5 +558,6 @@ namespace Grimoire.Tabs.Styles
         private System.Windows.Forms.Label hasher_status_lb;
         private System.Windows.Forms.GroupBox rdbToSQL_grpBx;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button dumpClient_btn;
     }
 }
