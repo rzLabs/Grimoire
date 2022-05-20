@@ -604,37 +604,14 @@ namespace Grimoire.Tabs.Styles
             bool backup = configMan["Backup", "Data"];
             int codepage = configMan.Get<int>("Codepage", "Grim");
             Encoding encoding = Encodings.GetByCodePage(codepage);
-            Core = new Core(backup, encoding);
+            Core = (configMan.Get<bool>("UseModifiedXOR", "Data", false)) ? new Core(backup, encoding, configMan.GetByteArray("ModifiedXORKey")) : new Core(backup, encoding);
             
-            Core.UseModifiedXOR = configMan["UseModifiedXOR", "Data"];
-
             if (Core.UseModifiedXOR)
             {
-                byte[] modifiedKey = configMan.GetByteArray("ModifiedXORKey");
-
-                if (modifiedKey == null || modifiedKey.Length != 256)
-                {
-                    Log.Fatal("Invalid XOR Key!");
-                    return;
-                }
-
-                Core.SetXORKey(modifiedKey);
-
-                if (!Core.ValidXOR)
-                {
-                    string msg = "The provided ModifiedXORKey is invalid!";
-
-                    Log.Error(msg);
-
-                    MessageBox.Show(msg, "XOR Key Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
-
                 Log.Information($"Using modified xor key:\n");
 
                 if (GUI.Main.Instance.LogLevel.MinimumLevel >= Serilog.Events.LogEventLevel.Debug)
-                    Log.Debug($"\n{StringExt.ByteArrayToString(modifiedKey)}");
+                    Log.Debug($"\n{StringExt.ByteArrayToString(Core.XORKey)}");
             }
 
             hook_core_events();
@@ -695,6 +672,9 @@ namespace Grimoire.Tabs.Styles
                 ts_file_load.Enabled = false;
                 ts_file_new.Enabled = false;
 
+                // check for a known file to see if we have a XOR Error
+                tManager.DataCore.GetEntryNoLocale("locale.ini");
+
                 Log.Information($"{Core.RowCount} entries loaded from data.000 to {tManager.Text} in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)} from path:\n\t- {path}");
 
                 if (docked)
@@ -707,7 +687,20 @@ namespace Grimoire.Tabs.Styles
             }
             catch (Exception ex)
             {
-                Log.Error($"An exceeption occured during load!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}");
+                string msg = null;
+
+                if (ex is IndexOutOfRangeException)
+                {
+                    msg = "A XOR exception was thrown while processing the client!\n\nAre you using a ModifiedXOR against a vanilla client or vice versa?\n\nPlease check your settings!";
+
+                    TabManager.Instance.Destroy(TabManager.Instance.Count - 1);
+                }
+                else 
+                    msg = $"An exceeption occured during load!\nMessage:\n\t{ex.Message}\n\nStack-Trace:\n\t{ex.StackTrace}";
+
+                LogUtility.MessageBoxAndLog(msg, "Data Load Exception", Serilog.Events.LogEventLevel.Error);
+
+                return;
             }
 
             tab_disabled = false;

@@ -83,7 +83,16 @@ namespace Grimoire.Structures
         public string DataLoadDirectory { get => configMan["LoadDirectory", "Data"]; set => configMan["LoadDirectory", "Data"] = value; }
 
         [Description("Determines if Grimoire will use a modified xor encryption key to load/alter client data files"), Category("Data Utility"), DisplayNameAttribute("Use Modified XOR Key")]
-        public bool UseModifiedXOR { get => configMan["UseModifiedXOR"]; set => configMan["UseModifiedXOR"] = value; }
+        public bool UseModifiedXOR 
+        { 
+            get => configMan["UseModifiedXOR"];
+            set
+            {
+                configMan["UseModifiedXOR"] = value;
+
+                // TODO: if the currently selected tab is a data tab we should ask if the user intended to change the xor status of it or not
+            }
+        }
 
         [Description("Determines if files like data.000-008 will be backed up before any changes are made to them. (RECOMMENDED)"), Category("Data Utility"), DisplayName("Backups")]
         public bool Backups 

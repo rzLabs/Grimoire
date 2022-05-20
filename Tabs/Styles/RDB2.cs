@@ -121,35 +121,14 @@ namespace Grimoire.Tabs.Styles
             {
                 if (rdbPath.EndsWith(".000")) // user wants rdb list from the data index
                 {
-                    dCore.UseModifiedXOR = configMgr["UseModifiedXOR", "Data"];
+                    dCore = (configMgr.Get<bool>("UseModifiedXOR", "Data", false)) ? new Core(false, StructObject.Encoding, configMgr.GetByteArray("ModifiedXORKey")) : new Core(false, StructObject.Encoding);
 
                     if (dCore.UseModifiedXOR)
                     {
-                        byte[] modifiedKey = configMgr.GetByteArray("ModifiedXORKey");
-
-                        if (modifiedKey == null || modifiedKey.Length != 256)
-                        {
-                            Log.Fatal("Invalid XOR Key!");
-                            return;
-                        }
-
-                        dCore.SetXORKey(modifiedKey);
-
-                        if (!dCore.ValidXOR)
-                        {
-                            string msg = "The provided ModifiedXORKey is invalid!";
-
-                            Log.Error(msg);
-
-                            MessageBox.Show(msg, "XOR Key Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                            return;
-                        }
-
                         Log.Information($"Using modified xor key:\n");
 
-                        if (GUI.Main.Instance.LogLevel.MinimumLevel <= Serilog.Events.LogEventLevel.Debug)
-                            Log.Debug($"\n{StringExt.ByteArrayToString(modifiedKey)}");
+                        if (Main.Instance.LogLevel.MinimumLevel >= LogEventLevel.Debug)
+                            Log.Debug($"\n{StringExt.ByteArrayToString(dCore.XORKey)}");
                     }
 
                     Log.Information($"{TabManager.Instance.Text} attempting to load file selected from index at\n\t- {rdbPath}");

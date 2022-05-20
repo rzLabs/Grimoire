@@ -225,7 +225,9 @@ namespace Grimoire.GUI
         {
             if (!calculating)
             {
-                flag = int.Parse(flagIO.Text);
+                if (!int.TryParse(flagIO.Text, out flag))
+                    return;
+
                 reverse();
             }
         }

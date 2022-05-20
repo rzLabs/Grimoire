@@ -211,6 +211,16 @@ namespace Grimoire.Utilities
     /// </summary>
     public static class DatabaseUtility
     {
+        static ConfigManager configMgr = GUI.Main.Instance.ConfigMgr;
+
+        static string ip = configMgr["IP"];
+        static string worldName = configMgr["WorldName"];
+        static string worldUser = configMgr["WorldUser"];
+        static string worldPass = configMgr["WorldPass"];
+        static bool trusted = configMgr.Get<bool>("Trusted", "DB", false);
+
+        static string connStr = $"Server={ip};";
+
         /// <summary>
         /// Automatically generated connection string based on settings provided in the Config.json
         /// </summary>
@@ -218,21 +228,12 @@ namespace Grimoire.Utilities
         {
             get
             {
-                ConfigManager configMgr = GUI.Main.Instance.ConfigMgr;
-
-
-                string ip = configMgr["IP"];
-                string name = configMgr["WorldName"];
-                string user = configMgr["WorldUser"];
-                string pass = configMgr["WorldPass"];
-                bool trusted = configMgr.Get<bool>("Trusted", "DB", false);
-
-                string connStr = $"Server={ip};Database={name};";
+                connStr += $"Database={worldName};";
 
                 if (trusted)
                     connStr += "Trusted_Connection=true;";
                 else
-                    connStr += $"User ID={user};Password={pass}";
+                    connStr += $"User ID={worldUser};Password={worldPass}";
 
                 return connStr;
 
@@ -241,32 +242,16 @@ namespace Grimoire.Utilities
 
         static DatabaseObject dbObj = null;
 
-        /// <summary>
-        /// Get the count of rows in the provided table
-        /// </summary>
-        /// <param name="tableName">Table to be counted</param>
-        /// <returns>Amount of rows existing in the provided table</returns>
-        public static async Task<int> GetRowCount(string tableName)
+        public static string NewConnectionString(string database)
         {
-            if (string.IsNullOrEmpty(tableName))
-                return -99;
+            connStr += $"Database={worldName};";
 
-            dbObj = new DatabaseObject(ConnectionString);
+            if (trusted)
+                connStr += "Trusted_Connection=true;";
+            else
+                connStr += $"User ID={worldUser};Password={worldPass}";
 
-            if (!await dbObj.Connect())
-            {
-                LogUtility.MessageBoxAndLog($"Failed to open a database connection!", "GetRowCount Exception", LogEventLevel.Error);
-
-                return -99;
-            }
-
-            dbObj.CommandText = $"select count(*) from dbo.{tableName}";
-
-            int value = await dbObj.ExecuteScalar<int>();
-
-            dbObj.Disconnect();
-
-            return value;
+            return connStr;
         }
 
         /// <summary>
@@ -301,7 +286,7 @@ namespace Grimoire.Utilities
         /// <returns>Populated collection of rows</returns>
         public static async Task<RowObject[]> ReadTableData(StructureObject structure, IProgress<int> progressObj)
         {
-            dbObj = new DatabaseObject(ConnectionString);
+            dbObj = new DatabaseObject(NewConnectionString(structure.DatabaseName ?? worldName));
 
             if (!await dbObj.Connect())
             {
@@ -490,7 +475,7 @@ namespace Grimoire.Utilities
                 }
 
                 bulkCpy.DestinationTableName = table.TableName;
-                bulkCpy.WriteToServer(table);
+                bulkCpy.WriteToServer(table); // TODO: grim is eatting errors that happen here! Fix it
             }
 
             dbObj.Disconnect();

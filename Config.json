@@ -70,7 +70,7 @@
     "DataDirectory": "E:\\OpenRZ",
     "StringStruct": "StringResource",
     "StringTable": "StringResource",
-    "ItemStruct": "ItemResource72",
+    "ItemStruct": "ItemResource73",
     "ItemTable": "ItemResource",
     "ItemUseFlagList": "use_flags_under_81",
     "ItemModelTypeList": "item-model_type",

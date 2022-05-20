@@ -15,6 +15,7 @@ using Grimoire.Structures;
 using Serilog;
 using Archimedes;
 using Archimedes.Cells;
+using DataCore;
 
 namespace Grimoire.Tabs.Styles
 {
@@ -23,7 +24,7 @@ namespace Grimoire.Tabs.Styles
         ConfigManager configMan = GUI.Main.Instance.ConfigMgr;
         StructureManager structMgr = StructureManager.Instance;
 
-        DataCore.Core data = new DataCore.Core(Encoding.Default);
+        Core data;
 
         DataTable selectionTbl = null;
 
@@ -37,7 +38,7 @@ namespace Grimoire.Tabs.Styles
 
         Dictionary<string, Dictionary<string, int>> enums = new Dictionary<string, Dictionary<string, int>>();
 
-        bool structLoaded = false;
+        bool structLoaded = true;
         bool useArenaPt = false;
 
         DataRow selectedItem = null;
@@ -45,10 +46,6 @@ namespace Grimoire.Tabs.Styles
         public Item()
         {
             InitializeComponent();
-
-            configureCores();
-
-            useArenaPt = configMan["UseArenaPoint", "Item"];
         }
 
         public void Clear()
@@ -93,99 +90,8 @@ namespace Grimoire.Tabs.Styles
             cdGroupInput.Value = 0;
             availablePeriodInput.Value = 0;
             decrease_type_lst.SelectedIndex = -1;
-        }
 
-        void configureCores()
-        {
-            data.UseModifiedXOR = configMan.Get<bool>("UseModifiedXOR", "Data", false);
-
-            if (data.UseModifiedXOR)
-            {
-                byte[] modifiedKey = configMan.GetByteArray("ModifiedXORKey");
-
-                if (modifiedKey == null || modifiedKey.Length != 256)
-                {
-                    Log.Fatal("Invalid XOR Key!");
-                    return;
-                }
-
-                data.SetXORKey(modifiedKey);
-
-                if (!data.ValidXOR)
-                {
-                    string msg = "The provided ModifiedXORKey is invalid!";
-
-                    Log.Error(msg);
-
-                    MessageBox.Show(msg, "XOR Key Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
-
-                Log.Information($"Using modified xor key:\n");
-
-                if (GUI.Main.Instance.LogLevel.MinimumLevel <= Serilog.Events.LogEventLevel.Debug)
-                    Log.Debug($"\n{StringExt.ByteArrayToString(modifiedKey)}");
-            }
-
-            int codepage = configMan.Get<int>("Codepage", "Grim");
-            Encoding encoding = Encoding.GetEncoding(codepage);
-            itemRDB.Encoding = encoding;
-            stringRDB.Encoding = encoding;
-
-            spr = new SPR(data);
-        }
-
-        private async void ts_select_struct_btn_Click(object sender, EventArgs e)
-        {
-            string structDir = configMan.GetDirectory("Directory", "RDB");
-            string structName = configMan["ItemStruct"];
-            string structPath = null;
-
-            using (OpenFileDialog ofDlg = new OpenFileDialog() 
-            {
-                InitialDirectory = structDir,
-                DefaultExt = ".lua",
-                Title = "Select Structure Definition",
-                FileName = $"{structName}.lua" }) 
-            { 
-                if (ofDlg.ShowDialog(this) == DialogResult.OK)
-                {
-                    if (File.Exists(ofDlg.FileName))
-                    {
-                        structPath = ofDlg.FileName;
-
-                        ts_struct_name.Text = Path.GetFileNameWithoutExtension(ofDlg.FileName);
-
-                        if (ts_struct_name.Text != configMan["ItemStruct", "Item"])
-                        {
-                            configMan["ItemStruct", "Item"] = ts_struct_name.Text;
-
-                            await configMan.Save();
-                        }
-
-                        ts_status.Text = string.Empty;
-                    }
-                }
-                else
-                    return;
-
-                Log.Debug($"User selected:\n\t- {ofDlg.FileName}");
-            }
-
-            if (structPath != null)
-            {
-                bindEnums();
-
-                structLoaded = true;
-            }
-
-            ts_status.Text = "Loading items...";
-
-            loadItems();
-
-            ts_status.Text = string.Empty;
-
+            TabManager.Instance.Text = "Item Utility";
         }
 
         void bindEnums()
@@ -251,8 +157,6 @@ namespace Grimoire.Tabs.Styles
                 return false;
             }
 
-            ts_select_struct_btn.Enabled = true;
-
             return true;
         }
 
@@ -317,12 +221,8 @@ namespace Grimoire.Tabs.Styles
                 if (select.ShowDialog(this) == DialogResult.OK)
                     selectedID = select.SelectedValue;
 
-            if (selectedID == -1)
-            {
-                LogUtility.MessageBoxAndLog($"Invalid item id: {selectedID}", "Item Select Exception", Serilog.Events.LogEventLevel.Error);
-
+            if (selectedID <= 0)
                 return;
-            }
 
             try 
             {
@@ -430,12 +330,40 @@ namespace Grimoire.Tabs.Styles
 
         private async void Item_Load(object sender, EventArgs e)
         {
-            stringRDB = await structMgr.GetStruct("StringResource");
-            itemRDB = await structMgr.GetStruct("ItemResource73");
+            useArenaPt = configMan["UseArenaPoint", "Item"];
+
+            data = (configMan.Get<bool>("UseModifiedXOR", "Data", false)) ? new Core(false, Encoding.Default, configMan.GetByteArray("ModifiedXORKey")) : new Core(false, Encoding.Default);
+
+            if (data.UseModifiedXOR)
+            {
+                Log.Information($"Using modified xor key:\n");
+
+                if (GUI.Main.Instance.LogLevel.MinimumLevel >= Serilog.Events.LogEventLevel.Debug)
+                    Log.Debug($"\n{StringExt.ByteArrayToString(data.XORKey)}");
+            }
+
+            spr = new SPR(data);
+
+            int codepage = configMan.Get<int>("Codepage", "Grim");
+            Encoding encoding = Encoding.GetEncoding(codepage);
+
+            string rdbStruct = configMan.Get<string>("ItemStruct", "Item", "ItemResource73");
+            string strStruct = configMan.Get<string>("StringStruct", "Item", "StringResource");
+
+            itemRDB = await structMgr.GetStruct(rdbStruct);
+            itemRDB.Encoding = encoding;
+            stringRDB = await structMgr.GetStruct(strStruct);
+            stringRDB.Encoding = encoding;
 
             // Use discard so that compiler doesn't complain that the call isn't awaited. We do not need to wait, continue on.
             _ = loadStrings();
             loadSPR();
+
+            bindEnums();
+
+            ts_status.Text = "Loading items...";
+
+            loadItems();
 
             ts_status.Text = string.Empty;
         }

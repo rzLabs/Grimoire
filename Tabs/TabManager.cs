@@ -381,9 +381,11 @@ namespace Grimoire.Tabs
         /// <summary>
         /// Destroy and remove the currently selected tab
         /// </summary>
-        public void Destroy()
+        public void Destroy(int index = -1)
         {
-            pages.RemoveAt(RightClick_TabIdx);
+            int tabIdx = (index >= 0) ? index : RightClick_TabIdx;
+
+            pages.RemoveAt(tabIdx);
             tabs.SelectedIndex = Math.Max(pages.Count - 1, 0);
 
             Log.Information($"{Text} has been closed!");

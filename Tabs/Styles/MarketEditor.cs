@@ -204,40 +204,58 @@ namespace Grimoire.Tabs.Styles
 
                 dbObj.CommandText = cmd;
 
-                using (DbDataReader dbRdr = await dbObj.ExecuteReader())
+                try
                 {
-                    int idx = 0;
 
-                    while (dbRdr.Read())
+                    using (DbDataReader dbRdr = await dbObj.ExecuteReader())
                     {
-                        MarketEntry entry = new MarketEntry()
-                        {
-                            SortID = dbRdr.GetInt32(0),
-                            MarketName = dbRdr.GetString(1),
-                            Code = dbRdr.GetInt32(2),
-                            ItemName = dbRdr.GetString(3),
-                            Price = dbRdr.GetInt32(4),
-                            PriceRatio = dbRdr.GetDecimal(5),
-                            HuntaholicPoint = dbRdr.GetInt32(6),
-                            HuntaholicRatio = dbRdr.GetDecimal(7),
-                        };
+                        int idx = 0;
 
-                        if (useArena)
+                        while (dbRdr.Read())
                         {
-                            entry.ArenaPoint = dbRdr.GetInt32(8);
-                            entry.ArenaRatio = dbRdr.GetDecimal(9);
+                            // TODO: we need to check for db nulls
+                            var SortID = dbRdr.GetInt32(0);
+                            var MarketName = dbRdr.GetString(1);
+                            var Code = dbRdr.GetInt32(2);
+                            var ItemName = dbRdr.GetString(3);
+                            var Price = dbRdr.GetInt32(4);
+                            var PriceRatio = dbRdr.GetDecimal(5);
+                            var HuntaholicPoint = dbRdr.GetInt32(6);
+                            var HuntaholicRatio = dbRdr.GetDecimal(7);
+
+                            MarketEntry entry = new MarketEntry()
+                            {
+                                SortID = SortID,
+                                MarketName = MarketName,
+                                Code = Code,
+                                ItemName = ItemName,
+                                Price = Price,
+                                PriceRatio = PriceRatio,
+                                HuntaholicPoint = HuntaholicPoint,
+                                HuntaholicRatio = HuntaholicRatio
+                            };
+
+                            if (useArena)
+                            {
+                                entry.ArenaPoint = dbRdr.GetInt32(8);
+                                entry.ArenaRatio = dbRdr.GetDecimal(9);
+                            }
+
+                            entries.Add(entry);
+
+                            if ((idx * 100 / count) != ((idx - 1) * 100 / count))
+                                progressBar.Value = idx;
+
+                            idx++;
                         }
 
-                        entries.Add(entry);
-
-                        if ((idx * 100 / count) != ((idx - 1) * 100 / count))
-                            progressBar.Value = idx;
-
-                        idx++;
+                        progressBar.Maximum = 100;
+                        progressBar.Value = 0;
                     }
+                }
+                catch (Exception ex)
+                {
 
-                    progressBar.Maximum = 100;
-                    progressBar.Value = 0;
                 }
             }
 
