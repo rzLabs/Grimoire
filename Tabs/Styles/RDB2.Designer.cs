@@ -49,7 +49,7 @@ namespace Grimoire.Tabs.Styles
             this.ts_encLbl = new System.Windows.Forms.ToolStripLabel();
             this.ts_enc_list = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.ts_struct_status = new System.Windows.Forms.ToolStripLabel();
+            this.ts_status_lb = new System.Windows.Forms.ToolStripLabel();
             this.ts_prog = new System.Windows.Forms.ToolStripProgressBar();
             this.ts_sel_struct_btn = new System.Windows.Forms.ToolStripButton();
             this.grid = new System.Windows.Forms.DataGridView();
@@ -74,12 +74,12 @@ namespace Grimoire.Tabs.Styles
             this.ts_encLbl,
             this.ts_enc_list,
             this.toolStripSeparator2,
-            this.ts_struct_status,
             this.ts_prog,
-            this.ts_sel_struct_btn});
+            this.ts_sel_struct_btn,
+            this.ts_status_lb});
             this.ts.Location = new System.Drawing.Point(0, 0);
             this.ts.Name = "ts";
-            this.ts.Size = new System.Drawing.Size(780, 25);
+            this.ts.Size = new System.Drawing.Size(910, 28);
             this.ts.TabIndex = 26;
             this.ts.Text = "toolStrip1";
             // 
@@ -93,7 +93,7 @@ namespace Grimoire.Tabs.Styles
             this.ts_load.Image = ((System.Drawing.Image)(resources.GetObject("ts_load.Image")));
             this.ts_load.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ts_load.Name = "ts_load";
-            this.ts_load.Size = new System.Drawing.Size(46, 22);
+            this.ts_load.Size = new System.Drawing.Size(46, 25);
             this.ts_load.Text = "Load";
             // 
             // ts_load_rdb
@@ -121,7 +121,7 @@ namespace Grimoire.Tabs.Styles
             this.ts_save.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ts_save.Name = "ts_save";
             this.ts_save.ShowDropDownArrow = false;
-            this.ts_save.Size = new System.Drawing.Size(35, 22);
+            this.ts_save.Size = new System.Drawing.Size(35, 25);
             this.ts_save.Text = "Save";
             // 
             // ts_save_file
@@ -183,7 +183,7 @@ namespace Grimoire.Tabs.Styles
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 28);
             // 
             // ts_search
             // 
@@ -191,19 +191,19 @@ namespace Grimoire.Tabs.Styles
             this.ts_search.Image = ((System.Drawing.Image)(resources.GetObject("ts_search.Image")));
             this.ts_search.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ts_search.Name = "ts_search";
-            this.ts_search.Size = new System.Drawing.Size(46, 22);
+            this.ts_search.Size = new System.Drawing.Size(46, 25);
             this.ts_search.Text = "Search";
             this.ts_search.Click += new System.EventHandler(this.ts_search_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 28);
             // 
             // ts_encLbl
             // 
             this.ts_encLbl.Name = "ts_encLbl";
-            this.ts_encLbl.Size = new System.Drawing.Size(60, 22);
+            this.ts_encLbl.Size = new System.Drawing.Size(60, 25);
             this.ts_encLbl.Text = "Encoding:";
             // 
             // ts_enc_list
@@ -211,24 +211,25 @@ namespace Grimoire.Tabs.Styles
             this.ts_enc_list.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ts_enc_list.Enabled = false;
             this.ts_enc_list.Name = "ts_enc_list";
-            this.ts_enc_list.Size = new System.Drawing.Size(114, 25);
+            this.ts_enc_list.Size = new System.Drawing.Size(132, 28);
             this.ts_enc_list.SelectedIndexChanged += new System.EventHandler(this.ts_enc_list_SelectedIndexChanged);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 28);
             // 
-            // ts_struct_status
+            // ts_status_lb
             // 
-            this.ts_struct_status.Name = "ts_struct_status";
-            this.ts_struct_status.Size = new System.Drawing.Size(0, 22);
+            this.ts_status_lb.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.ts_status_lb.Name = "ts_status_lb";
+            this.ts_status_lb.Size = new System.Drawing.Size(0, 25);
             // 
             // ts_prog
             // 
             this.ts_prog.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.ts_prog.Name = "ts_prog";
-            this.ts_prog.Size = new System.Drawing.Size(100, 22);
+            this.ts_prog.Size = new System.Drawing.Size(117, 25);
             // 
             // ts_sel_struct_btn
             // 
@@ -236,7 +237,7 @@ namespace Grimoire.Tabs.Styles
             this.ts_sel_struct_btn.Image = ((System.Drawing.Image)(resources.GetObject("ts_sel_struct_btn.Image")));
             this.ts_sel_struct_btn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ts_sel_struct_btn.Name = "ts_sel_struct_btn";
-            this.ts_sel_struct_btn.Size = new System.Drawing.Size(93, 22);
+            this.ts_sel_struct_btn.Size = new System.Drawing.Size(93, 25);
             this.ts_sel_struct_btn.Text = "Select Structure";
             this.ts_sel_struct_btn.Click += new System.EventHandler(this.ts_sel_struct_btn_Click);
             // 
@@ -249,9 +250,10 @@ namespace Grimoire.Tabs.Styles
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid.ContextMenuStrip = this.gridCMS;
-            this.grid.Location = new System.Drawing.Point(3, 28);
+            this.grid.Location = new System.Drawing.Point(4, 32);
+            this.grid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.grid.Name = "grid";
-            this.grid.Size = new System.Drawing.Size(774, 391);
+            this.grid.Size = new System.Drawing.Size(903, 451);
             this.grid.TabIndex = 28;
             this.grid.VirtualMode = true;
             this.grid.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.rowGrid_CellValueNeeded);
@@ -276,11 +278,12 @@ namespace Grimoire.Tabs.Styles
             this.rows_txBx.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.rows_txBx.BackColor = System.Drawing.Color.LightGray;
             this.rows_txBx.Enabled = false;
-            this.rows_txBx.Location = new System.Drawing.Point(708, 425);
+            this.rows_txBx.Location = new System.Drawing.Point(826, 490);
+            this.rows_txBx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rows_txBx.MaxLength = 7;
             this.rows_txBx.Name = "rows_txBx";
             this.rows_txBx.ReadOnly = true;
-            this.rows_txBx.Size = new System.Drawing.Size(69, 20);
+            this.rows_txBx.Size = new System.Drawing.Size(80, 23);
             this.rows_txBx.TabIndex = 35;
             this.rows_txBx.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -289,24 +292,26 @@ namespace Grimoire.Tabs.Styles
             this.date_txBx.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.date_txBx.BackColor = System.Drawing.Color.LightGray;
             this.date_txBx.Enabled = false;
-            this.date_txBx.Location = new System.Drawing.Point(3, 425);
+            this.date_txBx.Location = new System.Drawing.Point(4, 490);
+            this.date_txBx.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.date_txBx.MaxLength = 7;
             this.date_txBx.Name = "date_txBx";
             this.date_txBx.ReadOnly = true;
-            this.date_txBx.Size = new System.Drawing.Size(69, 20);
+            this.date_txBx.Size = new System.Drawing.Size(80, 23);
             this.date_txBx.TabIndex = 36;
             this.date_txBx.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // RDB2
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.date_txBx);
             this.Controls.Add(this.rows_txBx);
             this.Controls.Add(this.grid);
             this.Controls.Add(this.ts);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "RDB2";
-            this.Size = new System.Drawing.Size(780, 454);
+            this.Size = new System.Drawing.Size(910, 524);
             this.ts.ResumeLayout(false);
             this.ts.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
@@ -325,7 +330,7 @@ namespace Grimoire.Tabs.Styles
         private System.Windows.Forms.ToolStripLabel ts_encLbl;
         private System.Windows.Forms.ToolStripComboBox ts_enc_list;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripLabel ts_struct_status;
+        private System.Windows.Forms.ToolStripLabel ts_status_lb;
         private System.Windows.Forms.ToolStripProgressBar ts_prog;
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.ToolStripButton ts_sel_struct_btn;

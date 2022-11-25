@@ -231,7 +231,7 @@ namespace Grimoire.Tabs.Styles
 
                     if (string.IsNullOrEmpty(structname))
                     {
-                        using (StructureSelect select = new StructureSelect())
+                        using (StructureSelect select = new StructureSelect(configMgr, structMgr))
                         {
                             if (select.ShowDialog(this) != DialogResult.OK)
                             {
@@ -294,11 +294,9 @@ namespace Grimoire.Tabs.Styles
 
             actionSW.Restart();
 
-            using (StructureSelect select = new StructureSelect())
-            {
+            using (StructureSelect select = new StructureSelect(configMgr, structMgr, true))
                 if (select.ShowDialog(this) == DialogResult.OK)
-                    selectedStructs = select.SelectedStructures;
-            }
+                    selectedStructs = select.SelectedTexts;
 
             if (selectedStructs is null)
                 return;
@@ -578,7 +576,7 @@ namespace Grimoire.Tabs.Styles
             string filename = Path.GetFileName(path);
 
             StructureSelect select;
-            string structName = (StructLinkUtility.FilenameLinkExists(filename)) ? StructLinkUtility.GetStructName(filename) : ((select = new StructureSelect()).ShowDialog(this) == DialogResult.OK) ? select.SelectedText : null;
+            string structName = (StructLinkUtility.FilenameLinkExists(filename)) ? StructLinkUtility.GetStructName(filename) : ((select = new StructureSelect(configMgr, structMgr)).ShowDialog(this) == DialogResult.OK) ? select.SelectedText : null;
             StructureObject structObj;
 
             if (string.IsNullOrEmpty(structDir))

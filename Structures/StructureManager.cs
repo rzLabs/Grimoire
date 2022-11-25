@@ -17,7 +17,6 @@ using Serilog.Events;
 
 namespace Grimoire.Structures
 {
-    // TODO: rebuild the struct list if global epic is changed
     public class StructureManager : IEnumerable<StructureObject>
     {
         ConfigManager configMgr = GUI.Main.Instance.ConfigMgr;
@@ -76,6 +75,8 @@ namespace Grimoire.Structures
                 try
                 {
                     structObj.ParseScript(ParseFlags.Info);
+
+                    structures.Add(structObj);
                 }
                 catch (Exception ex)
                 {
@@ -83,55 +84,10 @@ namespace Grimoire.Structures
                         LogUtility.MessageBoxAndLog($"An exception occured while processing: {Path.GetFileNameWithoutExtension(filename)}\n\n{StringExt.LuaExceptionToString(((InterpreterException)ex).DecoratedMessage)}", "StructureManager Exception", LogEventLevel.Error);
 
                     return;
-                }
-
-                float globalEpic = configMgr.Get<float>("Epic", "Grim");
-                float epicMin = structObj.Epic[0];
-                float epicMax = (structObj.Epic.Length > 1) ? structObj.Epic[1] : epicMin;
-
-                // Struct epic is all | globalEpic >= struct min epic && <= struct max epic || globalEpic is all
-                if (epicMin == 0 && epicMin == epicMax || globalEpic >= epicMin && globalEpic <= epicMax || globalEpic == 0)
-                {
-                    structures.Add(structObj);
-
-                    for (int i = 0; i < structObj.Epic.Length; i++)
-                    {
-                        float epic = structObj.Epic[i];
-
-                        if (!AvailableEpics.Contains(epic))
-                            AvailableEpics.Add(epic);
-                    }
-                }
-                            
+                }            
             }
 
             Log.Information($"{structures.Count} structures loaded.");
-        }
-
-        public List<StructureObject> ByEpic(float[] epic)
-        {
-            List<StructureObject> _structures = new List<StructureObject>();
-
-            for (int i = 0; i < structures.Count; i++)
-            {
-                if (epic.Length == 1 && epic[0] == 0)
-                    _structures.Add(structures[i]);
-                else
-                {
-                    // loop this structures epic table
-                    for (int epicIdx1 = 0; epicIdx1 < structures[i].Epic.Length; epicIdx1++)
-                    {
-                        float structepic = structures[i].Epic[epicIdx1];
-
-                        // loop the provided epic table
-                        for (int epicIdx2 = 0; epicIdx2 < epic.Length; epicIdx2++)
-                            if (structepic == epic[epicIdx2])
-                                _structures.Add(structures[i].Clone() as StructureObject);
-                    }
-                }
-            }
-
-            return _structures;
         }
 
         public IEnumerator<StructureObject> GetEnumerator() => structures.GetEnumerator();

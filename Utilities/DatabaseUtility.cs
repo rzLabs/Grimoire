@@ -365,57 +365,56 @@ namespace Grimoire.Utilities
             Stopwatch actionSW = new Stopwatch();
             actionSW.Start();
 
-            try
+            dbObj = new DatabaseObject(ConnectionString);
+
+            DataTable dataTbl = await GenerateDataTable(structure.TableName);
+
+            for (int i = 0; i < structure.Rows.Count; i++) //loop rows
             {
-                dbObj = new DatabaseObject(ConnectionString);
+                DataRow newRow = dataTbl.NewRow();
+                RowObject refRow = structure.Rows[i];
 
-                DataTable dataTbl = await GenerateDataTable(structure.TableName);
-
-                for (int i = 0; i < structure.Rows.Count; i++) //loop rows
+                foreach (KeyValuePair<CellBase, object> pair in refRow)
                 {
-                    DataRow newRow = dataTbl.NewRow();
-                    RowObject refRow = structure.Rows[i];
+                    if (pair.Key.Flags.HasFlag(CellFlags.SqlIgnore))
+                        continue;
 
-                    foreach (KeyValuePair<CellBase, object> pair in refRow)
+                    if (pair.Key.PrimaryType == typeof(string))
                     {
-                        if (pair.Key.Flags.HasFlag(CellFlags.SqlIgnore))
-                            continue;
-
-                        if (pair.Key.PrimaryType == typeof(string))
-                        {
-                            newRow[pair.Key.Name] = ByteConverterExt.ToString((byte[])pair.Value);
-                            continue;
-                        }
-
-                        newRow[pair.Key.Name] = pair.Value;
+                        newRow[pair.Key.Name] = structure.Encoding.GetString((byte[])pair.Value);
+                        continue;
                     }
 
-                    dataTbl.Rows.Add(newRow);
+                    newRow[pair.Key.Name] = pair.Value;
                 }
 
-                if (!await dbObj.Connect())
-                    return false;
-
-                dbObj.CommandText = $"TRUNCATE TABLE {structure.TableName}";
-                await dbObj.ExecuteNonQuery();
-
-                await Task.Run(() => ExecuteBulk(dataTbl, progressObj) );
-
-                dbObj.Disconnect();
-
-                actionSW.Stop();
-
-                Log.Information($"{structure.TableName} exported in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)}");
-
-                return true;
-
+                dataTbl.Rows.Add(newRow);
             }
-            catch (Exception ex)
+
+            if (!await dbObj.Connect())
+                return false;
+
+            dbObj.CommandText = $"TRUNCATE TABLE {structure.TableName}";
+            await dbObj.ExecuteNonQuery();
+
+            var executeTask = ExecuteBulk(dataTbl, progressObj);
+
+            executeTask.Wait();
+
+            if (executeTask.IsFaulted)
             {
-                LogUtility.MessageBoxAndLog(ex, "writing sql table", "SQL Export Exception", LogEventLevel.Error);
+                Log.Error($"An exception has occured while exporting {structure.TableName}!\nMessage: {executeTask.Exception.Message}\nStack-Trace: {executeTask.Exception.StackTrace}");
 
                 return false;
             }
+
+            dbObj.Disconnect();
+
+            actionSW.Stop();
+
+            Log.Information($"{structure.TableName} exported in {StringExt.MilisecondsToString(actionSW.ElapsedMilliseconds)}");
+
+            return true;
         }
 
         /// <summary>
@@ -454,13 +453,13 @@ namespace Grimoire.Utilities
         /// </summary>
         /// <param name="table">Prepared datatable containing data</param>
         /// <param name="progress">Progress event</param>
-        public static async void ExecuteBulk(DataTable table, IProgress<int> progress)
+        public static async Task<int> ExecuteBulk(DataTable table, IProgress<int> progress)
         {
             if (dbObj == null)
             {
                 LogUtility.MessageBoxAndLog("dbObj is null!", "ExecuteBulk Exception", LogEventLevel.Error);
 
-                return;
+                return -1;
             }
 
             int rowCnt = table.Rows.Count;
@@ -471,14 +470,16 @@ namespace Grimoire.Utilities
                 {
                     LogUtility.MessageBoxAndLog($"Failed to open a database connection!", "ExecuteBulk Exception", LogEventLevel.Error);
 
-                    return;
+                    return -1;
                 }
 
                 bulkCpy.DestinationTableName = table.TableName;
-                bulkCpy.WriteToServer(table); // TODO: grim is eatting errors that happen here! Fix it
+                bulkCpy.WriteToServer(table);
             }
 
             dbObj.Disconnect();
+
+            return rowCnt;
         }
 
         /// <summary>

@@ -23,8 +23,6 @@ using System.Text;
 
 namespace Grimoire.Tabs.Styles
 {
-    // TODO: implement saving displayed rows only
-
     public partial class RDB2 : UserControl
     {
         #region Private fields
@@ -161,6 +159,9 @@ namespace Grimoire.Tabs.Styles
                         if (selectGUI.DialogResult == DialogResult.OK)
                         {
                             string fileName = selectGUI.SelectedText;
+
+                            ts_status_lb.Text = $"Loading {fileName} from data index...";
+
                             DataCore.Structures.IndexEntry finalResult = results.Find(i => i.Name == fileName);
                             rdbBytes = dCore.GetFileBytes(finalResult);
 
@@ -175,7 +176,11 @@ namespace Grimoire.Tabs.Styles
                     }
                 }
                 else
+                {
+                    ts_status_lb.Text = $"Loading {StructObject.RDBName}...";
+
                     rdbBytes = File.ReadAllBytes(rdbPath);
+                }
 
                 StructObject.Read(rdbBytes);
             }
@@ -199,6 +204,10 @@ namespace Grimoire.Tabs.Styles
             grid.RowCount = rowCnt;
 
             ts_save.Enabled = rowCnt > 0;
+
+            ts_enc_list.Enabled = rowCnt == 0;
+
+            ts_status_lb.Text = String.Empty;
 
             tabMgr.Text = StructObject.StructName;
 
@@ -277,6 +286,26 @@ namespace Grimoire.Tabs.Styles
             gridCMS.Items[0].Enabled = false;
         }
 
+        public void GenerateColumns()
+        {
+            ts_sel_struct_btn.Text = StructObject.Name;
+            ts_sel_struct_btn.Checked = true;
+            ts_sel_struct_btn.Enabled = false;
+
+            ts_enc_list.SelectedIndex = Encodings.GetIndex(StructObject.Encoding.CodePage);
+
+            // Create the original task to generate the columns
+            Task<DataGridViewTextBoxColumn[]> generateColumns = Task.Run(() => generateGridColumns());
+
+            // We do not need to wait for the columns to be generated to proceed. Chain a new task to the original generateColumns call, then invoke the calling thread to update it with the results.
+            generateColumns.ContinueWith(t => Invoke((MethodInvoker)(() =>
+            {
+                grid.Columns.AddRange(t.Result);
+
+                ts_load.Enabled = grid.Columns.Count > 0;
+            })));
+        }
+
         #endregion
 
         #region Private methods
@@ -351,7 +380,7 @@ namespace Grimoire.Tabs.Styles
 
         private async void ts_sel_struct_btn_Click(object sender, EventArgs e)
         {
-            using (StructureSelect selectGUI = new StructureSelect())
+            using (StructureSelect selectGUI = new StructureSelect(configMgr, structMgr))
             {
                 if (selectGUI.ShowDialog(this) != DialogResult.OK)
                     return;
@@ -371,26 +400,6 @@ namespace Grimoire.Tabs.Styles
             GenerateColumns();
 
             ts_enc_list.Enabled = true;
-        }
-
-        public void GenerateColumns()
-        {
-            ts_sel_struct_btn.Text = StructObject.Name;
-            ts_sel_struct_btn.Checked = true;
-            ts_sel_struct_btn.Enabled = false;
-
-            ts_enc_list.SelectedIndex = Encodings.GetIndex(StructObject.Encoding.CodePage);
-
-            // Create the original task to generate the columns
-            Task<DataGridViewTextBoxColumn[]> generateColumns = Task.Run(() => generateGridColumns());
-
-            // We do not need to wait for the columns to be generated to proceed. Chain a new task to the original generateColumns call, then invoke the calling thread to update it with the results.
-            generateColumns.ContinueWith(t => Invoke((MethodInvoker)(() =>
-            {
-                grid.Columns.AddRange(t.Result);
-
-                ts_load.Enabled = grid.Columns.Count > 0;
-            })));
         }
 
         private void ts_enc_list_SelectedIndexChanged(object sender, EventArgs e)
@@ -505,6 +514,22 @@ namespace Grimoire.Tabs.Styles
         {
             if (StructObject is null)
                 return;
+
+            if (StructObject.TableName == null || StructObject.TableName == "UNDEFINED")
+            {
+                if (MessageBox.Show("No SQL Table Name defined, would you like to provide one?", "Input Required", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question) != DialogResult.Yes)
+                {
+                    Log.Error($"Cannot save {StructObject.Name} to SQL without a valid table name!");
+                    return;
+                }
+
+                var input = DialogUtility.RequestInput<string>("Input Required", "Please input a valid table name", DialogUtility.DialogType.Text);
+
+                if (input is null)
+                    return;
+
+                StructObject.TableName = input;
+            }
 
             taskProgress = new Progress<int>(onRDBProgress);
 
